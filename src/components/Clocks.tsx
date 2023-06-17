@@ -1,22 +1,26 @@
 import { useEffect, useState } from "react";
-import { Clock } from "./Clock"
+import { Clock } from "./Clock";
 
-const Clocks: React.FC = () => {
+const cities: string[] = ["Tokyo", "London", "abc"];
 
-    const [time, setTime] = useState<string>(new Date().toLocaleTimeString())
-    
+const Clocks: React.FC = () => {   
+     
+    const [time, setTime] = useState<Date>(new Date())
+   
     useEffect(() => {
         const intervalId = setInterval(() => {
-            setTime(new Date().toLocaleTimeString());
-            console.log('hello');
+            setTime(new Date()); //ресурс
         }, 1000);
-        return () => clearInterval(intervalId)
-    }, [])
+        return () => clearInterval(intervalId) //вызывается когда компонента размонтируется
+    }, []) //[] - внутри указывается при изменении каких ресурсов вызывать юзэффект. по умолчанию все ресурсы
 
     return <div style={{display: "flex", flexDirection: "row",
         justifyContent: "space-around"}}>
-            <Clock time={time} />
-            <Clock time={time} />
+            {cities.map(city => <Clock time={time} city={city} key={city}/>)}
     </div>
 }
 export default Clocks
+
+{/* <Clock time={time} city={cities[0]} />
+<Clock time={time} city={cities[1]} />
+<Clock time={time} city={cities[2]} /> */}
