@@ -20,7 +20,3 @@ const Clocks: React.FC = () => {
     </div>
 }
 export default Clocks
-
-{/* <Clock time={time} city={cities[0]} />
-<Clock time={time} city={cities[1]} />
-<Clock time={time} city={cities[2]} /> */}
