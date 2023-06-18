@@ -58,11 +58,11 @@ export const Clock: React.FC<Props> = ({time, initialCity}) => { // or (props) a
     return <div style={style}>
 
         <Input submitFn={function (inputText: string): InputResult {
-            
-            setCity(getCity(inputText))
-            const inputResult: InputResult = getInputResult(inputText);
 
-            return { status: inputResult.status, message: inputResult.message };
+            setCity(getCity(inputText))
+
+            return getInputResult(inputText)
+            
         } } placeHolder={"enter something"} />
         
         <header>
