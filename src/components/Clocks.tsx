@@ -16,7 +16,7 @@ const Clocks: React.FC = () => {
     }, []) //[] - внутри указывается при изменении каких ресурсов вызывать юзэффект. по умолчанию все ресурсы
 
     return <div style={{display: "flex", flexDirection: "row", justifyContent: "space-around"}}>
-        {cities.map(city => <Clock time={time} city={city} key={city} />)}
+        {cities.map(city => <Clock time={time} initialCity={city} key={city} />)}
     </div>
 }
 export default Clocks

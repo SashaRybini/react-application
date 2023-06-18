@@ -1,9 +1,11 @@
-import { CSSProperties, useMemo } from "react"
+import { CSSProperties, useMemo, useState } from "react"
 import timeZones from "../time-zones";
+import InputResult from "../model/InputResult";
+import Input from "./common/Input";
 
 type Props = {
     time: Date,
-    city: string
+    initialCity: string
 }
 
 const countryDefault: string = 'Israel';
@@ -25,13 +27,44 @@ function getIndex(city: string): number {
     return timeZones.findIndex(obj => JSON.stringify(obj).includes(city)); //try find 
 }
 
-export const Clock: React.FC<Props> = ({time, city}) => { // or (props) and then props.time
-    // const style: React.CSSProperties
-    //operations inside are performed every second
+function getInputResult(city: string): InputResult {
+    if (getIndex(city) == -1) {
+        return {status: 'error', message: 'city/country not found'}
+    }
+    if (isMoreThanOneZone(city)) {
+        return {status: 'warning', message: 'found more than one time zone for this country'}
+    }
+    return {status: 'success', message: 'OK'};
+}
+function isMoreThanOneZone(city: string): boolean {
+    let res = false;
+    const zoneIndex = getIndex(city)
+    const timeZone = timeZones[zoneIndex].name;
+    const timeZoneLeftPart = timeZone.split('/')[0];
+    
+    const timeZonesPart =  timeZones.slice(zoneIndex + 1, timeZones.length)
+    res = timeZonesPart.findIndex(obj => obj.name.includes(timeZoneLeftPart) && JSON.stringify(obj).includes(city)) > -1;
+    
+    return res;
+}
+
+export const Clock: React.FC<Props> = ({time, initialCity}) => { // or (props) and then props.time
+    
+    const [city, setCity] = useState<string>(getCity(initialCity));
+
     const timeZone = useMemo(() => getTimeZone(city), [city]); //вызовется только если поменялся сити
     const timeInZone: string = time.toLocaleTimeString('en-GB', {timeZone: timeZone})
-    city = useMemo(() => getCity(city), [city])
+
     return <div style={style}>
+
+        <Input submitFn={function (inputText: string): InputResult {
+            
+            setCity(getCity(inputText))
+            const inputResult: InputResult = getInputResult(inputText);
+
+            return { status: inputResult.status, message: inputResult.message };
+        } } placeHolder={"enter something"} />
+        
         <header>
             Time in {city}
         </header>

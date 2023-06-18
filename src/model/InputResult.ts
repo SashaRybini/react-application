@@ -1,5 +1,5 @@
 type InputResult = {
-    status: "error" | "sucsess" | "warning",
+    status: "error" | "success" | "warning",
     message?: string
 }
 export default InputResult;
