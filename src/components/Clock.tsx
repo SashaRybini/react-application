@@ -28,21 +28,21 @@ function getIndex(city: string): number {
 }
 
 function getInputResult(city: string): InputResult {
-    if (getIndex(city) == -1) {
+    const index = getIndex(city)
+    if (index == -1) {
         return {status: 'error', message: 'city/country not found'}
     }
-    if (isMoreThanOneZone(city)) {
+    if (isMoreThanOneZone(index, city)) {
         return {status: 'warning', message: 'found more than one time zone for this country'}
     }
     return {status: 'success', message: 'OK'};
 }
-function isMoreThanOneZone(city: string): boolean {
+function isMoreThanOneZone(index: number, city: string): boolean {
     let res = false;
-    const zoneIndex = getIndex(city)
-    const timeZone = timeZones[zoneIndex].name;
+    const timeZone = timeZones[index].name;
     const timeZoneLeftPart = timeZone.split('/')[0];
     
-    const timeZonesPart =  timeZones.slice(zoneIndex + 1, timeZones.length)
+    const timeZonesPart =  timeZones.slice(index + 1, timeZones.length)
     res = timeZonesPart.findIndex(obj => obj.name.includes(timeZoneLeftPart) && JSON.stringify(obj).includes(city)) > -1;
     
     return res;
@@ -62,7 +62,7 @@ export const Clock: React.FC<Props> = ({time, initialCity}) => { // or (props) a
             setCity(getCity(inputText))
 
             return getInputResult(inputText)
-            
+
         } } placeHolder={"enter something"} />
         
         <header>
