@@ -19,12 +19,16 @@ const Input: React.FC<Props> = ({submitFn, placeHolder, buttonTitle, inputType})
 
     function onClickFn() {
         const res = submitFn(inputElementRef.current!.value)
-        setMessage(res.message || "")
-        res.message && setTimeout(() => setMessage(""), 5000)
-
+        
         status.current = res.status;
+        if (res.status === 'success') {
+            inputElementRef.current!.value = ''
+        }
         // setStatus(res.status || "")
         // res.status && setTimeout(() => setStatus(""), 5000)
+
+        setMessage(res.message || "")
+        res.message && setTimeout(() => setMessage(""), 5000)
     }
 
     function onChangeFn() {

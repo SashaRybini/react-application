@@ -9,10 +9,16 @@ const Clocks: React.FC = () => {
     const [time, setTime] = useState<Date>(new Date())
    
     useEffect(() => {
+        console.log('mounting of clocks');
         const intervalId = setInterval(() => {
             setTime(new Date()); //ресурс
+            console.log('interval');
+            
         }, 1000);
-        return () => clearInterval(intervalId) //вызывается когда компонента размонтируется и при повторном вызове этой функции
+        return () => {               //вызывается когда компонента размонтируется и при повторном вызове этой функции
+            clearInterval(intervalId)
+            console.log('unmouting of clock');
+        } 
     }, []) //[] - внутри указывается при изменении каких ресурсов вызывать юзэффект. по умолчанию все ресурсы
 
     return <div style={{display: "flex", flexDirection: "row", justifyContent: "space-around"}}>
