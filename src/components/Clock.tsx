@@ -53,7 +53,7 @@ export const Clock: React.FC<Props> = ({time, initialCity}) => { // or (props) a
     const [city, setCity] = useState<string>(getCity(initialCity));
 
     const timeZone = useMemo(() => getTimeZone(city), [city]); //вызовется только если поменялся сити
-    const timeInZone: string = time.toLocaleTimeString('en-GB', {timeZone: timeZone})
+    const timeInZone: string = time.toLocaleTimeString('en-GB', {timeZone: timeZone}) // ???
 
     return <div style={style}>
 
