@@ -29,13 +29,18 @@ function getIndex(city: string): number {
 
 function getInputResult(city: string): InputResult {
     const index = getIndex(city)
+    const res: InputResult = {
+        status: 'success', 
+        message: 'OK'
+    }
     if (index == -1) {
-        return {status: 'error', message: 'city/country not found'}
+        res.status = 'error'
+        res.message = 'city/country not found'
+    } else if (isMoreThanOneZone(index, city)) {
+        res.status = 'warning' 
+        res.message = 'found more than one time zone for this country'
     }
-    if (isMoreThanOneZone(index, city)) {
-        return {status: 'warning', message: 'found more than one time zone for this country'}
-    }
-    return {status: 'success', message: 'OK'};
+    return res;
 }
 function isMoreThanOneZone(index: number, city: string): boolean {
     let res = false;
