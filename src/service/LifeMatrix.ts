@@ -1,6 +1,9 @@
 import { matrixSum } from "../util/number-functions";
 
 export default class LifeMatrix {
+    static next(arg0: number[][]): any {
+      throw new Error('Method not implemented.');
+    }
 
     constructor(private _numbers: number[][]) {
 
