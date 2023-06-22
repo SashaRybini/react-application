@@ -1,13 +1,17 @@
 import { createSlice } from '@reduxjs/toolkit'
+function getDirection(): 'column' | 'row' {
+
+    return window.innerHeight > window.innerWidth ? 'column' : 'row'
+}
 const initialState: {direction: 'column' | 'row'} = {
-    direction: 'row'
+    direction: getDirection()
 }
 const slice = createSlice({
     initialState: initialState,
     name: 'directionState',
     reducers: {
-        setDirection: (state, data) => {
-            state.direction = data.payload as 'row' | 'column'
+        setDirection: (state) => {
+            state.direction = getDirection()
         }
     }
 })

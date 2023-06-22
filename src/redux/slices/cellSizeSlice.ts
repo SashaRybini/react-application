@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 import config from '../../config/life-game-config.json'
 const {dimension} = config
-export function getSize() {
+function getSize() {
     return Math.min(window.innerHeight, window.innerHeight) / dimension - 2 //border 1px
 }
 const initialState: {size: number} = { 
