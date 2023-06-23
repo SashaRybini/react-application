@@ -1,33 +1,29 @@
-import { useEffect, useState } from "react";
-import LifeGame from "./components/LifeGame";
-import { useDispatch, useSelector } from "react-redux";
-import { sizeAction } from "./redux/slices/cellSizeSlice";
-import { directionActions } from "./redux/slices/flexDirectionSlice";
-import Lifes from "./components/Lifes";
-import Input from "./components/common/Input";
-import InputResult from "./model/InputResult";
-import { countAction } from "./redux/slices/lifesCountSlice";
-import { useSelectorCount } from "./redux/store";
+import { BrowserRouter, Route, Routes } from "react-router-dom"
+import Navigator from "./components/navigators/Navigator"
+import Home from "./components/pages/Home"
+import Customers from "./components/pages/Customers"
+import Orders from "./components/pages/Orders"
+import Products from "./components/pages/Products"
+import ShoppingCart from "./components/pages/ShoppingCart"
+import SignIn from "./components/pages/SignIn"
+import SignOut from "./components/pages/SignOut"
+import './App.css'
 
 const App: React.FC = () => {
-  const dispatch = useDispatch<any>()
-  useEffect(() => {
-    window.addEventListener('resize', () => {
-      dispatch(sizeAction.setSize())
-      dispatch(directionActions.setDirection())
-    })
-  }, [])
+  
 
-  let count = useSelectorCount()
-  function submitFn(inputText: string): InputResult {
-    const res: InputResult = {status: 'success'}
-    dispatch(countAction.setCount(+inputText))
-    return res;
-  }
-
-  return <div>
-      {!count && <Input submitFn={submitFn} placeHolder="enter N lifes"></Input>}
-      {count != 0 && <Lifes lifesCount={count}/>}
-    </div>
+  return <BrowserRouter>
+    <Routes>
+      <Route path="/" element={<Navigator />}>
+        <Route index element={<Home />} />
+        <Route path="customers" element={<Customers />} />
+        <Route path="orders" element={<Orders />} />
+        <Route path="products" element={<Products />} />
+        <Route path="shoppingcart" element={<ShoppingCart />} />
+        <Route path="signin" element={<SignIn />} />
+        <Route path="signout" element={<SignOut />} />
+      </Route>
+    </Routes>
+  </BrowserRouter>
 }
 export default App
