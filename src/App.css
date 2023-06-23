@@ -20,3 +20,6 @@
     /* + смежные элементы */
     margin-left: 3vw;
 }
+.navigator-item>a {
+    text-decoration: none;
+}
