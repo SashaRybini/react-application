@@ -1,15 +1,17 @@
-import { useEffect, useRef, useState } from "react";
+import { CSSProperties, useEffect, useRef, useState } from "react";
 import InputResult from "../../model/InputResult";
 import Alert from "./Alert";
 import { StatusType } from "../../model/StatusType";
 
 type Props = {
     submitFn: (inputText: string) => InputResult,
-    placeHolder: string,
+    placeholder: string,
     buttonTitle?: string,
     inputType?: string
 }
-const Input: React.FC<Props> = ({submitFn, placeHolder, buttonTitle, inputType}) => {
+const style: CSSProperties = {textAlign: 'center'}
+
+const Input: React.FC<Props> = ({submitFn, placeholder, buttonTitle, inputType}) => {
     const inputElementRef = useRef<HTMLInputElement>(null)
     const [disabled, setDisabled] = useState<boolean>(true)
     const [message, setMessage] = useState<string>("")
@@ -35,10 +37,9 @@ const Input: React.FC<Props> = ({submitFn, placeHolder, buttonTitle, inputType})
         setDisabled(!inputElementRef.current?.value)
     }
 
-    return <div>
-        <input type={inputType || "text"} placeholder={placeHolder} ref={inputElementRef} onChange={onChangeFn}/>
+    return <div style={style}>
+        <input type={inputType || "text"} placeholder={placeholder} ref={inputElementRef} onChange={onChangeFn}/>
         <button onClick={onClickFn} disabled={disabled}>{buttonTitle || 'go'}</button>
-        {/* {message && <label>{"success"} {message}</label>} */}
         {message && <Alert status={status.current} message={message}></Alert>} 
     </div>
 }
