@@ -12,7 +12,10 @@ import { useSelectorAuth } from "./redux/store";
 import { useMemo } from "react";
 import routesConfig from './config/routes-config.json';
 import NotFound from "./components/pages/NotFound";
+import NavigatorDispatcher from "./components/navigators/NavigatorDispatcher";
+
 const {always, authenticated, admin, noadmin, noauthenticated} = routesConfig;
+
 function getRoutes(username: string): RouteType[] {
   const res: RouteType[] = [];
   res.push(...always);
@@ -22,12 +25,13 @@ function getRoutes(username: string): RouteType[] {
   !username && res.push(...noauthenticated);
   return res;
 }
+
 const App: React.FC = () => {
   const username = useSelectorAuth();
   const routes = useMemo(() => getRoutes(username), [username])
   return <BrowserRouter>
   <Routes>
-    <Route path="/" element={<Navigator routes={routes}/>}>
+    <Route path="/" element={<NavigatorDispatcher routes={routes}/>}>
         <Route index element={<Home/>}/>
         <Route path="customers" element={<Customers/>}/>
         <Route path="products" element={<Products/>}/>
