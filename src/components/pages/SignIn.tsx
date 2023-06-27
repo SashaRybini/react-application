@@ -4,6 +4,7 @@ import InputResult from "../../model/InputResult";
 import { authActions } from "../../redux/slices/authSlice";
 const SignIn: React.FC = () => {
     const dispatch = useDispatch();
+    //form todo
     return <Input submitFn={function (username: string): InputResult {
         setTimeout(() => dispatch(authActions.set(username)), 1000);
         return {status: "success", message:'success'}
