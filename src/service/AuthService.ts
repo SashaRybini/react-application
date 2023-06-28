@@ -1,6 +1,7 @@
+import LoginData from "../model/LoginData";
 import UserData from "../model/UserData";
 
 export default interface AuthService {
-    login(loginData: {email: string, password: string}): Promise<UserData | null>
+    login(loginData: LoginData): Promise<UserData>
     logout(): Promise<void>
 }

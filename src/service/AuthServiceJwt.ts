@@ -1,13 +1,22 @@
+import LoginData from "../model/LoginData";
 import UserData from "../model/UserData";
 import AuthService from "./AuthService";
+
+function getUserData(data: any): UserData {
+    const jwtPayloadJson = atob(data.accessToken.split('.')[1])
+    const jwtPayloadObj = JSON.parse(jwtPayloadJson)
+    const email = jwtPayloadObj.email
+    const role = jwtPayloadObj.sub
+    const res: UserData = {email, role}
+    return res;
+}
 
 export default class AuthServiceJwt implements AuthService {
 
     constructor(private url: string) {
-
     }
 
-    async login(loginData: { email: string; password: string; }): Promise<UserData | null> {
+    async login(loginData: LoginData): Promise<UserData> {
         const response = await fetch(`${this.url}/login`, {
             method: "POST",
             headers: {
@@ -15,21 +24,10 @@ export default class AuthServiceJwt implements AuthService {
             },
             body: JSON.stringify(loginData)
         })
-        if (response.status === 200) { //what about 'success' //or response.ok
-            const data = await response.json()
-            const payloadJson = atob(data.accessToken.split('.')[1])
-            const userData = JSON.parse(payloadJson)
-            const email = userData.email
-            const role = userData.sub
-            const res: UserData = {email, role}
-            return res;
-        } else {
-            alert(await response.json()) //we have our own alert
-        }
-        return null;
+        return response.ok ? getUserData(await response.json()) : null
     }
     async logout(): Promise<void> {
-        //???
+        //
     }
 
 }

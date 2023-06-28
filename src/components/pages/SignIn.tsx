@@ -1,21 +1,22 @@
 import { useDispatch } from "react-redux";
-import { authActions } from "../../redux/slices/authSlice";
 import SignInForm from "../forms/SignInForm";
-import AuthServiceJwt from "../../service/AuthServiceJwt";
-import serviceConfig from '../../config/servise-config.json'
-
-const {serviceUrl} = serviceConfig;
-const authServiseJwt = new AuthServiceJwt(serviceUrl)
+import LoginData from "../../model/LoginData";
+import InputResult from "../../model/InputResult";
+import { authService } from "../../config/service-config";
+import UserData from "../../model/UserData";
+import { authActions } from "../../redux/slices/authSlice";
 
 const SignIn: React.FC = () => {
     const dispatch = useDispatch();
-
-    async function signinCb(loginData: { email: string; password: string; }) {
-        const userData = await authServiseJwt.login(loginData);     
-        userData && dispatch(authActions.set(userData))
+    
+    async function submitFn(loginData: LoginData): Promise<InputResult> {
+        const res: UserData = await authService.login(loginData)
+        res && dispatch(authActions.set(res))
+        return {status: res ? 'success' : 'error', 
+                message: res? '' : 'Incorrect Credentials'}
     }
 
-    return <SignInForm signinCb={signinCb}/>
+    return <SignInForm submitFn={submitFn} />
 }
 
  export default SignIn;

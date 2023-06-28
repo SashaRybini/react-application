@@ -13,25 +13,29 @@ import { useMemo } from "react";
 import routesConfig from './config/routes-config.json';
 import NotFound from "./components/pages/NotFound";
 import NavigatorDispatcher from "./components/navigators/NavigatorDispatcher";
+import UserData from "./model/UserData";
 
 const {always, authenticated, admin, noadmin, noauthenticated} = routesConfig;
 
-function getRoutes(username: string): RouteType[] {
+function getRoutes(userData: UserData): RouteType[] {
   const res: RouteType[] = [];
   res.push(...always);
-  username && res.push(...authenticated);
-  username.startsWith('admin') && res.push(...admin);
-  username && !username.startsWith('admin') && res.push(...noadmin);
-  !username && res.push(...noauthenticated);
+  if (userData) {
+    res.push(...authenticated)
+    userData.role === 'admin' && res.push(...admin);
+    userData.role === 'user' && res.push(...noadmin);
+  } else {
+    res.push(...noauthenticated);
+  }
   return res;
 }
 
 const App: React.FC = () => {
-  const username = useSelectorAuth();
-  const routes = useMemo(() => getRoutes(username), [username])
+  const userData = useSelectorAuth();
+  const routes = useMemo(() => getRoutes(userData), [userData])
   return <BrowserRouter>
-  <Routes>
-    <Route path="/" element={<NavigatorDispatcher routes={routes}/>}>
+    <Routes>
+      <Route path="/" element={<NavigatorDispatcher routes={routes}/>}>
         <Route index element={<Home/>}/>
         <Route path="customers" element={<Customers/>}/>
         <Route path="products" element={<Products/>}/>
@@ -40,8 +44,8 @@ const App: React.FC = () => {
         <Route path="signin" element={<SignIn/>}/>
         <Route path="signout" element={<SignOut/>}/>
         <Route path="/*" element={<NotFound />}/>
-    </Route>
-  </Routes>
+      </Route>
+    </Routes>
   </BrowserRouter>
 }
 export default App;
