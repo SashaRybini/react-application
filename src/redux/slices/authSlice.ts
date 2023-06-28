@@ -8,14 +8,13 @@ const authSlice = createSlice({
     name: "authState",
     reducers: {
         set: (state, data) => {
-            state.username = data.payload;
-            localStorage.setItem(AUTH_ITEM, data.payload);
+            state.username = data.payload.role;
+            localStorage.setItem(AUTH_ITEM, data.payload.role);
         },
-        reset: (state) => {
+        reset: (state) => {         
             state.username = '';
             localStorage.removeItem(AUTH_ITEM);
         }
-
     }
 });
 export const authActions = authSlice.actions;

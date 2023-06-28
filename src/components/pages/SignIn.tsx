@@ -1,14 +1,21 @@
 import { useDispatch } from "react-redux";
-import Input from "../common/Input";
-import InputResult from "../../model/InputResult";
 import { authActions } from "../../redux/slices/authSlice";
+import SignInForm from "../forms/SignInForm";
+import AuthServiceJwt from "../../service/AuthServiceJwt";
+import serviceConfig from '../../config/servise-config.json'
+
+const {serviceUrl} = serviceConfig;
+const authServiseJwt = new AuthServiceJwt(serviceUrl)
+
 const SignIn: React.FC = () => {
     const dispatch = useDispatch();
-    //form todo
-    return <Input submitFn={function (username: string): InputResult {
-        setTimeout(() => dispatch(authActions.set(username)), 1000);
-        return {status: "success", message:'success'}
-    } } placeholder="username" />
+
+    async function signinCb(loginData: { email: string; password: string; }) {
+        const userData = await authServiseJwt.login(loginData);     
+        userData && dispatch(authActions.set(userData))
+    }
+
+    return <SignInForm signinCb={signinCb}/>
 }
 
  export default SignIn;
