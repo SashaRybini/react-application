@@ -2,8 +2,12 @@ import LoginData from "../model/LoginData";
 import UserData from "../model/UserData";
 import AuthService from "./AuthService";
 
+export const AUTH_DATA_JWT = 'auth-data-jwt'
+
 function getUserData(data: any): UserData {
-    const jwtPayloadJson = atob(data.accessToken.split('.')[1])
+    const jwt = data.accessToken
+    localStorage.setItem(AUTH_DATA_JWT, jwt)
+    const jwtPayloadJson = atob(jwt.split('.')[1])
     const jwtPayloadObj = JSON.parse(jwtPayloadJson)
     const email = jwtPayloadObj.email
     const role = jwtPayloadObj.sub
@@ -17,7 +21,7 @@ export default class AuthServiceJwt implements AuthService {
     }
 
     async login(loginData: LoginData): Promise<UserData> {
-        const response = await fetch(`${this.url}/login`, {
+        const response = await fetch(this.url, {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
@@ -27,7 +31,7 @@ export default class AuthServiceJwt implements AuthService {
         return response.ok ? getUserData(await response.json()) : null
     }
     async logout(): Promise<void> {
-        //
+        localStorage.removeItem(AUTH_DATA_JWT)
     }
 
 }
