@@ -1,13 +1,15 @@
-import { Typography } from "@mui/material"
+import AddEmployeeForm from "../forms/AddEmployeeForm"
+import { employeesService } from "../../config/service-config"
+import Employee from "../../model/Employee"
 
 const AddEmployee: React.FC = () => {
 
-    return <Typography 
-                variant="h4"
-                align="center"    
-            >
-        add employee page
-    </Typography>
+   function submitFn(empl: Employee): Promise<Employee> { //InputResult ?
+
+        return employeesService.addEmployee(empl)
+   }
+
+    return <AddEmployeeForm submitFn={submitFn} />
 }
 
 export default AddEmployee
