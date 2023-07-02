@@ -6,3 +6,11 @@ const SignOut: React.FC = () => {
 }
  
  export default SignOut;
+
+// return <button onClick={() => {
+//     dispatch(authActions.reset()) 
+//     authService.logout()
+// }}
+// >
+// confirm sign out
+// </button>

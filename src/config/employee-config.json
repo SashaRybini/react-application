@@ -1,6 +1,6 @@
 {
-    "minSalary": 7,
-    "maxSalary": 50,
+    "minSalary": 7000,
+    "maxSalary": 50000,
     "maxYear": 2003,
     "minYear": 1950,
     "departments": [
