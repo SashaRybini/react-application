@@ -5,34 +5,54 @@ import EmployeesService from "./EmployeesService";
 
 export default class EmployeesServiceRest implements EmployeesService {
 
-    private accessToken = localStorage.getItem(AUTH_DATA_JWT)
+    // private accessToken = localStorage.getItem(AUTH_DATA_JWT)
 
     constructor(private url: string) {
     }
 
     async addEmployee(empl: Employee): Promise<Employee> {
-
-        const employee = { ...empl, userId: "admin" }
-
-        const response = await fetch(this.url, {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${this.accessToken}`
-            },
-            body: JSON.stringify(employee)
-        })
-
-        return response.ok ? await response.json() : null
+        let responseText = '';
+        try {
+            const response = await fetch(this.url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${localStorage.getItem(AUTH_DATA_JWT) || ''}`
+                },
+                body: JSON.stringify({ ...empl, userId: 'admin' })
+            });
+            if (!response.ok) {
+                const { status, statusText } = response;
+                responseText = status == 401 || status == 403 ? 'Authentication' : statusText;
+                throw responseText;
+            }
+            return await response.json();
+        } catch (error: any) {
+            throw responseText ? responseText : "Server is unavailable. Repeat later on";
+        }
     }
 
-    getEmployees(): Observable<Employee[]> {
-        const res =  new Observable<Employee[]>((subscriber) => {
+    getEmployees(): Observable<Employee[] | string> {
+        const res = new Observable<Employee[] | string>((subscriber) => {
             fetch(this.url, {
-                headers: { Authorization: `Bearer ${this.accessToken}` }
-            }).then(response => response.json()).then(data => subscriber.next(data))
-        })
-        return res
+                headers: {
+                    Authorization: "Bearer " + localStorage.getItem(AUTH_DATA_JWT)
+                }
+            }
+            ).then(response => {
+                let res: Promise<Employee[] | string>
+                if (response.ok) {
+                    res = response.json()
+                } else {
+                    res = Promise.resolve(response.status == 401 || response.status == 403 ?
+                        'Authentication' : response.statusText)
+                }
+                return res
+            })
+            .then(data => subscriber.next(data))
+            .catch(error => subscriber.next('Server is unavailable, repear later')) //fetch can throw exeption only because of timeout
+        });
+        return res;
     }
 
 }

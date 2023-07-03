@@ -23,3 +23,8 @@
 .navigator-item>a {
     text-decoration: none;
 }
+
+.data-grid-header {
+    font-style: italic;
+    font-size: 1.1em;
+}

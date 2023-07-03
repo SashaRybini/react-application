@@ -4,7 +4,7 @@ import { RouteType } from "./components/navigators/Navigator";
 import SignIn from "./components/pages/SignIn";
 import SignOut from "./components/pages/SignOut";
 import './App.css'
-import { useSelectorAuth } from "./redux/store";
+import { useSelectorAuth, useSelectorCode } from "./redux/store";
 import { useMemo } from "react";
 import routesConfig from './config/routes-config.json';
 import NotFound from "./components/pages/NotFound";
@@ -14,6 +14,7 @@ import Employees from "./components/pages/Employees";
 import AgeStatistics from "./components/pages/AgeStatistics";
 import SalaryStatistics from "./components/pages/SalaryStatistics";
 import AddEmployee from "./components/pages/AddEmployee";
+import EmployeeGeneration from "./components/pages/EmployeeGeneration";
 
 const {always, authenticated, admin, noadmin, noauthenticated} = routesConfig;
 
@@ -41,7 +42,9 @@ function getRoutes(userData: UserData): RouteType[] {
 }
 
 const App: React.FC = () => {
-  const userData = useSelectorAuth();
+  const userData = useSelectorAuth()
+  const code = useSelectorCode()
+  // const [alertMessage, severity] = useMemo(() => codeProcessing(), [code])
   const routes = useMemo(() => getRoutes(userData), [userData])
   return <BrowserRouter>
     <Routes>
@@ -52,9 +55,11 @@ const App: React.FC = () => {
         <Route path="employees/add" element={<AddEmployee/>}/>
         <Route path="signin" element={<SignIn/>}/>
         <Route path="signout" element={<SignOut/>}/>
+        <Route path="employees/generation" element={<EmployeeGeneration/>}/>
         <Route path="/*" element={<NotFound />}/>
       </Route>
     </Routes>
+    {/* snackbar */}
   </BrowserRouter>
 }
 export default App;

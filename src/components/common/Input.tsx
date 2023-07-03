@@ -17,7 +17,6 @@ const Input: React.FC<Props> = ({submitFn, placeholder, buttonTitle, inputType})
     const [disabled, setDisabled] = useState<boolean>(true)
     const [message, setMessage] = useState<string>("")
 
-    // const [status, setStatus] = useState<string>("")
     const status = useRef<StatusType>("success")
 
     function onClickFn() {
@@ -27,29 +26,26 @@ const Input: React.FC<Props> = ({submitFn, placeholder, buttonTitle, inputType})
         if (res.status === 'success') {
             inputElementRef.current!.value = ''
         }
-        // setStatus(res.status || "")
-        // res.status && setTimeout(() => setStatus(""), 5000)
 
         setMessage(res.message || "")
         res.message && setTimeout(() => setMessage(""), 5000)
     }
 
-    // function onChangeFn() {
-    //     setDisabled(!inputElementRef.current?.value)
-    // }
     function onChangeFn(event: any) {
         inputElementRef.current = event.target as any
         setDisabled(!event.target.value)
     }
     
-
     return <div style={style}>
-        <TextField size="small" type={inputType || "text"} placeholder={placeholder} ref={inputElementRef}
-            onChange={onChangeFn}/>
+        <TextField 
+            size="small" 
+            type={inputType || "text"} 
+            placeholder={placeholder} 
+            ref={inputElementRef}
+            onChange={onChangeFn}
+        />
         <Button onClick={onClickFn} disabled={disabled}>{buttonTitle || 'go'}</Button>
         {message && <Alert severity={status.current} >{message}</Alert>} 
     </div>
 }
 export default Input;
-{/* <input type={inputType || "text"} placeholder={placeholder} ref={inputElementRef} 
-            onChange={onChangeFn}/> */}

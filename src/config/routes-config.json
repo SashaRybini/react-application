@@ -27,6 +27,11 @@
             "to": "/employees/add",
             "label": "Add Employee",
             "order": 2
+        },
+        {
+            "to": "/employees/generation",
+            "label": "Empl Generation",
+            "order": 3 
         }
     ],
     "noadmin": [],

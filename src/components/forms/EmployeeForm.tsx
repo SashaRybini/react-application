@@ -63,8 +63,6 @@ export const EmployeeForm: React.FC<Props> = ({ submitFn }) => {
             res.status == "success" && event.target.reset();
             setAlertMessage(res.message!);
         }
-
-
     }
     function onResetFn(event: any) {
         setEmployee(initialEmployee);
