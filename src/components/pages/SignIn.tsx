@@ -5,14 +5,20 @@ import InputResult from "../../model/InputResult";
 import { authService } from "../../config/service-config";
 import UserData from "../../model/UserData";
 import { authActions } from "../../redux/slices/authSlice";
+import CodePayload from "../../model/CodePayload";
+import CodeType from "../../model/CodeType";
+import { codeActions } from "../../redux/slices/codeSlice";
 
 const SignIn: React.FC = () => {
     const dispatch = useDispatch();
-    async function submitFn(loginData: LoginData): Promise<InputResult> {
+    async function submitFn(loginData: LoginData) {
         const res: UserData = await authService.login(loginData)
         res && dispatch(authActions.set(res))
-        return {status: res ? 'success' : 'error', 
-                message: res? '' : 'Incorrect Credentials'}
+
+        const alert: CodePayload = { code: CodeType.OK, message: ''}
+        alert.code = res ? CodeType.OK : CodeType.SERVER_ERROR
+        alert.message = res? 'welcome' : 'Incorrect Credentials'
+        dispatch(codeActions.set(alert))
     }
 
     return <SignInForm submitFn={submitFn} />

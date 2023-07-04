@@ -10,10 +10,13 @@ import { StatusType } from "../../model/StatusType"
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import Confirm from "../common/Confirm"
-import { useSelectorAuth } from "../../redux/store"
+import { useSelectorAuth, useSelectorCode } from "../../redux/store"
 import UserData from "../../model/UserData"
 import { UpdateEmployeeForm } from "../forms/UpdateEmployeeForm"
 import InputResult from "../../model/InputResult"
+import CodePayload from "../../model/CodePayload"
+import CodeType from "../../model/CodeType"
+import { codeActions } from "../../redux/slices/codeSlice"
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -100,13 +103,25 @@ const Employees: React.FC = () => {
     const [openDialog, setOpenDialog] = useState(false)
     const emplID = useRef(0)
 
-    function handleCloseDialog(decision: boolean) {
+    async function handleCloseDialog(decision: boolean) {
         setOpenDialog(false)
+        const alert: CodePayload = {code: CodeType.OK, message: ''}
         if (decision && !isUpdate) {
             employeesService.deleteEmployee(emplID.current)
+            alert.message = `employee with id ${emplID.current} has been deleted`
         } else if (decision && isUpdate) {
-
+            try {
+                const employee: Employee = await employeesService.updateEmployee(emplData.current!);
+                alert.message = `employee with id: ${employee.id} has been updated`
+            } catch (error: any) {
+                alert.code = CodeType.SERVER_ERROR
+                alert.message = error;
+                if ((typeof (error) == 'string') && error.includes('Authentication')) {
+                    alert.code = CodeType.AUTH_ERROR
+                }
+            }
         }
+        dispatch(codeActions.set(alert))
     }
 
     const [confirmTitle, setConfirmTitle] = useState('')
@@ -116,29 +131,13 @@ const Employees: React.FC = () => {
     const [isUpdate, setIsUpdate] = useState(false)
     const emplData = useRef<Employee>()
 
-    async function updateSubmitFn(empl: Employee): Promise<InputResult> {
-        const res: InputResult = { status: 'success', message: '' };
-
+    async function updateSubmitFn(empl: Employee) {
         setConfirmTitle('update employee?')
         setConfirmContent(`we are going to update employee with id ${emplData.current?.id}`)
+        emplData.current = empl
         setIsUpdate(true)
         setOpenDialog(true)
-
-        try {
-            const employee: Employee = await employeesService.updateEmployee(empl);
-            res.message = `employee with id: ${employee.id} has been updated`
-        } catch (error: any) {
-            res.status = 'error';
-            if ((typeof (error) == 'string') && error.includes('Authentication')) {
-                authService.logout();
-                dispatch(authActions.reset());
-                res.message = ""
-            }
-            res.message = error;
-        }
-
         setOpenModal(false)
-        return res;
     }
 
     return <Box sx={{ display: 'flex', justifyContent: 'center' }}>

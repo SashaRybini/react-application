@@ -6,30 +6,26 @@ import { useDispatch } from "react-redux";
 import { authActions } from "../../redux/slices/authSlice";
 import { codeActions } from "../../redux/slices/codeSlice";
 import CodeType from "../../model/CodeType";
+import CodePayload from "../../model/CodePayload";
 
 const AddEmployee: React.FC = () => {
 
     const dispatch = useDispatch();
-    
-    async function submitFn(empl: Employee): Promise<InputResult> {
-        const res: InputResult = { status: 'success', message: '' };
+
+    async function submitFn(empl: Employee) {
+        const alert: CodePayload = { code: CodeType.OK, message: ''}
         try {
             const employee: Employee = await employeesService.addEmployee(empl);
-            res.message = `employee with id: ${employee.id} has been added`
+            alert.message = `employee with id: ${employee.id} has been added`
         } catch (error: any) {
-            res.status = 'error';
+            alert.code = CodeType.SERVER_ERROR
+            alert.message = error;
+            
             if ((typeof (error) == 'string') && error.includes('Authentication')) {
-                authService.logout();
-                dispatch(authActions.reset());
-                res.message = ""
+                alert.code = CodeType.AUTH_ERROR
             }
-            res.message = error;
-
-            //
-            dispatch(codeActions.set({ code: CodeType.SERVER_ERROR, message: error }))
-            //
         }
-        return res;
+        dispatch(codeActions.set(alert))
     }
     return <EmployeeForm submitFn={submitFn} />
 }

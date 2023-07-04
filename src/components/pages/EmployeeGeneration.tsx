@@ -6,6 +6,9 @@ import { useDispatch } from "react-redux"
 import { Alert, Box, Button, Container, CssBaseline, Snackbar, TextField, ThemeProvider, createTheme } from "@mui/material"
 import { useRef, useState } from "react"
 import { StatusType } from "../../model/StatusType"
+import CodePayload from "../../model/CodePayload"
+import CodeType from "../../model/CodeType"
+import { codeActions } from "../../redux/slices/codeSlice"
 
 const { minYear, minSalary, maxYear, maxSalary, departments } = employeeConfig;
 const defaultTheme = createTheme();
@@ -13,28 +16,28 @@ const defaultTheme = createTheme();
 const EmployeeGeneration: React.FC = () => {
     const dispatch = useDispatch();
 
-    const [alertMessage, setAlertMessage] = useState('')
-    const severity = useRef<StatusType>('success')
-
     async function submitFn(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
         const emplsCount = +data.get('number')! as number
 
+        const alert: CodePayload = { code: CodeType.OK, message: ''}
+        
         try {
             for (let i = 0; i < emplsCount; i++) {
                 const rdmEmpl = getRandomEmployee(minSalary, maxSalary, minYear, maxYear, departments)
                 await employeesService.addEmployee(rdmEmpl)
             }
-            setAlertMessage(emplsCount + ' employees have been added')
+            alert.message = `${emplsCount} employees have been added`
         } catch (error: any) {
+            alert.code = CodeType.SERVER_ERROR
+            alert.message = error;
+            
             if ((typeof (error) == 'string') && error.includes('Authentication')) {
-                authService.logout();
-                dispatch(authActions.reset());
+                alert.code = CodeType.AUTH_ERROR
             }
-            severity.current = 'error'
-            setAlertMessage(error)
         }
+        dispatch(codeActions.set(alert))
     }
 
     return <ThemeProvider theme={defaultTheme}>
@@ -61,12 +64,6 @@ const EmployeeGeneration: React.FC = () => {
                         </Button>
                     </Box>
                 </form>
-                <Snackbar open={!!alertMessage} autoHideDuration={20000}
-                    onClose={() => setAlertMessage('')}>
-                    <Alert onClose={() => setAlertMessage('')} severity={severity.current} sx={{ width: '100%' }}>
-                        {alertMessage}
-                    </Alert>
-                </Snackbar>
             </Box>
         </Container>
     </ThemeProvider>

@@ -16,14 +16,10 @@ import { StatusType } from '../../model/StatusType';
 const defaultTheme = createTheme();
 
 type Props = {
-    submitFn: (loginData: LoginData) => Promise<InputResult>
+    submitFn: (loginData: LoginData) => void
 }
 
-const SignInForm: React.FC<Props> = ({submitFn}) => {
-    
-    const message = React.useRef<string>('')
-    const [open, setOpen] = React.useState(false)
-    const severity = React.useRef<StatusType>('success')
+const SignInForm: React.FC<Props> = ({submitFn}) => {   
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -31,9 +27,7 @@ const SignInForm: React.FC<Props> = ({submitFn}) => {
         const email: string = data.get('email')! as string
         const password: string = data.get('password')! as string
         const res = await submitFn({email, password})
-        message.current = res.message!
-        severity.current = res.status
-        message.current && setOpen(true)
+
     };
 
     return (
@@ -88,19 +82,6 @@ const SignInForm: React.FC<Props> = ({submitFn}) => {
                             Sign In
                         </Button>
                     </Box>
-                    <Snackbar 
-                        open={open} 
-                        autoHideDuration={6000} 
-                        onClose={() => setOpen(false)}
-                    >
-                        <Alert
-                            onClose={() => setOpen(false)}
-                            severity={severity.current} 
-                            sx={{ width: '100%' }}
-                        >
-                            {message.current}
-                        </Alert>
-                    </Snackbar>
                 </Box>
             </Container>
         </ThemeProvider>

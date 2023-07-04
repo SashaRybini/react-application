@@ -7,7 +7,7 @@ import { StatusType } from "../../model/StatusType";
 import { useDispatch } from "react-redux";
 import { codeActions } from "../../redux/slices/codeSlice";
 type Props = {
-    submitFn: (empl: Employee) => Promise<InputResult>,
+    submitFn: (empl: Employee) => void
 
 }
 const initialDate: any = 0;
@@ -21,8 +21,7 @@ export const EmployeeForm: React.FC<Props> = ({ submitFn }) => {
         = employeeConfig;
     const [employee, setEmployee] = useState<Employee>(initialEmployee);
     const [errorMessage, setErrorMessage] = useState('');
-    const [alertMessage, setAlertMessage] = useState('')
-    const severity = useRef<StatusType>('success')
+
     function handlerName(event: any) {
         const name = event.target.value;
         const emplCopy = { ...employee };
@@ -60,9 +59,7 @@ export const EmployeeForm: React.FC<Props> = ({ submitFn }) => {
             setErrorMessage("Please select gender")
         } else {
             const res = await submitFn(employee);
-            severity.current = res.status;
-            res.status == "success" && event.target.reset();
-            setAlertMessage(res.message!);
+            event.target.reset();
         }
     }
     function onResetFn(event: any) {
@@ -130,11 +127,5 @@ export const EmployeeForm: React.FC<Props> = ({ submitFn }) => {
                 <Button type="reset">Reset</Button>
             </Box>
         </form>
-        <Snackbar open={!!alertMessage} autoHideDuration={20000}
-            onClose={() => setAlertMessage('')}>
-            <Alert onClose={() => setAlertMessage('')} severity={severity.current} sx={{ width: '100%' }}>
-                {alertMessage}
-            </Alert>
-        </Snackbar>
     </Box>
 }

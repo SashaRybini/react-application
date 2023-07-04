@@ -7,7 +7,7 @@ import { StatusType } from "../../model/StatusType";
 import { getISODateStr } from "../../util/date-functions";
 
 type Props = {
-    submitFn: (empl: Employee) => Promise<InputResult>,
+    submitFn: (empl: Employee) => void,
     initialEmployee?: Employee
 }
 
@@ -39,11 +39,7 @@ export const UpdateEmployeeForm: React.FC<Props> = ({ submitFn, initialEmployee 
 
     async function onSubmitFn(event: any) {
         event.preventDefault();
-
         const res = await submitFn(employee);
-        severity.current = res.status;
-        res.status == "success" && event.target.reset();
-        setAlertMessage(res.message!);
     }
 
     return <Box sx={{ marginTop: { sm: "25vh" } }}>
@@ -95,11 +91,5 @@ export const UpdateEmployeeForm: React.FC<Props> = ({ submitFn, initialEmployee 
                 <Button type="submit" >Submit</Button>
             </Box>
         </form>
-        <Snackbar open={!!alertMessage} autoHideDuration={20000}
-            onClose={() => setAlertMessage('')}>
-            <Alert onClose={() => setAlertMessage('')} severity={severity.current} sx={{ width: '100%' }}>
-                {alertMessage}
-            </Alert>
-        </Snackbar>
     </Box>
 }
