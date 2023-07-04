@@ -67,6 +67,8 @@ const Employees: React.FC = () => {
                     emplID.current = +params.id
                 }} label="Delete" />,
                 <GridActionsCellItem icon={<EditIcon />} onClick={() => {
+                    setConfirmTitle('update employee?')
+                    setConfirmContent(`we are going to update employee with id ${params.id}`)
                     setOpenModal(true)
                     emplData.current = params.row
                 }} label="Update" />
@@ -131,9 +133,7 @@ const Employees: React.FC = () => {
     const [isUpdate, setIsUpdate] = useState(false)
     const emplData = useRef<Employee>()
 
-    async function updateSubmitFn(empl: Employee) {
-        setConfirmTitle('update employee?')
-        setConfirmContent(`we are going to update employee with id ${emplData.current?.id}`)
+    async function updateSubmitFn(empl: Employee) { 
         emplData.current = empl
         setIsUpdate(true)
         setOpenDialog(true)
