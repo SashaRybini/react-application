@@ -1,6 +1,6 @@
 import {createSlice} from '@reduxjs/toolkit';
 import UserData from '../../model/UserData';
-const AUTH_ITEM = "auth-item";
+export const AUTH_ITEM = "auth-item";  //
 function getUserData(): UserData {
     const userDataJson = localStorage.getItem(AUTH_ITEM) || ''
     let res: UserData = null
@@ -22,7 +22,7 @@ const authSlice = createSlice({
                 state.userData = data.payload;
             }
         },
-        reset: (state) => {         
+        reset: (state) => {
             state.userData = null;
             localStorage.removeItem(AUTH_ITEM);
         }

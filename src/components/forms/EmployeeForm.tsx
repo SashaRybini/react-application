@@ -4,6 +4,8 @@ import Employee from "../../model/Employee";
 import employeeConfig from "../../config/employee-config.json"
 import InputResult from "../../model/InputResult";
 import { StatusType } from "../../model/StatusType";
+import { useDispatch } from "react-redux";
+import { codeActions } from "../../redux/slices/codeSlice";
 type Props = {
     submitFn: (empl: Employee) => Promise<InputResult>,
 

@@ -8,7 +8,6 @@ import { authActions } from "../../redux/slices/authSlice";
 
 const SignIn: React.FC = () => {
     const dispatch = useDispatch();
-    
     async function submitFn(loginData: LoginData): Promise<InputResult> {
         const res: UserData = await authService.login(loginData)
         res && dispatch(authActions.set(res))

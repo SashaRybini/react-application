@@ -8,7 +8,7 @@ export default class EmployeesServiceRest implements EmployeesService {
     // private accessToken = localStorage.getItem(AUTH_DATA_JWT)
 
     constructor(private url: string) {
-    }
+    }   
 
     async addEmployee(empl: Employee): Promise<Employee> {
         let responseText = '';
@@ -50,9 +50,35 @@ export default class EmployeesServiceRest implements EmployeesService {
                 return res
             })
             .then(data => subscriber.next(data))
-            .catch(error => subscriber.next('Server is unavailable, repear later')) //fetch can throw exeption only because of timeout
+            .catch(error => subscriber.next('Server is unavailable, repeat later')) //fetch can throw exeption only because of timeout
         });
         return res;
+    }
+
+    async deleteEmployee(id: any): Promise<void> {
+        let responseText = '';
+        try {
+            const response = await fetch(`${this.url}/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${localStorage.getItem(AUTH_DATA_JWT) || ''}`
+                }
+            })
+            if (!response.ok) {
+                const { status, statusText } = response;
+                responseText = status == 401 || status == 403 ? 'Authentication' : statusText;
+                throw responseText;
+            }
+            return await response.json();
+        } catch (error: any) {
+            throw responseText ? responseText : "Server is unavailable. Repeat later on";
+        }
+    }
+
+    updateEmployee(empl: Employee): Promise<Employee> {
+        
+        throw new Error("Method not implemented.");
     }
 
 }

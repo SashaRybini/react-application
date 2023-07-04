@@ -15,8 +15,13 @@ import AgeStatistics from "./components/pages/AgeStatistics";
 import SalaryStatistics from "./components/pages/SalaryStatistics";
 import AddEmployee from "./components/pages/AddEmployee";
 import EmployeeGeneration from "./components/pages/EmployeeGeneration";
+import { Alert, Snackbar } from "@mui/material";
+import CodeType from "./model/CodeType";
+import { StatusType } from "./model/StatusType";
+import { authService } from "./config/service-config";
+import { useDispatch } from "react-redux";
 
-const {always, authenticated, admin, noadmin, noauthenticated} = routesConfig;
+const { always, authenticated, admin, noadmin, noauthenticated } = routesConfig;
 
 function getRoutes(userData: UserData): RouteType[] {
   const result: RouteType[] = [];
@@ -43,23 +48,41 @@ function getRoutes(userData: UserData): RouteType[] {
 
 const App: React.FC = () => {
   const userData = useSelectorAuth()
+  const dispatch = useDispatch()
   const code = useSelectorCode()
-  // const [alertMessage, severity] = useMemo(() => codeProcessing(), [code])
+  
+  const [alertMessage, severity] = useMemo(() => codeProcessing(), [code])
+  function codeProcessing() {
+    const res: [string, StatusType] = ['', 'success']
+    res[0] = code.message
+    res[1] = code.code === CodeType.OK ? 'success' : 'error'
+    if (code.code === CodeType.AUTH_ERROR) {
+      authService.logout()
+      // dispatch()
+    }
+    return res
+  }
+
   const routes = useMemo(() => getRoutes(userData), [userData])
   return <BrowserRouter>
     <Routes>
-      <Route path="/" element={<NavigatorDispatcher routes={routes}/>}>
-        <Route index element={<Employees/>}/>
-        <Route path="statistics/age" element={<AgeStatistics/>}/>
-        <Route path="statistics/salary" element={<SalaryStatistics/>}/>
-        <Route path="employees/add" element={<AddEmployee/>}/>
-        <Route path="signin" element={<SignIn/>}/>
-        <Route path="signout" element={<SignOut/>}/>
-        <Route path="employees/generation" element={<EmployeeGeneration/>}/>
-        <Route path="/*" element={<NotFound />}/>
+      <Route path="/" element={<NavigatorDispatcher routes={routes} />}>
+        <Route index element={<Employees />} />
+        <Route path="statistics/age" element={<AgeStatistics />} />
+        <Route path="statistics/salary" element={<SalaryStatistics />} />
+        <Route path="employees/add" element={<AddEmployee />} />
+        <Route path="signin" element={<SignIn />} />
+        <Route path="signout" element={<SignOut />} />
+        <Route path="employees/generation" element={<EmployeeGeneration />} />
+        <Route path="/*" element={<NotFound />} />
       </Route>
     </Routes>
-    {/* snackbar */}
+    {/* <Snackbar open={!!alertMessage} autoHideDuration={20000}
+      onClose={() => setAlertMessage('')}>
+      <Alert onClose={() => setAlertMessage('')} severity={severity.current} sx={{ width: '100%' }}>
+        {alertMessage}
+      </Alert>
+    </Snackbar> */}
   </BrowserRouter>
 }
 export default App;
