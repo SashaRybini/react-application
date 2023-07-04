@@ -10,7 +10,7 @@ import CodeType from "../../model/CodeType";
 const AddEmployee: React.FC = () => {
 
     const dispatch = useDispatch();
-
+    
     async function submitFn(empl: Employee): Promise<InputResult> {
         const res: InputResult = { status: 'success', message: '' };
         try {
@@ -25,10 +25,11 @@ const AddEmployee: React.FC = () => {
             }
             res.message = error;
 
+            //
             dispatch(codeActions.set({ code: CodeType.SERVER_ERROR, message: error }))
-            
+            //
         }
-        return res; //not needed w code dispatch
+        return res;
     }
     return <EmployeeForm submitFn={submitFn} />
 }

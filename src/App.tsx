@@ -20,6 +20,7 @@ import CodeType from "./model/CodeType";
 import { StatusType } from "./model/StatusType";
 import { authService } from "./config/service-config";
 import { useDispatch } from "react-redux";
+import SnackbarAlert from "./components/common/SnackbarAlert";
 
 const { always, authenticated, admin, noadmin, noauthenticated } = routesConfig;
 
@@ -77,12 +78,7 @@ const App: React.FC = () => {
         <Route path="/*" element={<NotFound />} />
       </Route>
     </Routes>
-    {/* <Snackbar open={!!alertMessage} autoHideDuration={20000}
-      onClose={() => setAlertMessage('')}>
-      <Alert onClose={() => setAlertMessage('')} severity={severity.current} sx={{ width: '100%' }}>
-        {alertMessage}
-      </Alert>
-    </Snackbar> */}
+    <SnackbarAlert message={""} severity={"error"} />
   </BrowserRouter>
 }
 export default App;
