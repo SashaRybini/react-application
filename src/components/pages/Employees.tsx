@@ -78,8 +78,6 @@ const Employees: React.FC = () => {
     }
 
     const dispatch = useDispatch()
-    const [alertMessage, setAlertMessage] = useState('')
-    const severity = useRef<StatusType>('error')
     const [employees, setEmployees] = useState<Employee[]>([])
     const userData = useSelectorAuth()
     const columns = useMemo(() => getColumns(userData), [userData])
@@ -87,16 +85,18 @@ const Employees: React.FC = () => {
     useEffect(() => {
         const subscription = employeesService.getEmployees().subscribe({
             next(emplArray: Employee[] | string) {
+                const alert: CodePayload = {code: CodeType.OK, message: ''}
                 if (typeof emplArray === 'string') {
                     if (emplArray.includes('Authentication')) {
-                        authService.logout()
-                        dispatch(authActions.reset())
+                        alert.code = CodeType.AUTH_ERROR
                     } else {
-                        setAlertMessage(emplArray)
+                        alert.code = CodeType.SERVER_ERROR
+                        alert.message = emplArray
                     }
                 } else {
                     setEmployees(emplArray.map(e => ({ ...e, birthDate: new Date(e.birthDate) })))
                 }
+                dispatch(codeActions.set(alert)) //
             }
         })
         return () => subscription.unsubscribe()
@@ -154,7 +154,6 @@ const Employees: React.FC = () => {
             handleClose={handleCloseDialog}
             open={openDialog}
         />
-
         <Modal
             open={openModal}
             onClose={() => setOpenModal(false)}
@@ -173,19 +172,6 @@ const Employees: React.FC = () => {
                 />
             </Box>
         </Modal>
-
-        <Snackbar
-            open={!!alertMessage}
-            autoHideDuration={20000}
-            onClose={() => setAlertMessage('')}>
-            <Alert
-                onClose={() => setAlertMessage('')}
-                severity={severity.current}
-                sx={{ width: '100%' }}
-            >
-                {alertMessage}
-            </Alert>
-        </Snackbar>
     </Box>
 }
 export default Employees
