@@ -112,6 +112,7 @@ const Employees: React.FC = () => {
             employeesService.deleteEmployee(emplID.current)
             alert.message = `employee with id ${emplID.current} has been deleted`
         } else if (decision && isUpdate) {
+            setIsUpdate(false)
             try {
                 const employee: Employee = await employeesService.updateEmployee(emplData.current!);
                 alert.message = `employee with id: ${employee.id} has been updated`
@@ -161,6 +162,11 @@ const Employees: React.FC = () => {
             aria-describedby="modal-modal-description"
         >
             <Box sx={style}>
+                <Typography
+                    variant="h6"
+                >
+                    {`we are on updating employee with id ${emplData.current?.id}`}
+                </Typography>
                 <UpdateEmployeeForm
                     submitFn={updateSubmitFn}
                     initialEmployee={emplData.current}
