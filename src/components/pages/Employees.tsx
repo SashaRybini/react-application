@@ -74,6 +74,7 @@ const Employees: React.FC = () => {
                 }} label="Update" />
             ]
         })
+        //fixme below, two separate fns
         return columns
     }
 
@@ -105,11 +106,11 @@ const Employees: React.FC = () => {
     const [openDialog, setOpenDialog] = useState(false)
     const emplID = useRef(0)
 
-    async function handleCloseDialog(decision: boolean) {
+    async function handleCloseDialog(decision: boolean) { //fn performs deleting and updating :)
         setOpenDialog(false)
         const alert: CodePayload = {code: CodeType.OK, message: ''}
         if (decision && !isUpdate) {
-            employeesService.deleteEmployee(emplID.current)
+            employeesService.deleteEmployee(emplID.current) //fixme (try / catch)
             alert.message = `employee with id ${emplID.current} has been deleted`
         } else if (decision && isUpdate) {
             setIsUpdate(false)

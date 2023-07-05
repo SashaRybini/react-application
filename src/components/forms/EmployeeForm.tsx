@@ -88,7 +88,6 @@ export const EmployeeForm: React.FC<Props> = ({ submitFn }) => {
                     <TextField type="date" required fullWidth label="birthDate"
                         value={employee.birthDate ? employee.birthDate.toISOString()
                             .substring(0, 10) : ''} inputProps={{
-
                                 min: `${minYear}-01-01`,
                                 max: `${maxYear}-12-31`
                             }} InputLabelProps={{

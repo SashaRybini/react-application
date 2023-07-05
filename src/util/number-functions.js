@@ -4,7 +4,7 @@ export function range(min, max) {
 }
 export function count(array, field, interval) {
     return array.reduce((res, cur)=>{
-        const intervalNumber = Math.trunc(cur[field] / interval);
+        const intervalNumber = Math.trunc(cur / interval);
         res[intervalNumber] = res[intervalNumber] == undefined ? 1 :
          res[intervalNumber] + 1
          return res;

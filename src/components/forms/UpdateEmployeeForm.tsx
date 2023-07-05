@@ -15,9 +15,7 @@ export const UpdateEmployeeForm: React.FC<Props> = ({ submitFn, initialEmployee 
     const { minYear, minSalary, maxYear, maxSalary, departments }
         = employeeConfig;
     const [employee, setEmployee] = useState<Employee>(initialEmployee!);
-    const [errorMessage, setErrorMessage] = useState('');
-    const [alertMessage, setAlertMessage] = useState('')
-    const severity = useRef<StatusType>('success')
+
     function handlerName(event: any) {
         const name = event.target.value;
         const emplCopy = { ...employee };
