@@ -1,13 +1,13 @@
 export function range(min, max) {
-    
-    return Array.from({length: max - min}).map((__, index) => index + min)
+
+    return Array.from({ length: max - min }).map((__, index) => index + min)
 }
 export function count(array, interval) {
-    return array.reduce((res, cur)=>{
+    return array.reduce((res, cur) => {
         const intervalNumber = Math.trunc(cur / interval);
         res[intervalNumber] = res[intervalNumber] == undefined ? 1 :
-         res[intervalNumber] + 1
-         return res;
+            res[intervalNumber] + 1
+        return res;
     }, {});
 }
 export function arraySum(array) {

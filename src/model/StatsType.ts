@@ -1,7 +1,7 @@
 type StatsType = {
-    id: any,
+    id: number,
     min: number,
     max: number,
-    count: any
+    count: number
 }
 export default StatsType

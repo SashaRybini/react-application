@@ -20,7 +20,7 @@ export function getStatistics(employees: Employee[], field: string, interval: nu
     const res: StatsType[] = Object.entries(statisticsObj).map((e, index): StatsType => {
         const min = +e[0] * interval;
         const max = min + interval - 1;
-        return { id: index + 1, min, max, count: e[1] };
+        return { id: index + 1, min, max, count: e[1] as number };
     })
 
     return res
