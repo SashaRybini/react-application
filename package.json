@@ -23,6 +23,7 @@
     "react-redux": "^8.1.1",
     "react-router-dom": "^6.13.0",
     "react-scripts": "5.0.1",
+    "recharts": "^2.7.2",
     "redux": "^4.2.1",
     "router-dom": "^2.2.11",
     "rxjs": "^7.8.1",

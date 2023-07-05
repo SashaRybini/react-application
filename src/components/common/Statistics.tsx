@@ -1,4 +1,4 @@
-import { Box } from "@mui/material"
+import { Box, useTheme } from "@mui/material"
 import { DataGrid, GridColDef } from "@mui/x-data-grid"
 import { useEffect, useMemo, useState } from "react"
 import { useDispatch } from "react-redux"
@@ -9,11 +9,16 @@ import CodeType from "../../model/CodeType"
 import { codeActions } from "../../redux/slices/codeSlice"
 import StatsType from "../../model/StatsType"
 import { getStatistics } from "../../service/CompanyService"
+import React from "react"
+import { Title } from "@mui/icons-material"
+import { Label, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
 
 type Props = {
     fieldName: string,
     interval: number
 }
+
+
 
 function getColumns() {
     const columns: GridColDef[] = [
@@ -38,19 +43,19 @@ function getColumns() {
 }
 
 function getRows(employees: Employee[], fieldName: string, interval: number) {
-    const res = getStatistics(employees, fieldName, interval)
-    return res;
+    const rows: StatsType[] = getStatistics(employees, fieldName, interval)
+    return rows;
 }
 
 
-const Statistics: React.FC<Props> = ({fieldName, interval}) => {
+const Statistics: React.FC<Props> = ({ fieldName, interval }) => {
 
     const dispatch = useDispatch()
     const [employees, setEmployees] = useState<Employee[]>([])
     useEffect(() => {
         const subscription = employeesService.getEmployees().subscribe({
             next(emplArray: Employee[] | string) {
-                const alert: CodePayload = {code: CodeType.OK, message: ''}
+                const alert: CodePayload = { code: CodeType.OK, message: '' }
                 if (typeof emplArray === 'string') {
                     if (emplArray.includes('Authentication')) {
                         alert.code = CodeType.AUTH_ERROR
@@ -70,12 +75,65 @@ const Statistics: React.FC<Props> = ({fieldName, interval}) => {
     const columns = getColumns()
     const rows = useMemo(() => getRows(employees, fieldName, interval), [employees, fieldName, interval])
 
+    const theme = useTheme();
+
+    function createData(range: string, count: number) {
+        return { range, count };
+    }
+    
+    const data = rows.map(r => createData(r.min + "-" + r.max, r.count))
+      
+
     return <Box sx={{ display: 'flex', justifyContent: 'center' }}>
         <Box sx={{ height: '50vh', width: '80vw' }}>
             {columns && <DataGrid
                 columns={columns}
                 rows={rows}
             />}
+
+            <React.Fragment>
+                <Title>Title</Title>
+                <ResponsiveContainer>
+                    <LineChart
+                        data={data}
+                        margin={{
+                            top: 16,
+                            right: 16,
+                            bottom: 0,
+                            left: 24,
+                        }}
+                    >
+                        <XAxis
+                            dataKey="range"
+                            stroke={theme.palette.text.secondary}
+                            style={theme.typography.body2}
+                        />
+                        <YAxis
+                            stroke={theme.palette.text.secondary}
+                            style={theme.typography.body2}
+                        >
+                            <Label
+                                angle={270}
+                                position="left"
+                                style={{
+                                    textAnchor: 'middle',
+                                    fill: theme.palette.text.primary,
+                                    ...theme.typography.body1,
+                                }}
+                            >
+                                Count
+                            </Label>
+                        </YAxis>
+                        <Line
+                            isAnimationActive={false}
+                            type="monotone"
+                            dataKey="count"
+                            stroke={theme.palette.primary.main}
+                            dot={false}
+                        />
+                    </LineChart>
+                </ResponsiveContainer>
+            </React.Fragment>
         </Box>
     </Box>
 }

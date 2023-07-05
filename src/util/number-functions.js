@@ -2,7 +2,7 @@ export function range(min, max) {
     
     return Array.from({length: max - min}).map((__, index) => index + min)
 }
-export function count(array, field, interval) {
+export function count(array, interval) {
     return array.reduce((res, cur)=>{
         const intervalNumber = Math.trunc(cur / interval);
         res[intervalNumber] = res[intervalNumber] == undefined ? 1 :

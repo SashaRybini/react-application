@@ -15,7 +15,7 @@ export function getStatistics(employees: Employee[], field: string, interval: nu
         array = employees.map(e => e[field])
     }
     
-    const statisticsObj = count(array, field, interval);
+    const statisticsObj = count(array, interval);
     
     const res: StatsType[] = Object.entries(statisticsObj).map((e, index): StatsType => {
         const min = +e[0] * interval;
