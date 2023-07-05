@@ -1,21 +1,10 @@
-import Employee from "../model/Employee";
+
 import StatsType from "../model/StatsType";
 import { count } from "../util/number-functions";
 
-export function getStatistics(employees: Employee[], field: string, interval: number): StatsType[] {
-    // const res: StatsType[] = []
+export function getStatistics(empls: Object[], field: string, interval: number): StatsType[] {
     
-    let array;
-    const currentYear = new Date().getFullYear();
-
-    if (field == 'birthDate') {
-        array = employees.map(e => currentYear - e[field].getFullYear())
-    }
-    if (field == 'salary') {
-        array = employees.map(e => e[field])
-    }
-    
-    const statisticsObj = count(array, interval);
+    const statisticsObj = count(empls, field, interval);
     
     const res: StatsType[] = Object.entries(statisticsObj).map((e, index): StatsType => {
         const min = +e[0] * interval;

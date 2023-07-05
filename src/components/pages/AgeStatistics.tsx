@@ -1,5 +1,5 @@
 import { Box, FormHelperText, MenuItem, Select, Typography } from "@mui/material"
-import Statistics from "../common/Statistics"
+import Statistics from "./Statistics"
 import { useState } from "react"
 
 const DEFAULT_INTERVAL = 10

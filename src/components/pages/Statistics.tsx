@@ -18,8 +18,6 @@ type Props = {
     interval: number
 }
 
-
-
 function getColumns() {
     const columns: GridColDef[] = [
         {
@@ -42,8 +40,13 @@ function getColumns() {
     return columns
 }
 
-function getRows(employees: Employee[], fieldName: string, interval: number) {
-    const rows: StatsType[] = getStatistics(employees, fieldName, interval)
+function getRows(employees: Employee[], fieldName: string, interval: number): StatsType[] {
+    let empls: Object[] = Object.assign(employees)
+    if (fieldName == 'birthDate') {
+        empls = employees.map(e => ({...e, 'age': new Date().getFullYear() - e.birthDate.getFullYear()}))
+        fieldName = 'age'
+    } 
+    const rows: StatsType[] = getStatistics(empls, fieldName, interval)
     return rows;
 }
 
@@ -86,10 +89,8 @@ const Statistics: React.FC<Props> = ({ fieldName, interval }) => {
 
     return <Box sx={{ display: 'flex', justifyContent: 'center' }}>
         <Box sx={{ height: '50vh', width: '80vw' }}>
-            {columns && <DataGrid
-                columns={columns}
-                rows={rows}
-            />}
+            
+            {columns && <DataGrid columns={columns} rows={rows} />}
 
             <React.Fragment>
                 <Title>Title</Title>
