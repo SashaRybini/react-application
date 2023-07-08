@@ -1,22 +1,19 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import Employee from "../../model/Employee"
-import { authService, employeesService } from "../../config/service-config"
+import { employeesService } from "../../config/service-config"
 import { Subscription } from 'rxjs'
 import { DataGrid, GridActionsCellItem, GridColDef, GridRowParams } from "@mui/x-data-grid"
-import { Alert, Box, Modal, Snackbar, TextField, Typography } from "@mui/material"
+import { Box, Modal, Typography } from "@mui/material"
 import { useDispatch } from "react-redux"
-import { authActions } from "../../redux/slices/authSlice"
-import { StatusType } from "../../model/StatusType"
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import Confirm from "../common/Confirm"
-import { useSelectorAuth, useSelectorCode } from "../../redux/store"
+import { useSelectorAuth } from "../../redux/store"
 import UserData from "../../model/UserData"
-import { UpdateEmployeeForm } from "../forms/UpdateEmployeeForm"
-import InputResult from "../../model/InputResult"
 import CodePayload from "../../model/CodePayload"
 import CodeType from "../../model/CodeType"
 import { codeActions } from "../../redux/slices/codeSlice"
+import { EmployeeForm } from "../forms/EmployeeForm"
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -167,9 +164,9 @@ const Employees: React.FC = () => {
                 >
                     {`we are on updating employee with id ${emplData.current?.id}`}
                 </Typography>
-                <UpdateEmployeeForm
+                <EmployeeForm
                     submitFn={updateSubmitFn}
-                    initialEmployee={emplData.current}
+                    employeeUpdated={emplData.current}
                 />
             </Box>
         </Modal>
