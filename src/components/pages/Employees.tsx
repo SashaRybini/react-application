@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import Employee from "../../model/Employee"
 import { employeesService } from "../../config/service-config"
-import { Subscription } from 'rxjs'
 import { DataGrid, GridActionsCellItem, GridColDef, GridRowParams } from "@mui/x-data-grid"
 import { Box, Modal, Typography } from "@mui/material"
 import { useDispatch } from "react-redux"
@@ -103,12 +102,20 @@ const Employees: React.FC = () => {
     const [openDialog, setOpenDialog] = useState(false)
     const emplID = useRef(0)
 
-    async function handleCloseDialog(decision: boolean) { //fn performs deleting and updating :)
+    async function handleCloseDialog(decision: boolean) { //fn performs deleting and updating
         setOpenDialog(false)
         const alert: CodePayload = {code: CodeType.OK, message: ''}
         if (decision && !isUpdate) {
-            employeesService.deleteEmployee(emplID.current) //fixme (try / catch)
-            alert.message = `employee with id ${emplID.current} has been deleted`
+            try {
+                employeesService.deleteEmployee(emplID.current) //fixme (try / catch) //doens't work...
+                alert.message = `employee with id ${emplID.current} has been deleted`
+            } catch (error: any) {
+                alert.code = CodeType.SERVER_ERROR
+                alert.message = error;
+                if ((typeof (error) == 'string') && error.includes('Authentication')) {
+                    alert.code = CodeType.AUTH_ERROR
+                }
+            }
         } else if (decision && isUpdate) {
             setIsUpdate(false)
             try {
