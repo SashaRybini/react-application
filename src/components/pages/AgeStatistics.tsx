@@ -1,33 +1,21 @@
-import { Box, FormHelperText, MenuItem, Select, Typography } from "@mui/material"
-import Statistics from "./Statistics"
-import { useState } from "react"
-
-const DEFAULT_INTERVAL = 10
-
-const intervals = [5, 10, 20]
-
+import { useMemo, useState } from "react";
+import intervals from '../../config/intervals.json'
+import { getStatistics } from "../../service/EmployeesDataProcessor";
+import Statistics from "../common/Statistics";
+import { useSelectorEmployees } from "../../hooks/hooks";
 const AgeStatistics: React.FC = () => {
+    const { ageIntervals } = intervals;
+    const employees = useSelectorEmployees();
+    const [interval, setInterval] = useState(ageIntervals[0])
+    const statisticsData = useMemo(() => getStatistics(employees, "age", interval), [employees, interval])
+    return <Statistics 
+                title={"Age Statistics"} 
+                intervalOptions={ageIntervals} 
+                data={statisticsData} 
+                submitFn={function (intervalSelected: number): void {
+                    setInterval(intervalSelected);
+                }} 
+            />
 
-    const [interval, setInterval] = useState(DEFAULT_INTERVAL)
-
-    function handlerInterval(event: any) {
-        const selectedInterval = event.target.value;
-
-        setInterval(selectedInterval);
-    }
-
-    return <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
-            <Box>
-                <Select
-                labelId="select-interval-id"
-                value={interval}
-                onChange={handlerInterval}>
-                {intervals.map(i => <MenuItem value={i} key={i}>{i}</MenuItem>)}
-            </Select>
-            <FormHelperText>Select interval</FormHelperText>
-            </Box>
-            <Statistics fieldName="birthDate" interval={interval} />
-        </Box>
 }
-
-export default AgeStatistics
+export default AgeStatistics;

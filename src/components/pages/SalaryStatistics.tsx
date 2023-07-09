@@ -1,37 +1,22 @@
-import { Box, Button, FormHelperText, MenuItem, Select, TextField, Typography } from "@mui/material"
-import Statistics from "./Statistics"
-import { useState } from "react"
-
-const DEFAULT_INTERVAL = 5000
-
-const intervals = [1000, 2000, 5000, 10000]
-
+import { useMemo, useState } from "react";
+import intervals from '../../config/intervals.json'
+import { getStatistics } from "../../service/EmployeesDataProcessor";
+import Statistics from "../common/Statistics";
+import { useSelectorEmployees } from "../../hooks/hooks";
 const SalaryStatistics: React.FC = () => {
+    const { salaryIntervals } = intervals;
+    const employees = useSelectorEmployees();
+    const [interval, setInterval] = useState(salaryIntervals[0])
+    const statisticsData = useMemo(() => getStatistics(employees, "salary", interval), [employees, interval])
 
-    const [interval, setInterval] = useState(DEFAULT_INTERVAL)
-
-    function handlerInterval(event: any) {
-        const selectedInterval = event.target.value;
-
-        setInterval(selectedInterval);
-    }
-
-
-    return <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-        <Box>
-            <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={interval}
-                onChange={handlerInterval}
-            >
-                {intervals.map(i => <MenuItem value={i} key={i}>{i}</MenuItem>)}
-            </Select>
-            <FormHelperText>Select interval</FormHelperText>
-        </Box>
-        <Statistics fieldName="salary" interval={interval} />
-    </Box>
+    return <Statistics 
+                title={"Salary Statistics"} 
+                intervalOptions={salaryIntervals} 
+                data={statisticsData} 
+                submitFn={function (intervalSelected: number): void {
+                    setInterval(intervalSelected);
+                }} 
+            />
 
 }
-
-export default SalaryStatistics
+export default SalaryStatistics;

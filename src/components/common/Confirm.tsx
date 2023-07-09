@@ -3,10 +3,10 @@ import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, D
 type Props = {
     title: string,
     content: string,
-    handleClose: (decision: boolean) => void
+    confirmFn: (decision: boolean) => void
     open: boolean
 }
-const Confirm: React.FC<Props> = ({title, content, handleClose, open}) => {
+const Confirm: React.FC<Props> = ({title, content, confirmFn: handleClose, open}) => {
 
     return <Box>
         <Dialog

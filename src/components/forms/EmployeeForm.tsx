@@ -63,7 +63,7 @@ export const EmployeeForm: React.FC<Props> = ({ submitFn, employeeUpdated }) => 
         }
     }
     function onResetFn(event: any) {
-        setEmployee(initialEmployee);
+        setEmployee(employeeUpdated || initialEmployee);
     }
 
     return <Box sx={{ marginTop: { sm: "25vh" } }}>
