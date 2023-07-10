@@ -1,5 +1,5 @@
-import LoginData from "../model/LoginData";
-import UserData from "../model/UserData";
+import LoginData from "../../model/LoginData";
+import UserData from "../../model/UserData";
 import AuthService from "./AuthService";
 
 export const AUTH_DATA_JWT = 'auth-data-jwt'

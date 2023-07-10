@@ -1,14 +1,14 @@
-import { Observable } from "rxjs";
-import Employee from "../model/Employee";
+import { Observable, catchError, of } from "rxjs";
+import Employee from "../../model/Employee";
 import EmployeesService from "./EmployeesService";
-import appFirebase from '../config/firebase-config';
+import appFirebase from '../../config/firebase-config';
 import {
     CollectionReference, DocumentReference, getFirestore,
     collection, getDoc, FirestoreError, setDoc, deleteDoc, doc
 } from 'firebase/firestore';
 import { collectionData } from 'rxfire/firestore'
-import { getRandomInt } from "../util/random";
-import { getISODateStr } from "../util/date-functions";
+import { getRandomInt } from "../../util/random";
+import { getISODateStr } from "../../util/date-functions";
 
 const MIN_ID = 100000;
 const MAX_ID = 1000000;
@@ -25,7 +25,7 @@ function getErrorMessage(firestoreError: FirestoreError): string {
     let errorMessage = '';
     switch (firestoreError.code) {
         case "unauthenticated":
-        case "permission-denied": errorMessage = "Authentication"; break;
+            case "permission-denied": errorMessage = "Authentication"; break;
         default: errorMessage = firestoreError.message;
     }
     return errorMessage;
@@ -42,8 +42,8 @@ export default class EmployeesServiceFire implements EmployeesService {
         try {
             await setDoc(docRef, employee)
         } catch (error: any) {
-            const firestorError: FirestoreError = error;
-            const errorMessage = getErrorMessage(firestorError);
+            const firestoreError: FirestoreError = error;
+            const errorMessage = getErrorMessage(firestoreError);
             throw errorMessage;
         }
         return employee;
@@ -64,7 +64,11 @@ export default class EmployeesServiceFire implements EmployeesService {
         return id;
     }
     getEmployees(): Observable<string | Employee[]> {
-        return collectionData(this.collectionRef) as Observable<string | Employee[]>;
+        return collectionData(this.collectionRef).pipe(catchError(error => {
+            const firestorError: FirestoreError = error;
+            const errorMessage = getErrorMessage(firestorError);
+            return of(errorMessage) //of закидывает мессадж в стрим
+        })) as Observable<string | Employee[]>
     }
     async deleteEmployee(id: any): Promise<void> {
         const docRef = this.getDocRef(id);

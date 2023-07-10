@@ -13,10 +13,10 @@ export function getDaysBetweenDates(fromDate, toDate) {
 export function getAge(birthDate) {
     const currentDate = new Date();
     const age = currentDate.getFullYear() - birthDate.getFullYear();
-    return age - comareMonthDay(currentDate.getMonth(), currentDate.getDate(),
+    return age - compareMonthDay(currentDate.getMonth(), currentDate.getDate(),
     birthDate.getMonth(), birthDate.getDate() );
 }
-function comareMonthDay(currentMonth, currentDay, birthMonth, birthDay) {
+function compareMonthDay(currentMonth, currentDay, birthMonth, birthDay) {
     let res = currentMonth == birthMonth ? +(currentDay > birthDay) : +(currentMonth > birthMonth);
     return res;
 }
