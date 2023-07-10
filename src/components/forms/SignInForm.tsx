@@ -92,12 +92,15 @@ const SignInForm: React.FC<Props> = ({ submitFn }) => {
                                 </Button>
                             </Grid>
                             <Grid item xs={12} sm={6} md={12}>
-                                <Button 
-                                    onClick={googleSubmit}
-                                    sx={{ mt: 3, mb: 2 }}
-                                >
-                                    Sign In With Google
-                                </Button>
+                                <Box style={{display: 'flex', justifyContent: 'center'}}>
+                                    <Button
+                                        style={{border: 'solid'}}
+                                        onClick={googleSubmit}
+                                        sx={{ mt: 3, mb: 2 }}
+                                    >
+                                        Sign In With Google
+                                    </Button>
+                                </Box>
                             </Grid>
                         </Grid>
 
