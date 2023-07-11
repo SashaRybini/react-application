@@ -25,7 +25,7 @@ import { authActions } from "./redux/slices/authSlice";
 import CodePayload from "./model/CodePayload";
 import { codeActions } from "./redux/slices/codeSlice";
 
-const { always, authenticated, admin, noadmin, noauthenticated } = routesConfig;
+const { always, authenticated, admin, noadmin, noauthenticated, development } = routesConfig;
 
 function getRoutes(userData: UserData): RouteType[] {
   const result: RouteType[] = [];
@@ -34,6 +34,9 @@ function getRoutes(userData: UserData): RouteType[] {
     result.push(...authenticated)
     userData.role === 'admin' && result.push(...admin);
     userData.role === 'user' && result.push(...noadmin);
+    if (process.env.NODE_ENV === "development" && userData.role === 'admin') {
+      result.push(...development)
+    }
   } else {
     result.push(...noauthenticated);
   }
@@ -78,7 +81,7 @@ const App: React.FC = () => {
         <Route path="employees/add" element={<AddEmployee />} />
         <Route path="signin" element={<SignIn />} />
         <Route path="signout" element={<SignOut />} />
-        <Route path="employees/generation" element={<EmployeeGeneration />} />
+        {process.env.NODE_ENV === "development" && <Route path="employees/generation" element={<EmployeeGeneration />} />}
         <Route path="/*" element={<NotFound />} />
       </Route>
     </Routes>

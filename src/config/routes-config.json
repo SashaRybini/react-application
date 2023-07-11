@@ -27,11 +27,6 @@
             "to": "/employees/add",
             "label": "Add Employee",
             "order": 2
-        },
-        {
-            "to": "/employees/generation",
-            "label": "Empl Generation",
-            "order": 3 
         }
     ],
     "noadmin": [],
@@ -40,6 +35,13 @@
             "to": "/signin",
             "label": "Sign In",
             "order": 2
+        }
+    ],
+    "development": [
+        {
+            "to": "/employees/generation",
+            "label": "Empl Generation",
+            "order": 3 
         }
     ]
 }

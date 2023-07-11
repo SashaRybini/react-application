@@ -1,4 +1,4 @@
-import { Box, Modal } from "@mui/material"
+import { Box, Button, Modal, Typography, useMediaQuery, useTheme } from "@mui/material"
 import { useState, useEffect, useRef, useMemo } from "react";
 import Employee from "../../model/Employee";
 import { employeesService } from "../../config/service-config";
@@ -10,6 +10,8 @@ import Confirm from "../common/Confirm";
 import { EmployeeForm } from "../forms/EmployeeForm";
 import InputResult from "../../model/InputResult";
 import { useDispatchCode, useSelectorEmployees } from "../../hooks/hooks";
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { getISODateStr } from "../../util/date-functions";
 
 const columnsCommon: GridColDef[] = [
     {
@@ -51,15 +53,52 @@ const style = {
     boxShadow: 24,
     p: 4,
 };
+const styleXs = {
+    position: 'absolute' as 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 300,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+};
 
 const Employees: React.FC = () => {
+    const columnsXs: GridColDef[] = [ //copy past not so good
+        {
+            field: 'id', headerName: 'ID', flex: 0.5, headerClassName: 'data-grid-header',
+            align: 'center', headerAlign: 'center'
+        },
+        {
+            field: 'name', headerName: 'Name', flex: 0.7, headerClassName: 'data-grid-header',
+            align: 'center', headerAlign: 'center'
+        },
+        {
+            field: 'actions', type: "actions", getActions: (params) => {
+                return [
+                    <GridActionsCellItem label="details" icon={<VisibilityIcon />}
+                        onClick={() => { 
+                            employeeId.current = params.id as any;
+                            if (params.row) {
+                                const empl = params.row;
+                                empl && (employee.current = empl);
+                                setOpenDetails(true)
+                            }
+                         }}
+                    />
+                ]
+            }
+        }
+    ]
     const columnsAdmin: GridColDef[] = [
         {
             field: 'actions', type: "actions", getActions: (params) => {
                 return [
                     <GridActionsCellItem label="remove" icon={<Delete />}
                         onClick={() => removeEmployee(params.id)
-                        } 
+                        }
                     />,
                     <GridActionsCellItem label="update" icon={<Edit />}
                         onClick={() => {
@@ -69,28 +108,39 @@ const Employees: React.FC = () => {
                                 empl && (employee.current = empl);
                                 setFlEdit(true)
                             }
-                        }} 
+                        }}
                     />
                 ];
             }
         }
     ]
+
+    const theme = useTheme()
+    const isPortrait = useMediaQuery(theme.breakpoints.down('sm'))
+
     const dispatch = useDispatchCode();
     const userData = useSelectorAuth();
     const employees = useSelectorEmployees();
-    const columns = useMemo(() => getColumns(), [userData, employees]);
+    const columns = useMemo(() => getColumns(), [userData, employees, isPortrait]);
 
     const [openConfirm, setOpenConfirm] = useState(false);
     const [openEdit, setFlEdit] = useState(false);
+    const [xsOpen, setOpenDetails] = useState(false);
     const title = useRef('');
     const content = useRef('');
     const employeeId = useRef('');
     const confirmFn = useRef<any>(null);
     const employee = useRef<Employee | undefined>();
+
     function getColumns(): GridColDef[] {
-        let res: GridColDef[] = columnsCommon;
-        if (userData && userData.role == 'admin') {
-            res = res.concat(columnsAdmin);
+        let res: GridColDef[];
+        if (isPortrait) {
+            res = columnsXs;
+        } else {
+            res = columnsCommon;
+            if (userData && userData.role == 'admin') {
+                res = res.concat(columnsAdmin);
+            }
         }
         return res;
     }
@@ -127,9 +177,7 @@ const Employees: React.FC = () => {
         return Promise.resolve(res);
     }
     async function actualUpdate(isOk: boolean) {
-
         let errorMessage: string = '';
-
         if (isOk) {
             try {
                 await employeesService.updateEmployee(employee.current!);
@@ -139,7 +187,6 @@ const Employees: React.FC = () => {
         }
         dispatch(errorMessage, '');
         setOpenConfirm(false);
-
     }
 
     return <Box sx={{
@@ -159,6 +206,30 @@ const Employees: React.FC = () => {
         >
             <Box sx={style}>
                 <EmployeeForm submitFn={updateEmployee} employeeUpdated={employee.current} />
+            </Box>
+        </Modal>
+
+        <Modal
+            open={xsOpen}
+            onClose={() => setOpenDetails(false)}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+        >
+            <Box sx={styleXs}>
+                <Typography>ID: {employee.current?.id}</Typography> 
+                <Typography>Name: {employee.current?.name}</Typography> 
+                <Typography>Birth Date: {employee.current?.birthDate.toISOString().substring(0, 10)}</Typography> 
+                <Typography>Department: {employee.current?.department}</Typography> 
+                <Typography>Salary: {employee.current?.salary}</Typography>
+                {userData && userData.role == 'admin' && <Button onClick={() => {
+                    setOpenDetails(false)
+                    removeEmployee(employee.current?.id)
+                    }}> delete </Button>
+                }
+                {userData && userData.role == 'admin' && <Button onClick={() => {
+                    setOpenDetails(false)
+                    setFlEdit(true)
+                    }}> update </Button>}
             </Box>
         </Modal>
 
