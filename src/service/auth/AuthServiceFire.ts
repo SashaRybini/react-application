@@ -5,8 +5,7 @@ import {
     getFirestore, collection, getDoc, doc
 } from 'firebase/firestore';
 import {
-    GoogleAuthProvider,
-    getAuth, signInWithEmailAndPassword, signInWithPopup, signOut
+    GoogleAuthProvider, getAuth, signInWithEmailAndPassword, signInWithPopup, signOut
 } from 'firebase/auth';
 import appFirebase from "../../config/firebase-config";
 

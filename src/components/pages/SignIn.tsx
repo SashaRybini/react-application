@@ -1,7 +1,6 @@
 import { useDispatch } from "react-redux";
 import SignInForm from "../forms/SignInForm";
 import LoginData from "../../model/LoginData";
-import InputResult from "../../model/InputResult";
 import { authService } from "../../config/service-config";
 import UserData from "../../model/UserData";
 import { authActions } from "../../redux/slices/authSlice";
@@ -17,7 +16,7 @@ const SignIn: React.FC = () => {
 
         const alert: CodePayload = { code: CodeType.OK, message: ''}
         alert.code = res ? CodeType.OK : CodeType.SERVER_ERROR
-        alert.message = res? 'welcome' : 'Incorrect Credentials'
+        alert.message = res? 'Welcome' : 'Incorrect Credentials'
         dispatch(codeActions.set(alert))
     }
 

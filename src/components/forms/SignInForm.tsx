@@ -9,9 +9,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import LoginData from '../../model/LoginData';
-import InputResult from '../../model/InputResult';
 import { Alert, Grid, Snackbar } from '@mui/material';
-import { StatusType } from '../../model/StatusType';
 
 const defaultTheme = createTheme();
 
@@ -103,11 +101,6 @@ const SignInForm: React.FC<Props> = ({ submitFn }) => {
                                 </Box>
                             </Grid>
                         </Grid>
-
-
-
-
-
                     </Box>
                 </Box>
             </Container>

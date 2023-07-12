@@ -1,3 +1,11 @@
-const NotFound: React.FC = () =>
- <p style={{backgroundColor: 'green'}} className="component-logo">404 Not Found</p>
- export default NotFound;
+import { Typography } from "@mui/material";
+
+const style: React.CSSProperties = { 
+    backgroundColor: 'green' 
+}
+
+const NotFound: React.FC = () => {
+    
+    return <Typography style={style}>404 Not Found</Typography>
+}
+export default NotFound;

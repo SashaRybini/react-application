@@ -1,8 +1,8 @@
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { Menu } from '@mui/icons-material'
 import { AppBar, IconButton, ListItem, Toolbar, Typography, Drawer, List, Box, ListItemButton, Tab } from '@mui/material';
-import { RouteType } from './Navigator';
+import { RouteType } from './NavigatorDispatcher';
+import { Menu } from '@mui/icons-material';
 
 const NavigatorPortrait: React.FC<{routes: RouteType[]}> = ({ routes }) => {
 
@@ -26,10 +26,7 @@ const NavigatorPortrait: React.FC<{routes: RouteType[]}> = ({ routes }) => {
     function toggleOpen() {
         setOpen(!flOpen);
     }
-    // function getListItems(): React.ReactNode {
-    //     return routes.map(i => <ListItem onClick={toggleOpen} 
-    //         component={Link} to={i.to} key={i.to}>{i.label}</ListItem>)
-    // }
+
     function getTabs(): React.ReactNode {
         return routes.map(r => (
             <ListItem key={r.label} disablePadding>
@@ -45,12 +42,11 @@ const NavigatorPortrait: React.FC<{routes: RouteType[]}> = ({ routes }) => {
                 <IconButton onClick={toggleOpen} sx={{ color: 'primary' }}>
                     <Menu />
                 </IconButton>
-                <Typography sx={{ width: "100%", textAlign: "center", fontSize: "1.5em" }}>
+                <Typography sx={{ width: "100%", textAlign: "center", fontSize: "1.3em", color: 'gray'}}>
                     {getTitle()}
                 </Typography>
                 <Drawer open={flOpen} onClose={toggleOpen} anchor="left">
                     <List>
-                        {/* {getListItems()} */}
                         {getTabs()}
                     </List>
                 </Drawer>

@@ -1,31 +1,18 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { RouteType } from "./components/navigators/Navigator";
-
-import SignIn from "./components/pages/SignIn";
-import SignOut from "./components/pages/SignOut";
-import './App.css'
-import { useSelectorAuth, useSelectorCode } from "./redux/store";
-import { useMemo } from "react";
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import './App.css';
+import Products from './components/pages/Products';
+import Orders from './components/pages/Orders';
+import Customers from './components/pages/Customers';
+import SignIn from './components/pages/SignIn';
+import SignOut from './components/pages/SignOut';
+import NotFound from './components/pages/NotFound';
+import NavigatorDispatcher, { RouteType } from './components/navigators/NavigatorDispatcher';
+import { useMemo } from 'react';
 import routesConfig from './config/routes-config.json';
-import NotFound from "./components/pages/NotFound";
-import NavigatorDispatcher from "./components/navigators/NavigatorDispatcher";
-import UserData from "./model/UserData";
-import Employees from "./components/pages/Employees";
-import AgeStatistics from "./components/pages/AgeStatistics";
-import SalaryStatistics from "./components/pages/SalaryStatistics";
-import AddEmployee from "./components/pages/AddEmployee";
-import EmployeeGeneration from "./components/pages/EmployeeGeneration";
-import { Alert, Snackbar } from "@mui/material";
-import CodeType from "./model/CodeType";
-import { StatusType } from "./model/StatusType";
-import { authService } from "./config/service-config";
-import { useDispatch } from "react-redux";
-import SnackbarAlert from "./components/common/SnackbarAlert";
-import { authActions } from "./redux/slices/authSlice";
-import CodePayload from "./model/CodePayload";
-import { codeActions } from "./redux/slices/codeSlice";
+import UserData from './model/UserData';
+import ShoppingCart from './components/pages/ShoppingCart';
 
-const { always, authenticated, admin, noadmin, noauthenticated, development } = routesConfig;
+const { always, authenticated, admin, noadmin, noauthenticated } = routesConfig;
 
 function getRoutes(userData: UserData): RouteType[] {
   const result: RouteType[] = [];
@@ -34,9 +21,6 @@ function getRoutes(userData: UserData): RouteType[] {
     result.push(...authenticated)
     userData.role === 'admin' && result.push(...admin);
     userData.role === 'user' && result.push(...noadmin);
-    if (process.env.NODE_ENV === "development" && userData.role === 'admin') {
-      result.push(...development)
-    }
   } else {
     result.push(...noauthenticated);
   }
@@ -53,39 +37,27 @@ function getRoutes(userData: UserData): RouteType[] {
   return res
 }
 
-const App: React.FC = () => {
-  const userData: UserData = useSelectorAuth()
-  const dispatch = useDispatch()
-  const codeMessage: CodePayload = useSelectorCode()
-  const [alertMessage, severity] = useMemo(() => codeProcessing(), [codeMessage])
+function App() {
 
-  function codeProcessing() {
-    const res: [string, StatusType] = ['', 'success']
-    res[0] = codeMessage.message
-    res[1] = codeMessage.code === CodeType.OK ? 'success' : 'error'
-    if (codeMessage.code === CodeType.AUTH_ERROR) {
-      authService.logout()
-      dispatch(authActions.reset());
-    }
-    return res
-  }
+  // const routes = useMemo(() => getRoutes(userData), [userData])
+  const routes = getRoutes({email: "123", role: "user"})
+  // const routes = getRoutes(null)
 
-  const routes = useMemo(() => getRoutes(userData), [userData])
 
   return <BrowserRouter>
     <Routes>
       <Route path="/" element={<NavigatorDispatcher routes={routes} />}>
-        <Route index element={<Employees />} />
-        <Route path="statistics/age" element={<AgeStatistics />} />
-        <Route path="statistics/salary" element={<SalaryStatistics />} />
-        <Route path="employees/add" element={<AddEmployee />} />
+        <Route index element={<Products />} />
+        <Route path="orders" element={<Orders />} />
+        <Route path="customers" element={<Customers />} />
+        <Route path="shoppingcart" element={<ShoppingCart />} />
         <Route path="signin" element={<SignIn />} />
         <Route path="signout" element={<SignOut />} />
-        {process.env.NODE_ENV === "development" && <Route path="employees/generation" element={<EmployeeGeneration />} />}
         <Route path="/*" element={<NotFound />} />
       </Route>
     </Routes>
-    {alertMessage && <SnackbarAlert message={alertMessage} severity={severity} />}
+    {/* {alertMessage && <SnackbarAlert message={alertMessage} severity={severity} />} */}
   </BrowserRouter>
 }
+
 export default App;
