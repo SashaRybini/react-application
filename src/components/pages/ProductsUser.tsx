@@ -1,9 +1,11 @@
 import { Box, Button, Card, CardActions, CardContent, CardMedia, Grid, Modal, Typography } from "@mui/material"
-import goodsConfig from "../../config/goods-config.json"
+// import goodsConfig from "../../config/goods-config.json"
 import { useState } from "react";
+import { useSelector } from "react-redux";
+import { useSelectorProducts } from "../../hooks/hooks";
 
-const initialGoods = goodsConfig.initialGoods;
-const goods = initialGoods
+// const initialGoods = goodsConfig.initialGoods;
+// const goods = initialGoods
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -20,12 +22,13 @@ const style = {
 const ProductsUser: React.FC = () => {
 
     const [openContent, setOpenContent] = useState(false)
+    const products = useSelectorProducts()
 
     function getProductsCards() {
-        return goods.map((g, index) => <Card key={index} sx={{ maxWidth: 345 }}>
+        return products.map((g, index) => <Card key={index} sx={{ maxWidth: 345 }}>
             <CardMedia
                 sx={{ height: 200 }}
-                image={g.image}
+                image={g.imageUrl}
             />
             <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
@@ -49,17 +52,12 @@ const ProductsUser: React.FC = () => {
                     <Typography variant="body2" color="text.secondary">
                         {g.content}
                     </Typography>
-
                 </Box>
             </Modal>
         </Card>)
     }
 
-    return <Grid
-        container
-        justifyContent='center'
-        gap={2}
-    >
+    return <Grid container justifyContent='center' gap={2}>
         {getProductsCards()}
     </Grid>
 }

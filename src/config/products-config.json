@@ -1,13 +1,13 @@
 {
-    "initialGoods": [
+    "initialProducts": [
         {
-            "image": "https://www.shibata-fender.team/files/content/Referenzen/Germany_Wilhemshaven_LNG/cone-fenders_lng-terminal_wilhelmshaven_germany_shibatafenderteam_news.jpg",
+            "imageUrl": "https://www.shibata-fender.team/files/content/Referenzen/Germany_Wilhemshaven_LNG/cone-fenders_lng-terminal_wilhelmshaven_germany_shibatafenderteam_news.jpg",
             "title": "SPC Cone Fender",
             "price": 12000,
             "content": "The SPC Cone Fender is an efficient rubber fender type that is used in various applications. It has a conical body and fully rubber-embedded mounting flanges. Its refined geometry and conical shape result in a number of outstanding performance characteristics."
         },
         {
-            "image": "https://www.shibata-fender.team/files/content/products/CSS_Fenders/cell-fender.jpg",
+            "imageUrl": "https://www.shibata-fender.team/files/content/products/CSS_Fenders/cell-fender.jpg",
             "title": "CSS Cell Fender",
             "price": 11000,
             "content": "The CSS Cell Fender is a well established rubber fender type, with a hollow cylindrical body and fully rubber-embedded mounting flanges. It is designed to deflect in an axial direction up to 52,5% (design deflection)."

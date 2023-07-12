@@ -11,7 +11,14 @@ import { useMemo } from 'react';
 import routesConfig from './config/routes-config.json';
 import UserData from './model/UserData';
 import ShoppingCart from './components/pages/ShoppingCart';
-import { useSelectorAuth } from './redux/store';
+import { useSelectorAuth, useSelectorCode } from './redux/store';
+import SnackbarAlert from './components/common/SnackbarAlert';
+import { useDispatch } from 'react-redux';
+import CodePayload from './model/CodePayload';
+import { StatusType } from './model/StatusType';
+import CodeType from './model/CodeType';
+import { authService } from './config/service-config';
+import { authActions } from './redux/slices/authSlice';
 
 const { always, authenticated, admin, noadmin, noauthenticated } = routesConfig;
 
@@ -43,6 +50,21 @@ function App() {
   const userData: UserData = useSelectorAuth()
   const routes = useMemo(() => getRoutes(userData), [userData])
 
+  const dispatch = useDispatch()
+  const codeMessage: CodePayload = useSelectorCode()
+  const [alertMessage, severity] = useMemo(() => codeProcessing(), [codeMessage])
+
+  function codeProcessing() {
+    const res: [string, StatusType] = ['', 'success']
+    res[0] = codeMessage.message
+    res[1] = codeMessage.code === CodeType.OK ? 'success' : 'error'
+    if (codeMessage.code === CodeType.AUTH_ERROR) {
+      authService.logout()
+      dispatch(authActions.reset());
+    }
+    return res
+  }
+
   return <BrowserRouter>
     <Routes>
       <Route path="/" element={<NavigatorDispatcher routes={routes} />}>
@@ -55,7 +77,7 @@ function App() {
         <Route path="/*" element={<NotFound />} />
       </Route>
     </Routes>
-    {/* {alertMessage && <SnackbarAlert message={alertMessage} severity={severity} />} */}
+    {alertMessage && <SnackbarAlert message={alertMessage} severity={severity} />}
   </BrowserRouter>
 }
 

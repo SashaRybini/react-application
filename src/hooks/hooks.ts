@@ -4,7 +4,8 @@ import { codeActions } from "../redux/slices/codeSlice";
 import { useEffect, useState } from "react";
 // import Employee from "../model/Employee";
 import { Subscription } from "rxjs";
-// import { employeesService } from "../config/service-config";
+import { Product } from "../model/Product";
+import { productsService } from "../config/service-config";
 
 export function useDispatchCode() {
     const dispatch = useDispatch();
@@ -22,24 +23,25 @@ export function useDispatchCode() {
         dispatch(codeActions.set({ code, message: message || successMessage }))
     }
 }
-// export function useSelectorEmployees() {
-//     const dispatch = useDispatchCode();
-//     const [employees, setEmployees] = useState<Employee[]>([]);
-//     useEffect(() => {
-//         const subscription: Subscription = employeesService.getEmployees()
-//             .subscribe({
-//                 next(emplArray: Employee[] | string) {
-//                     let errorMessage: string = '';
-//                     if (typeof emplArray === 'string') {
-//                         errorMessage = emplArray;
-//                     } else {
-//                         setEmployees(emplArray.map(e => ({ ...e, birthDate: new Date(e.birthDate) })));
-//                     }
-//                     dispatch(errorMessage, '');
-//                 }
-//             });
-//         return () => subscription.unsubscribe();
-//     }, []);
-//     return employees;
-// }
+export function useSelectorProducts() {
+    const dispatch = useDispatchCode();
+    const [products, setProducts] = useState<Product[]>([]);
+    useEffect(() => {
+        const subscription: Subscription = productsService.getProducts()
+            .subscribe({
+                next(prodArray: Product[] | string) {
+                    let errorMessage: string = '';
+                    if (typeof prodArray === 'string') {
+                        errorMessage = prodArray;
+                    } else {
+                        // setProducts(emplArray.map(e => ({ ...e, birthDate: new Date(e.birthDate) })));
+                        setProducts(prodArray);
+                    }
+                    dispatch(errorMessage, '');
+                }
+            });
+        return () => subscription.unsubscribe();
+    }, []);
+    return products;
+}
 

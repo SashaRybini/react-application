@@ -10,6 +10,7 @@ import { codeActions } from "../../redux/slices/codeSlice";
 
 const SignIn: React.FC = () => {
     const dispatch = useDispatch();
+    
     async function submitFn(loginData: LoginData) {
         const res: UserData = await authService.login(loginData)
         res && dispatch(authActions.set(res))

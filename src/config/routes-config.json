@@ -2,7 +2,7 @@
     "always": [
         {
             "to": "/",
-            "label": "Goods",
+            "label": "Products",
             "order": 1
         }
     ],
