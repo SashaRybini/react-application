@@ -11,6 +11,7 @@ import { useMemo } from 'react';
 import routesConfig from './config/routes-config.json';
 import UserData from './model/UserData';
 import ShoppingCart from './components/pages/ShoppingCart';
+import { useSelectorAuth } from './redux/store';
 
 const { always, authenticated, admin, noadmin, noauthenticated } = routesConfig;
 
@@ -39,10 +40,8 @@ function getRoutes(userData: UserData): RouteType[] {
 
 function App() {
 
-  // const routes = useMemo(() => getRoutes(userData), [userData])
-  const routes = getRoutes({email: "123", role: "user"})
-  // const routes = getRoutes(null)
-
+  const userData: UserData = useSelectorAuth()
+  const routes = useMemo(() => getRoutes(userData), [userData])
 
   return <BrowserRouter>
     <Routes>
