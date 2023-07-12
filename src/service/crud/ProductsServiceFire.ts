@@ -42,7 +42,7 @@ export default class ProductsServiceFire implements ProductsService {
     }
     private async initProductsCollection() {
         const snapshot = await getDocs(this.collectionRef);
-        snapshot.empty ? console.log('empty') : console.log('no');
+        // snapshot.empty ? console.log('empty') : console.log('no');
         if (snapshot.empty) {
             initialProducts.forEach(p => this.addProduct(p))
         }
