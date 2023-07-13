@@ -1,9 +1,17 @@
-import { 
-    Box, Button, Card, CardActions, CardContent, 
-    CardMedia, Grid, Modal, Typography 
+import {
+    Box, Button, Card, CardActions, CardContent,
+    CardMedia, Grid, Modal, Typography
 } from "@mui/material"
 import { useState } from "react";
 import { useSelectorProducts } from "../../hooks/hooks";
+import { Product } from "../../model/Product";
+import CategorySelect from "../common/CategorySelect";
+import { categories } from "../forms/AddProductForm";
+
+const centerStyle = { 
+    display: 'flex', flexDirection: 'column', 
+    justifyContent: 'center', alignItems: 'center' 
+}
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -24,7 +32,8 @@ const ProductsUser: React.FC = () => {
     const products = useSelectorProducts()
 
     function getProductsCards() {
-        return products.map((g, index) => <Card key={index} sx={{ maxWidth: 345 }}>
+        const prods = filteredProducts.length == 0 ? products : filteredProducts
+        return prods.map((g, index) => <Card key={index} sx={{ maxWidth: 345 }}>
             <CardMedia
                 sx={{ height: 200 }}
                 image={g.imageUrl}
@@ -41,17 +50,31 @@ const ProductsUser: React.FC = () => {
                 <Button size="small" onClick={() => {
                     setOpenContent(true)
                     setContent(g.content)
-                    }}
+                }}
                 >
                     Learn More
                 </Button>
-            </CardActions> 
+            </CardActions>
         </Card>)
     }
+    
+    const [category, setCategory] = useState('')
+    const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
+    function handlerCategoryFilter(event: any) {
+        setCategory(event.target.value)
+        const filtered = products.filter(p => p.category === event.target.value)
+        setFilteredProducts(filtered)
+    }
 
-    return <Grid container justifyContent='center' gap={2}>
-        {getProductsCards()}
-        <Modal
+    return <Box sx={centerStyle}>
+        <CategorySelect
+            category={category}
+            handlerCategoryFilter={handlerCategoryFilter}
+            categories={categories}
+        />
+        <Grid container justifyContent='center' gap={2}>
+            {getProductsCards()}
+            <Modal
                 open={openContent}
                 onClose={() => setOpenContent(false)}
                 aria-labelledby="modal-modal-title"
@@ -63,6 +86,7 @@ const ProductsUser: React.FC = () => {
                     </Typography>
                 </Box>
             </Modal>
-    </Grid>
+        </Grid>
+    </Box>
 }
 export default ProductsUser

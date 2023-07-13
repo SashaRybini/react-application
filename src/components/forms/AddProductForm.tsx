@@ -10,7 +10,7 @@ type Props = {
     submitFn: (prod: Product) => void
     productUpdated?: Product
 }
-const categories: string[] = categoriesConfig.categories
+export const categories: string[] = categoriesConfig.categories
 const initialProduct: Product = {
     id: 0, imageUrl: '', title: '', price: 0, content: '', category: ''
 };
@@ -18,7 +18,7 @@ const initialProduct: Product = {
 export const AddProductForm: React.FC<Props> = ({ submitFn, productUpdated }) => {
 
     const [product, setProduct] = useState<Product>(productUpdated || initialProduct);
-    const [errorMessage, setErrorMessage] = useState('');
+    // const [errorMessage, setErrorMessage] = useState('');
 
     function handlerImageUrl(event: any) {
         const imageUrl = event.target.value;

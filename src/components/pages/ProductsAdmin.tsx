@@ -1,5 +1,7 @@
 import { Delete, Edit } from "@mui/icons-material";
-import { Box, Link, Modal, Typography } from "@mui/material"
+import { 
+    Box, FormHelperText, Link, MenuItem, Modal, Select, Typography 
+} from "@mui/material"
 import {
     DataGrid, GridActionsCellItem, GridColDef, GridRenderCellParams
 } from "@mui/x-data-grid"
@@ -7,12 +9,9 @@ import { useRef, useState } from "react";
 import { useDispatchCode, useSelectorProducts } from "../../hooks/hooks";
 import Confirm from "../common/Confirm";
 import { productsService } from "../../config/service-config";
-import CodePayload from "../../model/CodePayload";
-import CodeType from "../../model/CodeType";
-import { useDispatch } from "react-redux";
-import { codeActions } from "../../redux/slices/codeSlice";
 import { Product } from "../../model/Product";
-import { AddProductForm } from "../forms/AddProductForm";
+import { AddProductForm, categories } from "../forms/AddProductForm";
+import CategorySelect from "../common/CategorySelect";
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -25,6 +24,11 @@ const style = {
     boxShadow: 24,
     p: 4,
 };
+const centerStyle = { 
+    display: 'flex', flexDirection: 'column', 
+    justifyContent: 'center', alignItems: 'center' 
+}
+
 
 function ExpandableCell({ value }: GridRenderCellParams) {
     const [expanded, setExpanded] = useState(false);
@@ -120,30 +124,37 @@ const ProductsAdmin: React.FC = () => {
             try {
                 productsService.updateProduct(product.current!)
                 dispatch('', `product with id ${productId.current} has been deleted`)
-            } catch(error: any) {
+            } catch (error: any) {
                 dispatch(error, '')
             }
         }
     }
-    async function updateSubmitFn(prod: Product) { 
+    async function updateSubmitFn(prod: Product) {
         product.current = prod
         setIsUpdate(true)
         setOpenConfirmDialog(true)
         setOpenUpdateModal(false)
     }
+    const [category, setCategory] = useState('')
+    const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
+    function handlerCategoryFilter(event: any) {
+        setCategory(event.target.value)
+        const filtered = products.filter(p => p.category === event.target.value)
+        setFilteredProducts(filtered)
+    }
 
-    return <Box sx={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignContent: 'center'
-    }}
-    >
+    return <Box sx={centerStyle}>
+        <CategorySelect 
+            category={category} 
+            handlerCategoryFilter={handlerCategoryFilter} 
+            categories={categories}
+        />
         <Box sx={{ height: '70vh', width: '95vw' }}>
             <DataGrid
                 // getEstimatedRowHeight={() => 100}
                 getRowHeight={() => 'auto'}
                 columns={columns}
-                rows={products} />
+                rows={filteredProducts.length != 0 ? filteredProducts : products} />
         </Box>
         <Confirm
             title={confirmTitle}
