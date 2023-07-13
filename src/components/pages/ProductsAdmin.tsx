@@ -1,35 +1,50 @@
 import { Delete, Edit } from "@mui/icons-material";
-import { Box, Link } from "@mui/material"
-import { DataGrid, GridActionsCellItem, GridColDef, GridRenderCellParams } from "@mui/x-data-grid"
+import { Box, Link, Modal, Typography } from "@mui/material"
+import {
+    DataGrid, GridActionsCellItem, GridColDef, GridRenderCellParams
+} from "@mui/x-data-grid"
+import { useRef, useState } from "react";
+import { useDispatchCode, useSelectorProducts } from "../../hooks/hooks";
+import Confirm from "../common/Confirm";
+import { productsService } from "../../config/service-config";
+import CodePayload from "../../model/CodePayload";
+import CodeType from "../../model/CodeType";
+import { useDispatch } from "react-redux";
+import { codeActions } from "../../redux/slices/codeSlice";
+import { Product } from "../../model/Product";
+import { AddProductForm } from "../forms/AddProductForm";
 
-import { getRandomInt } from "../../util/random";
-import { useState } from "react";
-
-
-// import tempConfig from "../../config/goods-config.json"
-// import { useSelector } from "react-redux";
-import { useSelectorProducts } from "../../hooks/hooks";
-// const products = tempConfig.initialGoods.map(g => ({ ...g, price: `$${g.price}`, id: getRandomInt(1, 1000) }))
+const style = {
+    position: 'absolute' as 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+};
 
 function ExpandableCell({ value }: GridRenderCellParams) {
     const [expanded, setExpanded] = useState(false);
     return (
-      <Box>
-        {expanded ? value : value.slice(0, 50)}&nbsp;
-        {value.length > 50 && (
-          // eslint-disable-next-line jsx-a11y/anchor-is-valid
-          <Link
-            type="button"
-            component="button"
-            sx={{ fontSize: 'inherit' }}
-            onClick={() => setExpanded(!expanded)}
-          >
-            {expanded ? 'view less' : 'view more'}
-          </Link>
-        )}
-      </Box>
+        <Box>
+            {expanded ? value : value.slice(0, 50)}&nbsp;
+            {value.length > 50 && (
+                // eslint-disable-next-line jsx-a11y/anchor-is-valid
+                <Link
+                    type="button"
+                    component="button"
+                    sx={{ fontSize: 'inherit' }}
+                    onClick={() => setExpanded(!expanded)}
+                >
+                    {expanded ? 'view less' : 'view more'}
+                </Link>
+            )}
+        </Box>
     );
-  }
+}
 
 const ProductsAdmin: React.FC = () => {
     const columns: GridColDef[] = [
@@ -40,7 +55,7 @@ const ProductsAdmin: React.FC = () => {
         {
             field: 'imageUrl', headerName: 'Image', flex: 0.4, align: 'center', headerAlign: 'center',
             renderCell: (params) => {
-                return <img src={params.value} style={{ width: '100%'}} />
+                return <img src={params.value} style={{ width: '100%' }} />
             }
         },
         {
@@ -48,30 +63,74 @@ const ProductsAdmin: React.FC = () => {
             align: 'center', headerAlign: 'center'
         },
         {
-            field: 'price', headerName: 'Price', flex: 0.6, headerClassName: 'data-grid-header',
+            field: 'price', headerName: 'Price in $', flex: 0.6, headerClassName: 'data-grid-header',
             align: 'center', headerAlign: 'center'
         },
         {
             field: 'content', headerName: 'Content', flex: 0.8, headerClassName: 'data-grid-header',
-            align: 'center', headerAlign: 'center', 
+            align: 'center', headerAlign: 'center',
             renderCell: (params: GridRenderCellParams) => <ExpandableCell {...params} />,
         },
         {
             field: 'actions', type: "actions", getActions: (params) => {
                 return [
                     <GridActionsCellItem label="remove" icon={<Delete />}
-                        onClick={() => console.log('remove')}
+                        onClick={() => removeProduct(params.row)}
                     />,
                     <GridActionsCellItem label="update" icon={<Edit />}
-                        onClick={() => console.log('update')}
+                        onClick={() => updateProduct(params.row)}
                     />
                 ];
             }
         }
     ]
-
     const products = useSelectorProducts()
 
+    const productId = useRef('')
+    const [confirmTitle, setConfirmTitle] = useState('')
+    const [confirmContent, setConfirmContent] = useState('')
+    const [openConfirmDialog, setOpenConfirmDialog] = useState(false)
+    function removeProduct(prod: Product) {
+        setConfirmTitle('delete product?')
+        setConfirmContent(`you are going to delete ${prod.title}`)
+        productId.current = prod.id
+        setOpenConfirmDialog(true)
+    }
+    const product = useRef<Product>()
+    const [openUpdateModal, setOpenUpdateModal] = useState(false)
+    const [isUpdate, setIsUpdate] = useState(false)
+    function updateProduct(prod: Product) {
+        setConfirmTitle('update product?')
+        setConfirmContent(`we are going to update ${prod.title}`)
+        setOpenUpdateModal(true)
+        product.current = prod
+    }
+    const dispatch = useDispatchCode()
+    function onSubmitConfirmDialog(confirmation: boolean) { //fn performs deleting and updating
+        setOpenConfirmDialog(false)
+        if (confirmation && !isUpdate) {
+            try {
+                productsService.deleteProduct(productId.current)
+                dispatch('', `product with id ${productId.current} has been deleted`)
+            } catch (error: any) {
+                dispatch(error, '')
+            }
+        } else if (confirmation && isUpdate) {
+            setIsUpdate(false)
+            try {
+                productsService.updateProduct(product.current!)
+                dispatch('', `product with id ${productId.current} has been deleted`)
+            } catch(error: any) {
+                dispatch(error, '')
+            }
+        }
+    }
+    async function updateSubmitFn(prod: Product) { 
+        product.current = prod
+        setIsUpdate(true)
+        setOpenConfirmDialog(true)
+        setOpenUpdateModal(false)
+    }
 
     return <Box sx={{
         display: 'flex',
@@ -80,12 +139,36 @@ const ProductsAdmin: React.FC = () => {
     }}
     >
         <Box sx={{ height: '70vh', width: '95vw' }}>
-            <DataGrid 
+            <DataGrid
                 // getEstimatedRowHeight={() => 100}
-                getRowHeight={() => 'auto'} 
-                columns={columns} 
+                getRowHeight={() => 'auto'}
+                columns={columns}
                 rows={products} />
         </Box>
+        <Confirm
+            title={confirmTitle}
+            content={confirmContent}
+            handleClose={onSubmitConfirmDialog}
+            open={openConfirmDialog}
+        />
+        <Modal
+            open={openUpdateModal}
+            onClose={() => setOpenUpdateModal(false)}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+        >
+            <Box sx={style}>
+                <Typography
+                    variant="h6"
+                >
+                    {`we are on updating ${product.current?.title}`}
+                </Typography>
+                <AddProductForm
+                    submitFn={updateSubmitFn}
+                    productUpdated={product.current}
+                />
+            </Box>
+        </Modal>
     </Box>
 }
 export default ProductsAdmin

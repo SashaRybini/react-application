@@ -2,7 +2,6 @@ import { useDispatch } from "react-redux";
 import CodeType from "../model/CodeType";
 import { codeActions } from "../redux/slices/codeSlice";
 import { useEffect, useState } from "react";
-// import Employee from "../model/Employee";
 import { Subscription } from "rxjs";
 import { Product } from "../model/Product";
 import { productsService } from "../config/service-config";
@@ -13,12 +12,14 @@ export function useDispatchCode() {
         let code: CodeType = CodeType.OK;
         let message: string = '';
         
-        if (error.includes('Authentication')) {
-            code = CodeType.AUTH_ERROR;
-            message = "Authentication error, mooving to Sign In";
-        } else {
-            code = error.includes('unavailable') ? CodeType.SERVER_ERROR : CodeType.UNKNOWN;
-            message = error;
+        if (error) { //for dispatch OK messages
+            if (error.includes('Authentication')) {
+                code = CodeType.AUTH_ERROR;
+                message = "Authentication error, mooving to Sign In";
+            } else {
+                code = error.includes('unavailable') ? CodeType.SERVER_ERROR : CodeType.UNKNOWN;
+                message = error;
+            }
         }
         dispatch(codeActions.set({ code, message: message || successMessage }))
     }

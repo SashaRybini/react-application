@@ -34,7 +34,7 @@ const ProductsUser: React.FC = () => {
                     {g.title}
                 </Typography>
                 <Typography gutterBottom variant="h6" component="div">
-                    Price: {g.price}
+                    Price: ${g.price}
                 </Typography>
             </CardContent>
             <CardActions>

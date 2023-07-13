@@ -19,7 +19,6 @@ function convertProduct(product: Product, id?: string): any {
     const res: any = {
         ...product,
         id: id ? id : product.id,
-        price: `$${product.price}`
     }
     return res;
 }
