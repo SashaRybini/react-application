@@ -15,8 +15,8 @@ function ExpandableCell({ value }: GridRenderCellParams) {
     const [expanded, setExpanded] = useState(false);
     return (
       <Box>
-        {expanded ? value : value.slice(0, 100)}&nbsp;
-        {value.length > 200 && (
+        {expanded ? value : value.slice(0, 50)}&nbsp;
+        {value.length > 50 && (
           // eslint-disable-next-line jsx-a11y/anchor-is-valid
           <Link
             type="button"

@@ -23,8 +23,13 @@
     "admin": [
         {
             "to": "/customers",
-            "label": "customers",
+            "label": "Customers",
             "order": 4
+        },
+        {
+            "to": "/addproduct",
+            "label": "Add Product",
+            "order": 3
         }
     ],
     "noadmin": [

@@ -1,11 +1,9 @@
-import { Box, Button, Card, CardActions, CardContent, CardMedia, Grid, Modal, Typography } from "@mui/material"
-// import goodsConfig from "../../config/goods-config.json"
+import { 
+    Box, Button, Card, CardActions, CardContent, 
+    CardMedia, Grid, Modal, Typography 
+} from "@mui/material"
 import { useState } from "react";
-import { useSelector } from "react-redux";
 import { useSelectorProducts } from "../../hooks/hooks";
-
-// const initialGoods = goodsConfig.initialGoods;
-// const goods = initialGoods
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -22,6 +20,7 @@ const style = {
 const ProductsUser: React.FC = () => {
 
     const [openContent, setOpenContent] = useState(false)
+    const [content, setContent] = useState('')
     const products = useSelectorProducts()
 
     function getProductsCards() {
@@ -35,14 +34,24 @@ const ProductsUser: React.FC = () => {
                     {g.title}
                 </Typography>
                 <Typography gutterBottom variant="h6" component="div">
-                    Price: ${g.price}
+                    Price: {g.price}
                 </Typography>
-
             </CardContent>
             <CardActions>
-                <Button size="small" onClick={() => setOpenContent(true)}>Learn More</Button>
-            </CardActions>
-            <Modal
+                <Button size="small" onClick={() => {
+                    setOpenContent(true)
+                    setContent(g.content)
+                    }}
+                >
+                    Learn More
+                </Button>
+            </CardActions> 
+        </Card>)
+    }
+
+    return <Grid container justifyContent='center' gap={2}>
+        {getProductsCards()}
+        <Modal
                 open={openContent}
                 onClose={() => setOpenContent(false)}
                 aria-labelledby="modal-modal-title"
@@ -50,15 +59,10 @@ const ProductsUser: React.FC = () => {
             >
                 <Box sx={style}>
                     <Typography variant="body2" color="text.secondary">
-                        {g.content}
+                        {content}
                     </Typography>
                 </Box>
             </Modal>
-        </Card>)
-    }
-
-    return <Grid container justifyContent='center' gap={2}>
-        {getProductsCards()}
     </Grid>
 }
 export default ProductsUser

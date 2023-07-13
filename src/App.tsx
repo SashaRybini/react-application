@@ -19,6 +19,7 @@ import { StatusType } from './model/StatusType';
 import CodeType from './model/CodeType';
 import { authService } from './config/service-config';
 import { authActions } from './redux/slices/authSlice';
+import AddProduct from './components/pages/AddProduct';
 
 const { always, authenticated, admin, noadmin, noauthenticated } = routesConfig;
 
@@ -72,6 +73,7 @@ function App() {
         <Route path="orders" element={<Orders />} />
         <Route path="customers" element={<Customers />} />
         <Route path="shoppingcart" element={<ShoppingCart />} />
+        <Route path="addproduct" element={<AddProduct />} />
         <Route path="signin" element={<SignIn />} />
         <Route path="signout" element={<SignOut />} />
         <Route path="/*" element={<NotFound />} />
