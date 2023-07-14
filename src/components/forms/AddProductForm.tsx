@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import {
     FormControl, Grid, TextField, InputLabel, Select, Box, MenuItem, Button,
-    FormLabel, RadioGroup, FormControlLabel, Radio, FormHelperText
 } from '@mui/material';
 import { Product } from "../../model/Product";
-import categoriesConfig from '../../config/categories-config.json'
+import categoriesConfig from '../../config/categories-config.json';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 
 type Props = {
     submitFn: (prod: Product) => void
@@ -62,8 +63,9 @@ export const AddProductForm: React.FC<Props> = ({ submitFn, productUpdated }) =>
     function onResetFn(event: any) {
         setProduct(productUpdated || initialProduct);
     }
+    const [multiline, setMultiline] = useState(false)
 
-    return <Box sx={{ marginTop: { sm: "25vh" } }}>
+    return <Box sx={{ marginTop: { sm: "5vh" } }}>
         <form onSubmit={onSubmitFn} onReset={onResetFn}>
             <Grid container spacing={4} justifyContent="center">
                 <Grid item xs={8} sm={5} >
@@ -89,9 +91,15 @@ export const AddProductForm: React.FC<Props> = ({ submitFn, productUpdated }) =>
                 <Grid item xs={8} sm={5} >
                     <TextField type="text" required fullWidth label="Content"
                         helperText="enter content" onChange={handlerContent}
-                        value={product.content} />
+                        value={product.content} 
+                        multiline={multiline}
+                    />
+                    <Button 
+                        onClick={() => setMultiline(multiline? false : true)}
+                    >
+                        {multiline? <ExpandLessIcon/> : <ExpandMoreIcon />}
+                    </Button>
                 </Grid>
-
                 <Grid item xs={8} sm={4} md={5} >
                     <TextField label="Price" fullWidth required
                         type="number" onChange={handlerPrice}
@@ -101,9 +109,7 @@ export const AddProductForm: React.FC<Props> = ({ submitFn, productUpdated }) =>
                             min: 0,
                             max: Number.MAX_VALUE
                         }} />
-                </Grid>
-                
-                
+                </Grid>                              
             </Grid>
             <Box sx={{ marginTop: { xs: "10vh", sm: "5vh" }, textAlign: "center" }}>
                 <Button type="submit" >Submit</Button>

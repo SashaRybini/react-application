@@ -9,26 +9,49 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import LoginData from '../../model/LoginData';
-import { Alert, Grid, Snackbar } from '@mui/material';
+import { Alert, Grid, Modal, Snackbar } from '@mui/material';
+import { useState } from 'react';
+import RegisterForm from './RegisterForm';
+import UserData from '../../model/UserData';
+import { authService } from '../../config/service-config';
 
 const defaultTheme = createTheme();
 
+const style = {
+    position: 'absolute' as 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+};
+
 type Props = {
-    submitFn: (loginData: LoginData) => void
+    loginSubmitFn: (loginData: LoginData) => void
+    registerSubmitFn: (newUser: UserData) => void
 }
 
-const SignInForm: React.FC<Props> = ({ submitFn }) => {
+const SignInForm: React.FC<Props> = ({ loginSubmitFn, registerSubmitFn }) => {
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmitSignIn = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
         const email: string = data.get('email')! as string
         const password: string = data.get('password')! as string
-        const res = await submitFn({ email, password })
+        const res = await loginSubmitFn({ email, password })
     };
 
     function googleSubmit() {
-        submitFn({ email: 'GOOGLE', password: '' })
+        loginSubmitFn({ email: 'GOOGLE', password: '' })
+    }
+
+    const [openRegisterModal, setOpenRegisterModal] = useState(false)
+    const handleSubmitRegister = (newUser: UserData) => {
+        setOpenRegisterModal(false)
+        registerSubmitFn(newUser)
     }
 
     return (
@@ -51,7 +74,7 @@ const SignInForm: React.FC<Props> = ({ submitFn }) => {
                     </Typography>
                     <Box
                         component="form"
-                        onSubmit={handleSubmit}
+                        onSubmit={handleSubmitSignIn}
                         noValidate sx={{ mt: 1 }}
                     >
                         <Grid container justifyContent={'center'} spacing={3}>
@@ -89,12 +112,28 @@ const SignInForm: React.FC<Props> = ({ submitFn }) => {
                                     Sign In
                                 </Button>
                             </Grid>
+
                             <Grid item xs={12} sm={6} md={12}>
-                                <Box style={{display: 'flex', justifyContent: 'center'}}>
+                                <Box style={{ display: 'flex', justifyContent: 'center' }}>
                                     <Button
-                                        style={{border: 'solid'}}
+                                        onClick={() => setOpenRegisterModal(true)}
+                                        style={{ border: 'solid' }}
+                                        sx={{ mt: 2.5, mb: 2 }}
+                                    >
+                                        Sign Up
+                                    </Button>
+                                </Box>
+
+
+                            </Grid>
+
+
+                            <Grid item xs={12} sm={6} md={12}>
+                                <Box style={{ display: 'flex', justifyContent: 'center' }}>
+                                    <Button
+
                                         onClick={googleSubmit}
-                                        sx={{ mt: 3, mb: 2 }}
+                                        sx={{ mt: 1, mb: 2 }}
                                     >
                                         Sign In With Google
                                     </Button>
@@ -104,6 +143,16 @@ const SignInForm: React.FC<Props> = ({ submitFn }) => {
                     </Box>
                 </Box>
             </Container>
+            <Modal
+                open={openRegisterModal}
+                onClose={() => setOpenRegisterModal(false)}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box sx={style}>
+                    <RegisterForm submitFn={handleSubmitRegister}/>
+                </Box>
+            </Modal>
         </ThemeProvider>
     );
 }

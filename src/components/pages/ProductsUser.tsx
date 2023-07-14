@@ -1,12 +1,17 @@
 import {
     Box, Button, Card, CardActions, CardContent,
-    CardMedia, Grid, Modal, Typography
+    CardMedia, Grid, Modal, TextField, Typography
 } from "@mui/material"
 import { useState } from "react";
 import { useSelectorProducts } from "../../hooks/hooks";
 import { Product } from "../../model/Product";
 import CategorySelect from "../common/CategorySelect";
 import { categories } from "../forms/AddProductForm";
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
+import UserData from "../../model/UserData";
+import { useSelectorAuth } from "../../redux/store";
+import { useNavigate } from "react-router-dom";
 
 const centerStyle = { 
     display: 'flex', flexDirection: 'column', 
@@ -55,6 +60,29 @@ const ProductsUser: React.FC = () => {
                     Learn More
                 </Button>
             </CardActions>
+            <Grid container>
+                <Grid item xs={4}>
+                    <Button 
+                        onClick={() => {
+                            if (!userData) {
+                                navigate('/signin')
+                            } else {
+                                console.log('+');
+                            }
+                        }}
+                    ><AddIcon/></Button>
+                </Grid>
+                <Grid item xs={4}>
+                    <Typography 
+                        style={{display: 'flex', justifyContent: 'center'}}
+                    >
+                        10
+                    </Typography>
+                </Grid>
+                <Grid item xs={4}>
+                    <Button><RemoveIcon/></Button>
+                </Grid>
+            </Grid>
         </Card>)
     }
     
@@ -65,6 +93,9 @@ const ProductsUser: React.FC = () => {
         const filtered = products.filter(p => p.category === event.target.value)
         setFilteredProducts(filtered)
     }
+
+    const userData: UserData = useSelectorAuth()
+    const navigate = useNavigate()
 
     return <Box sx={centerStyle}>
         <CategorySelect
