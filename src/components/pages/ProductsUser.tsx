@@ -65,30 +65,30 @@ const ProductsUser: React.FC = () => {
             </CardActions>
             <Grid container>
                 <Grid item xs={4}>
-                    <Button
+                <Button
                         onClick={() => {
-                            if (!userData) {
-                                navigate('/signin')
-                            } else {
-                                ordersService.addProductTocart(userData.email, p.id)
-                            }
+                            ordersService.removeProductFromCart(userData!.email, p)
                         }}
-                    ><AddIcon /></Button>
+                        disabled={counts[index] == 0}
+                    ><RemoveIcon /></Button>
                 </Grid>
                 <Grid item xs={4}>
                     <Typography
                         style={{ display: 'flex', justifyContent: 'center' }}
                     >
-                        {amount[index]}
+                        {counts[index]}
                     </Typography>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={4}>   
                     <Button
                         onClick={() => {
-                            ordersService.removeProductFromCart(userData!.email, p.id)
+                            if (!userData) {
+                                navigate('/signin')
+                            } else {
+                                ordersService.addProductTocart(userData.email, p)
+                            }
                         }}
-                        disabled={amount[index] == 0}
-                    ><RemoveIcon /></Button>
+                    ><AddIcon /></Button>
                 </Grid>
             </Grid>
         </Card>)
@@ -106,6 +106,7 @@ const ProductsUser: React.FC = () => {
     const navigate = useNavigate()
 
 
+    //code below TODO move to useSelectorCart in hooks
     const [cart, setCart] = useState<PickedProduct[]>([]);
     useEffect(() => {
         if (userData) {
@@ -119,11 +120,11 @@ const ProductsUser: React.FC = () => {
         }
     }, [])
 
-    const amount = useMemo(() => getAmount(), [products, cart, filteredProducts])
+    const counts = useMemo(() => getAmount(), [products, cart, filteredProducts]) //products?
     function getAmount(): number[] {
         const prods = filteredProducts.length == 0 ? products : filteredProducts
         return prods.map(prod => {
-            const pickedProd = cart.find(cartProd => cartProd.id == prod.id)
+            const pickedProd = cart.find(cartProd => cartProd.product.id == prod.id)
             let count = 0
             if (pickedProd) {
                 count = pickedProd.count

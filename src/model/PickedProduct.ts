@@ -1,5 +1,7 @@
+import { Product } from "./Product"
+
 export type PickedProduct = {
-    [x: string]: any
-    id: string, //we will think about product: product
+    product: Product,
+    id: string, //datagrid requires id's, rows don't work w/o id's
     count: number
 }
