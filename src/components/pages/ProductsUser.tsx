@@ -2,7 +2,7 @@ import {
     Box, Button, Card, CardActions, CardContent,
     CardMedia, Grid, Modal, TextField, Typography
 } from "@mui/material"
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSelectorProducts } from "../../hooks/hooks";
 import { Product } from "../../model/Product";
 import CategorySelect from "../common/CategorySelect";
@@ -12,10 +12,13 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import UserData from "../../model/UserData";
 import { useSelectorAuth } from "../../redux/store";
 import { useNavigate } from "react-router-dom";
+import { ordersService } from "../../config/service-config";
+import { PickedProduct } from "../../model/PickedProduct";
+import { Subscription } from "rxjs";
 
-const centerStyle = { 
-    display: 'flex', flexDirection: 'column', 
-    justifyContent: 'center', alignItems: 'center' 
+const centerStyle = {
+    display: 'flex', flexDirection: 'column',
+    justifyContent: 'center', alignItems: 'center'
 }
 
 const style = {
@@ -38,23 +41,23 @@ const ProductsUser: React.FC = () => {
 
     function getProductsCards() {
         const prods = filteredProducts.length == 0 ? products : filteredProducts
-        return prods.map((g, index) => <Card key={index} sx={{ maxWidth: 345 }}>
+        return prods.map((p, index) => <Card key={index} sx={{ maxWidth: 345 }}>
             <CardMedia
                 sx={{ height: 200 }}
-                image={g.imageUrl}
+                image={p.imageUrl}
             />
             <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
-                    {g.title}
+                    {p.title}
                 </Typography>
                 <Typography gutterBottom variant="h6" component="div">
-                    Price: ${g.price}
+                    Price: ${p.price}
                 </Typography>
             </CardContent>
             <CardActions>
                 <Button size="small" onClick={() => {
                     setOpenContent(true)
-                    setContent(g.content)
+                    setContent(p.content)
                 }}
                 >
                     Learn More
@@ -62,30 +65,35 @@ const ProductsUser: React.FC = () => {
             </CardActions>
             <Grid container>
                 <Grid item xs={4}>
-                    <Button 
+                    <Button
                         onClick={() => {
                             if (!userData) {
                                 navigate('/signin')
                             } else {
-                                console.log('+');
+                                ordersService.addProductTocart(userData.email, p.id)
                             }
                         }}
-                    ><AddIcon/></Button>
+                    ><AddIcon /></Button>
                 </Grid>
                 <Grid item xs={4}>
-                    <Typography 
-                        style={{display: 'flex', justifyContent: 'center'}}
+                    <Typography
+                        style={{ display: 'flex', justifyContent: 'center' }}
                     >
-                        10
+                        {amount[index]}
                     </Typography>
                 </Grid>
                 <Grid item xs={4}>
-                    <Button><RemoveIcon/></Button>
+                    <Button
+                        onClick={() => {
+                            ordersService.removeProductFromCart(userData!.email, p.id)
+                        }}
+                        disabled={amount[index] == 0}
+                    ><RemoveIcon /></Button>
                 </Grid>
             </Grid>
         </Card>)
     }
-    
+
     const [category, setCategory] = useState('')
     const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
     function handlerCategoryFilter(event: any) {
@@ -96,6 +104,33 @@ const ProductsUser: React.FC = () => {
 
     const userData: UserData = useSelectorAuth()
     const navigate = useNavigate()
+
+
+    const [cart, setCart] = useState<PickedProduct[]>([]);
+    useEffect(() => {
+        if (userData) {
+            const subscription: Subscription = ordersService.getShoppingCart(userData.email)
+                .subscribe({
+                    next(prodArray: PickedProduct[]) {
+                        setCart(prodArray);
+                    }
+                });
+            return () => subscription.unsubscribe();
+        }
+    }, [])
+
+    const amount = useMemo(() => getAmount(), [products, cart, filteredProducts])
+    function getAmount(): number[] {
+        const prods = filteredProducts.length == 0 ? products : filteredProducts
+        return prods.map(prod => {
+            const pickedProd = cart.find(cartProd => cartProd.id == prod.id)
+            let count = 0
+            if (pickedProd) {
+                count = pickedProd.count
+            }
+            return count
+        })
+    }
 
     return <Box sx={centerStyle}>
         <CategorySelect

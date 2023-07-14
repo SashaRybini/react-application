@@ -3,13 +3,13 @@ import { authReducer } from "./slices/authSlice";
 import { useSelector } from "react-redux";
 import UserData from "../model/UserData";
 import { codeReducer } from "./slices/codeSlice";
-import CodeType from "../model/CodeType";
 import CodePayload from "../model/CodePayload";
+
 
 export const store = configureStore({
     reducer: {
      authState: authReducer,
-     codeState: codeReducer
+     codeState: codeReducer,
     }
 });
 export function useSelectorAuth() {
