@@ -94,6 +94,7 @@ const ProductsAdmin: React.FC = () => {
     const [confirmTitle, setConfirmTitle] = useState('')
     const [confirmContent, setConfirmContent] = useState('')
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false)
+    
     function removeProduct(prod: Product) {
         setConfirmTitle('delete product?')
         setConfirmContent(`you are going to delete ${prod.title}`)

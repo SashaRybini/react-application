@@ -1,15 +1,16 @@
 import { Delete } from "@mui/icons-material"
-import { Box } from "@mui/material"
+import { Box, Button, Typography } from "@mui/material"
 import { DataGrid, GridActionsCellItem, GridColDef } from "@mui/x-data-grid"
 import { Product } from "../../model/Product"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { PickedProduct } from "../../model/PickedProduct"
 import { Subscription } from "rxjs"
-import { ordersService } from "../../config/service-config"
+import { ordersService, productsService } from "../../config/service-config"
 import UserData from "../../model/UserData"
 import { useSelectorAuth } from "../../redux/store"
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
+import Confirm from "../common/Confirm"
 
 const centerStyle = {
     display: 'flex', flexDirection: 'column',
@@ -32,7 +33,15 @@ const ShoppingCart: React.FC = () => {
             field: 'actionsRemove', type: "actions", getActions: (params) => {
                 return [
                     <GridActionsCellItem label="remove" icon={<RemoveIcon />}
-                        onClick={() => console.log('-')}
+                        onClick={() => {
+                            const product: Product = params.row.product
+                            const count = params.row.count
+                            if (count < 2) {
+                                removeProduct(product)
+                            } else {
+                                ordersService.removeProductFromCart(userData!.email, product)
+                            }
+                        }}
                     />
                 ];
             }
@@ -45,13 +54,15 @@ const ShoppingCart: React.FC = () => {
             field: 'actionsAdd', type: "actions", getActions: (params) => {
                 return [
                     <GridActionsCellItem label="remove" icon={<AddIcon />}
-                        onClick={() => console.log('+')}
+                        onClick={() => {
+                            ordersService.addProductToCart(userData!.email, params.row.product)
+                        }}
                     />
                 ];
             }
         },
         {
-            field: 'amount', headerName: 'Amount', flex: 0.4, headerClassName: 'data-grid-header',
+            field: 'amount', headerName: 'Amount in $', flex: 0.4, headerClassName: 'data-grid-header',
             align: 'center', headerAlign: 'center'
         },
         {
@@ -64,9 +75,22 @@ const ShoppingCart: React.FC = () => {
             }
         }
     ]
-    function removeProduct(prod: Product) {
-        console.log('-row');
+    const productId = useRef('')
+    const [confirmTitle, setConfirmTitle] = useState('')
+    const [confirmContent, setConfirmContent] = useState('')
+    const [openConfirmDialog, setOpenConfirmDialog] = useState(false)
 
+    function removeProduct(prod: Product) { //we have same fn in ProductsAdmin
+        setConfirmTitle('delete product?')
+        setConfirmContent(`you are going to delete ${prod.title}`)
+        productId.current = prod.id
+        setOpenConfirmDialog(true)
+    }
+    function onSubmitConfirmDialog(confirmation: boolean) {
+        setOpenConfirmDialog(false)
+        if (confirmation) {
+            ordersService.removeProductAtAll(userData!.email, productId.current)
+        }
     }
     const userData: UserData = useSelectorAuth()
     //code below TODO move to useSelectorCart in hooks
@@ -87,16 +111,37 @@ const ShoppingCart: React.FC = () => {
         return cart.map(pp => ({
             ...pp.product,
             count: pp.count,
-            amount: pp.count * pp.product.price
+            amount: pp.count * pp.product.price,
+            product: pp.product
         }))
+    }
+    const totalAmount = useMemo(() => getTotalAmount(), [cart])
+    function getTotalAmount() {
+        return cart.reduce((res, cur) => res + (cur.count * cur.product.price), 0)
     }
 
     return <Box sx={centerStyle}>
-        <Box sx={{ height: '70vh', width: '95vw' }}>
+        <Box sx={{ height: '60vh', width: '95vw' }}>
             <DataGrid
                 columns={columns}
                 rows={getRows()}
             />
+        </Box>
+        <Confirm
+            title={confirmTitle}
+            content={confirmContent}
+            handleClose={onSubmitConfirmDialog}
+            open={openConfirmDialog}
+        />
+        <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+            <Typography sx={{mt: 4}} variant="h4">Total amout: ${totalAmount}</Typography>
+            <Button
+                variant="contained"
+                sx={{ mt: 4, ml: 12 }}
+                onClick={() => console.log('order')}
+            >
+                order
+            </Button>
         </Box>
     </Box>
 }

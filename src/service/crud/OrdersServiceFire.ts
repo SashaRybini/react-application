@@ -17,7 +17,7 @@ export default class OrdersServiceFire implements OrdersService {
     dataBase: Firestore = getFirestore(appFirebase)
     collectionRef: CollectionReference = collection(this.dataBase, 'orders')
 
-    async addProductTocart(email: string, product: Product): Promise<void> {
+    async addProductToCart(email: string, product: Product): Promise<void> {
         const docRef = this.getDocRef(email, product.id)
         const docSnapshot = await getDoc(docRef)
         const docData = docSnapshot.data();

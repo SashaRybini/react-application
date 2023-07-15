@@ -85,7 +85,7 @@ const ProductsUser: React.FC = () => {
                             if (!userData) {
                                 navigate('/signin')
                             } else {
-                                ordersService.addProductTocart(userData.email, p)
+                                ordersService.addProductToCart(userData.email, p)
                             }
                         }}
                     ><AddIcon /></Button>

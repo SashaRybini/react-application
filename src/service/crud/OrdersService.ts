@@ -4,7 +4,8 @@ import { Product } from "../../model/Product"
 
 export default interface ProductsService {
 
-    addProductTocart(email: string, product: Product): Promise<void>
+    addProductToCart(email: string, product: Product): Promise<void>
     removeProductFromCart(email: string, product: Product): Promise<void>
     getShoppingCart(email: string): Observable<PickedProduct[]>
+    removeProductAtAll(email: string, id: string): Promise<void>
 }
