@@ -5,7 +5,7 @@ import { Product } from "../../model/Product"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { PickedProduct } from "../../model/PickedProduct"
 import { Subscription } from "rxjs"
-import { ordersService, productsService } from "../../config/service-config"
+import { ordersService } from "../../config/service-config"
 import UserData from "../../model/UserData"
 import { useSelectorAuth } from "../../redux/store"
 import AddIcon from '@mui/icons-material/Add';
@@ -82,14 +82,14 @@ const ShoppingCart: React.FC = () => {
 
     function removeProduct(prod: Product) { //we have same fn in ProductsAdmin
         setConfirmTitle('delete product?')
-        setConfirmContent(`you are going to delete ${prod.title}`)
+        setConfirmContent(`you are going to delete ${prod.title} from cart`)
         productId.current = prod.id
         setOpenConfirmDialog(true)
     }
     function onSubmitConfirmDialog(confirmation: boolean) {
         setOpenConfirmDialog(false)
         if (confirmation) {
-            ordersService.removeProductAtAll(userData!.email, productId.current)
+            ordersService.removeProductFromCartAtAll(userData!.email, productId.current)
         }
     }
     const userData: UserData = useSelectorAuth()
@@ -134,11 +134,14 @@ const ShoppingCart: React.FC = () => {
             open={openConfirmDialog}
         />
         <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-            <Typography sx={{mt: 4}} variant="h4">Total amout: ${totalAmount}</Typography>
+            <Typography sx={{mt: 4}} variant="h5">Total amout: ${totalAmount}</Typography>
             <Button
                 variant="contained"
                 sx={{ mt: 4, ml: 12 }}
-                onClick={() => console.log('order')}
+                disabled={totalAmount == 0}
+                onClick={() => {
+                    ordersService.createOrder(userData!.email, cart)
+                }}
             >
                 order
             </Button>

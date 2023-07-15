@@ -10,17 +10,22 @@ import { Product } from "../../model/Product";
 import ProductsService from "./ProductsService";
 import appFirebase from "../../config/firebase-config";
 import { PickedProduct } from "../../model/PickedProduct";
+import { getIdToken } from "firebase/auth";
+import { Order } from "../../model/Order";
+import { getISODateStr } from "../../util/date-functions";
 
+const MIN_ID = 1000000;
+const MAX_ID = 10000000;
 
 export default class OrdersServiceFire implements OrdersService {
 
     dataBase: Firestore = getFirestore(appFirebase)
-    collectionRef: CollectionReference = collection(this.dataBase, 'orders')
+    ordersRef: CollectionReference = collection(this.dataBase, 'orders')
 
     async addProductToCart(email: string, product: Product): Promise<void> {
         const docRef = this.getDocRef(email, product.id)
         const docSnapshot = await getDoc(docRef)
-        const docData = docSnapshot.data();
+        const docData = docSnapshot.data()
         let count = 0
         if (docData) {
             count = docData.count;
@@ -38,21 +43,47 @@ export default class OrdersServiceFire implements OrdersService {
         const docData = docSnapshot.data();
         let count = 0
         if (docData) {
-            count = docData.count;
+            count = docData.count
         }
         const prod: PickedProduct = {product, id: product.id, count: count - 1}
         if (prod.count < 1) {
-            this.removeProductAtAll(email, product.id)
+            this.removeProductFromCartAtAll(email, product.id)
         } else {
             await setDoc(docRef, prod)   
         }
     }
-    async removeProductAtAll(email: string, id: string): Promise<void> {
+    async removeProductFromCartAtAll(email: string, id: string): Promise<void> {
         const docRef = this.getDocRef(email, id)
         await deleteDoc(docRef)
     }
-    getShoppingCart(email: string): Observable<PickedProduct[]> {
-        const collectionRef = collection(this.dataBase, email) as CollectionReference<PickedProduct>;
-        return collectionData(collectionRef);
+    getShoppingCart(email: string): Observable<PickedProduct[]> { //toto handle errors? of? like in getProducts (ProductsServiceFire)
+        const collectionRef = collection(this.dataBase, email) //as CollectionReference<PickedProduct>;
+        return collectionData(collectionRef) as Observable<PickedProduct[]>
+    }
+    async createOrder(email: string, cart: PickedProduct[]): Promise<void> {
+        const order: Order = {
+            id: await this.getId(),
+            email: email,
+            orderDate: getISODateStr(new Date()),
+            cart: cart,
+            deliveryDate: '',
+            isDelivered: false
+        }
+        await setDoc(doc(this.ordersRef, order.id), order);
+    }
+    private async getId(): Promise<string> {
+        let id: string = '';
+        do {
+            id = getRandomInt(MIN_ID, MAX_ID).toString();
+        } while (await this.exists(id));
+        return id;
+    }
+    private async exists(id: string): Promise<boolean> {
+        const docRef: DocumentReference = doc(this.ordersRef, id);
+        const docSnap = await getDoc(docRef);
+        return docSnap.exists();
+    }
+    getOrders(): Observable<Order[]> { //todo handle ERRORS
+        return collectionData(this.ordersRef) as Observable<Order[]>
     }
 }

@@ -94,7 +94,7 @@ const ProductsAdmin: React.FC = () => {
     const [confirmTitle, setConfirmTitle] = useState('')
     const [confirmContent, setConfirmContent] = useState('')
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false)
-    
+
     function removeProduct(prod: Product) {
         setConfirmTitle('delete product?')
         setConfirmContent(`you are going to delete ${prod.title}`)
@@ -155,7 +155,8 @@ const ProductsAdmin: React.FC = () => {
                 // getEstimatedRowHeight={() => 100}
                 getRowHeight={() => 'auto'}
                 columns={columns}
-                rows={filteredProducts.length != 0 ? filteredProducts : products} />
+                rows={filteredProducts.length != 0 ? filteredProducts : products}
+            />
         </Box>
         <Confirm
             title={confirmTitle}

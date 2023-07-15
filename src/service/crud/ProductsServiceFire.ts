@@ -77,8 +77,8 @@ export default class ProductsServiceFire implements ProductsService {
     }
     getProducts(): Observable<string | Product[]> {
         return collectionData(this.collectionRef).pipe(catchError(error => {
-            const firestorError: FirestoreError = error;
-            const errorMessage = getErrorMessage(firestorError);
+            const firestoreError: FirestoreError = error;
+            const errorMessage = getErrorMessage(firestoreError);
             return of(errorMessage) //of закидывает мессадж в стрим
         })) as Observable<string | Product[]>
     }
@@ -90,8 +90,8 @@ export default class ProductsServiceFire implements ProductsService {
         try {
             await deleteDoc(docRef);
         } catch (error: any) {
-            const firestorError: FirestoreError = error;
-            const errorMessage = getErrorMessage(firestorError);
+            const firestoreError: FirestoreError = error;
+            const errorMessage = getErrorMessage(firestoreError);
             throw errorMessage;
         }
     }
