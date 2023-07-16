@@ -119,14 +119,26 @@ const Customers: React.FC = () => {
                     <GridActionsCellItem label="status" icon={<CheckIcon />}
                         onClick={() => {
                             if (params.row.status == 'ordered') {
-                                updateOrderStatus(params.row, params.id.toString(), 'accepted')
+                                // updateOrderStatus(params.row, params.id.toString(), 'accepted')
+                                // const orderWithCost = params.row
+                                // delete orderWithCost.cost
+                                // const order: Order = { ...orderWithCost, status: 'accepted' }
+                                // currentOrder.current = order
+                                // setOpenConfirmStatus(true)
+                                convertOrderAndUpdateStatus(params.row, 'accepted')
                             }
                         }}
                     />,
                     <GridActionsCellItem label="update" icon={<LocalShippingOutlinedIcon />}
                         onClick={() => {
                             if (params.row.status == 'accepted') {
-                                updateOrderStatus(params.row, params.id.toString(), 'delivered')
+                                // updateOrderStatus(params.row, params.id.toString(), 'delivered')
+                                // const orderWithCost = params.row
+                                // delete orderWithCost.cost
+                                // const order: Order = { ...orderWithCost, status: 'delivered' }
+                                // currentOrder.current = order
+                                // setOpenConfirmStatus(true)
+                                convertOrderAndUpdateStatus(params.row, 'delivered')
                             }
                         }}
                     />
@@ -134,12 +146,26 @@ const Customers: React.FC = () => {
             }
         }
     ]
-    //confirmation possible via useRef
-    function updateOrderStatus(orderWithCost: any, orderId: string, orderStatus: string) {
+    function convertOrderAndUpdateStatus(orderWithCost: any, status: string) {
         delete orderWithCost.cost
-        const order: Order = { ...orderWithCost, status: orderStatus }
-        ordersService.setOrderStatus(orderId, order)
+        const order: Order = { ...orderWithCost, status }
+        currentOrder.current = order
+        setOpenConfirmStatus(true)
+    }
+    const currentOrder = useRef<Order>()
+    const [openConfirmStatus, setOpenConfirmStatus] = useState(false)
+    //confirmation possible via useRef
+    // function updateOrderStatus(orderWithCost: any, orderId: string, orderStatus: string) {
+    //     delete orderWithCost.cost
+    //     const order: Order = { ...orderWithCost, status: orderStatus }
+    //     ordersService.setOrderStatus(orderId, order)
 
+    // }
+    function onSubmitConfirmStatus(confirmatin: boolean) {
+        setOpenConfirmStatus(false)
+        if (confirmatin) {
+            ordersService.setOrderStatus(currentOrder.current?.id, currentOrder.current!)
+        }
     }
     const [openUserDetails, setOpenUserDetails] = useState(false)
     const userInfo = useRef<UserData>()
@@ -194,7 +220,12 @@ const Customers: React.FC = () => {
                 <UserInfoCard userInfo={userInfo.current!} />
             </Box>
         </Modal>
-
+        <Confirm
+            title='update status?'
+            content=''
+            handleClose={onSubmitConfirmStatus}
+            open={openConfirmStatus}
+        />
         <Modal
             open={openOrderDetails}
             onClose={() => setOpenOrderDetails(false)}
