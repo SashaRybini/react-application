@@ -2,18 +2,21 @@ import LoginData from "../../model/LoginData";
 import UserData from "../../model/UserData";
 import AuthService from "./AuthService";
 import {
-    getFirestore, collection, getDoc, doc
+    getFirestore, collection, getDoc, doc, setDoc
 } from 'firebase/firestore';
 import {
     GoogleAuthProvider, getAuth, signInWithEmailAndPassword,
     signInWithPopup, signOut, createUserWithEmailAndPassword
 } from 'firebase/auth';
 import appFirebase from "../../config/firebase-config";
+import { Observable } from "rxjs";
+import { collectionData } from "rxfire/firestore";
 
 export default class AuthServiceFire implements AuthService {
 
     private auth = getAuth(appFirebase);
     private administrators = collection(getFirestore(appFirebase), 'administrators');
+    private users = collection(getFirestore(appFirebase), 'users')
 
     async registerNewUser(newUser: UserData): Promise<void> {
         try {
@@ -26,7 +29,10 @@ export default class AuthServiceFire implements AuthService {
         } catch (error: any) {
             console.log(error.code, error)
         }
-        //+ collection
+        //+ collection of users 
+        const docRef = doc(this.users, newUser?.email)
+        delete newUser?.password
+        await setDoc(docRef, newUser)
     }
 
     async login(loginData: LoginData): Promise<UserData> {
@@ -53,5 +59,7 @@ export default class AuthServiceFire implements AuthService {
     logout(): Promise<void> {
         return signOut(this.auth)
     }
-
+    getUsers(): Observable<UserData[]> { //todo handle errors
+        return collectionData(this.users) as Observable<UserData[]>
+    }
 }

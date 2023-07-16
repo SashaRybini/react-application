@@ -1,5 +1,5 @@
 import { Delete } from "@mui/icons-material"
-import { Box, Button, Typography } from "@mui/material"
+import { Box, Button, TextField, Typography } from "@mui/material"
 import { DataGrid, GridActionsCellItem, GridColDef } from "@mui/x-data-grid"
 import { Product } from "../../model/Product"
 import { useEffect, useMemo, useRef, useState } from "react"
@@ -11,6 +11,7 @@ import { useSelectorAuth } from "../../redux/store"
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import Confirm from "../common/Confirm"
+import { getEndDate, getISODateStr } from "../../util/date-functions"
 
 const centerStyle = {
     display: 'flex', flexDirection: 'column',
@@ -119,6 +120,18 @@ const ShoppingCart: React.FC = () => {
     function getTotalAmount() {
         return cart.reduce((res, cur) => res + (cur.count * cur.product.price), 0)
     }
+    const [openConfirmOrder, setOpenConfirmOrder] = useState(false)
+    function onSubmitConfirmOrder(confirmatin: boolean) {
+        setOpenConfirmOrder(false)
+        if (confirmatin) {
+            ordersService.createOrder(userData!.email, cart, deliveryDate)
+        }
+    }
+    const [deliveryDate, setDeliveryDate] = useState('')
+    function handlerDeliveryDate(event: any) {
+        const date = event.target.value;
+        setDeliveryDate(date);
+    }
 
     return <Box sx={centerStyle}>
         <Box sx={{ height: '60vh', width: '95vw' }}>
@@ -134,18 +147,43 @@ const ShoppingCart: React.FC = () => {
             open={openConfirmDialog}
         />
         <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-            <Typography sx={{mt: 4}} variant="h5">Total amout: ${totalAmount}</Typography>
+            <Typography sx={{ mt: 4 }} variant="h5">Total amout: ${totalAmount}</Typography>
+
+            <TextField
+                sx={{ mt: 4 }}
+                type="date"
+                required
+                fullWidth
+                label="Order Date"
+                value={deliveryDate}
+                inputProps={{
+                    min: getEndDate(new Date(), 30),
+                    max: getEndDate(new Date(), 300)
+                }}
+                InputLabelProps={{
+                    shrink: true
+                }}
+                onChange={handlerDeliveryDate}
+            />
+
             <Button
                 variant="contained"
                 sx={{ mt: 4, ml: 12 }}
-                disabled={totalAmount == 0}
+                disabled={totalAmount == 0 || !deliveryDate}
                 onClick={() => {
-                    ordersService.createOrder(userData!.email, cart)
+                    // ordersService.createOrder(userData!.email, cart)
+                    setOpenConfirmOrder(true)
                 }}
             >
                 order
             </Button>
         </Box>
+        <Confirm
+            title='create order?'
+            content=''
+            handleClose={onSubmitConfirmOrder}
+            open={openConfirmOrder}
+        />
     </Box>
 }
 export default ShoppingCart

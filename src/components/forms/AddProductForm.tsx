@@ -21,6 +21,8 @@ export const AddProductForm: React.FC<Props> = ({ submitFn, productUpdated }) =>
     const [product, setProduct] = useState<Product>(productUpdated || initialProduct);
     // const [errorMessage, setErrorMessage] = useState('');
 
+
+    //todo one common handler
     function handlerImageUrl(event: any) {
         const imageUrl = event.target.value;
         const prodCopy = { ...product };

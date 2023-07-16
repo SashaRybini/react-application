@@ -9,6 +9,6 @@ export default interface ProductsService {
     removeProductFromCart(email: string, product: Product): Promise<void>
     getShoppingCart(email: string): Observable<PickedProduct[]>
     removeProductFromCartAtAll(email: string, id: string): Promise<void>
-    createOrder(email: string, cart: PickedProduct[]): Promise<void>
+    createOrder(email: string, cart: PickedProduct[], deliveryDate: string): Promise<void>
     getOrders(): Observable<Order[]>
 }

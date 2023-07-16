@@ -6,5 +6,5 @@ export type Order = {
     orderDate: string,
     cart: PickedProduct[],
     deliveryDate: string,
-    isDelivered: boolean
+    status: string
 }

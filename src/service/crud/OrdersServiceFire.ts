@@ -60,16 +60,18 @@ export default class OrdersServiceFire implements OrdersService {
         const collectionRef = collection(this.dataBase, email) //as CollectionReference<PickedProduct>;
         return collectionData(collectionRef) as Observable<PickedProduct[]>
     }
-    async createOrder(email: string, cart: PickedProduct[]): Promise<void> {
+    async createOrder(email: string, cart: PickedProduct[], deliveryDate: string): Promise<void> {
         const order: Order = {
             id: await this.getId(),
-            email: email,
+            email,
             orderDate: getISODateStr(new Date()),
-            cart: cart,
-            deliveryDate: '',
-            isDelivered: false
+            cart,
+            deliveryDate,
+            status: 'ordered'
         }
         await setDoc(doc(this.ordersRef, order.id), order);
+
+        // ===== and clear shopping =====
     }
     private async getId(): Promise<string> {
         let id: string = '';
