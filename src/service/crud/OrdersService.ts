@@ -11,4 +11,5 @@ export default interface ProductsService {
     removeProductFromCartAtAll(email: string, id: string): Promise<void>
     createOrder(email: string, cart: PickedProduct[], deliveryDate: string): Promise<void>
     getOrders(): Observable<Order[]>
+    setOrderStatus(orderId: string, order: Order): Promise<void>
 }

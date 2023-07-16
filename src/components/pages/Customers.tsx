@@ -1,19 +1,35 @@
-import { Box, Button, Tooltip } from "@mui/material"
-import { useEffect, useState } from "react";
+import { Box, Button, Card, CardContent, Modal, Tooltip, Typography } from "@mui/material"
+import { useEffect, useRef, useState } from "react";
 import { Order } from "../../model/Order";
 import { Subscription } from "rxjs";
 import { authService, ordersService } from "../../config/service-config";
 import { DataGrid, GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import Avatar from '@mui/material/Avatar';
-import EditCalendarIcon from '@mui/icons-material/EditCalendar';
 import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
-import { log } from "console";
 import UserData from "../../model/UserData";
+import UserInfoCard from "../common/UserInfoCard";
+import { PickedProduct } from "../../model/PickedProduct";
+import OrderDetails from "../common/OrderDetails";
+import CheckIcon from '@mui/icons-material/Check';
+import Confirm from "../common/Confirm";
+
+const style = {
+    position: 'absolute' as 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+};
 
 const centerStyle = {
     display: 'flex', flexDirection: 'column',
     justifyContent: 'center', alignItems: 'center'
 }
+
 
 function stringToColor(string: string) {
     let hash = 0;
@@ -52,16 +68,34 @@ const Customers: React.FC = () => {
             field: 'email', headerName: 'Customer', flex: 0.5, headerClassName: 'data-grid-header',
             align: 'center', headerAlign: 'center',
             renderCell: (params) => {
-                return <Button onClick={() => console.log(users.filter(u => u?.email === params.value))}>
+                return <Button onClick={() => {
+                    setOpenUserDetails(true)
+                    const user: UserData = users.filter(u => u?.email === params.value)[0]
+                    userInfo.current = user
+                }}>
                     <Tooltip title={params.value}>
-                    <Avatar {...stringAvatar(params.value)} />
+                        <Avatar {...stringAvatar(params.value)} />
                     </Tooltip>
                 </Button>
             }
         },
         {
             field: 'id', headerName: 'Order ID', flex: 0.5, headerClassName: 'data-grid-header',
-            align: 'center', headerAlign: 'center'
+            align: 'center', headerAlign: 'center',
+            type: "actions", getActions: (params) => {
+                const test = params.row.status
+                return [
+                    <GridActionsCellItem label="orderDetails" icon={
+                        <Box sx={{ fontSize: '0.8em', color: 'black' }}>{params.id}</Box>
+                    }
+                        onClick={() => {
+                            const userCart: PickedProduct[] = params.row.cart
+                            setOpenOrderDetails(true)
+                            cart.current = userCart
+                        }}
+                    />
+                ];
+            }
         },
         {
             field: 'cost', headerName: 'Cost in $', flex: 0.6, headerClassName: 'data-grid-header',
@@ -75,32 +109,40 @@ const Customers: React.FC = () => {
             field: 'deliveryDate', headerName: 'Delivery Date', flex: 0.8, headerClassName: 'data-grid-header',
             align: 'center', headerAlign: 'center'
         },
-        // {
-        //     field: 'actionsDate', headerName: "Delivery Date", flex: 0.8,
-        //     type: "actions", getActions: (params) => {
-        //         return [
-        //             <GridActionsCellItem label="remove" icon={<EditCalendarIcon />}
-        //                 onClick={() => console.log('set date')}
-        //             />
-        //         ];
-        //     }
-        // },
-        // {
-        //     field: 'status', headerName: 'Status', flex: 0.6, headerClassName: 'data-grid-header',
-        //     align: 'center', headerAlign: 'center'
-        // }
         {
-            field: 'actionsStatus', headerName: "Status", flex: 0.8,
-            type: "actions", getActions: (params) => {
+            field: 'status', headerName: 'Status', flex: 0.6, headerClassName: 'data-grid-header',
+            align: 'center', headerAlign: 'center'
+        },
+        {
+            field: 'actionsStatus', type: "actions", getActions: (params) => {
                 return [
-                    <GridActionsCellItem label="remove" icon={<LocalShippingOutlinedIcon />}
-                        onClick={() => console.log('set status')}
+                    <GridActionsCellItem label="status" icon={<CheckIcon />}
+                        onClick={() => {
+                            if (params.row.status == 'ordered') {
+                                updateOrderStatus(params.row, params.id.toString(), 'accepted')
+                            }
+                        }}
+                    />,
+                    <GridActionsCellItem label="update" icon={<LocalShippingOutlinedIcon />}
+                        onClick={() => {
+                            if (params.row.status == 'accepted') {
+                                updateOrderStatus(params.row, params.id.toString(), 'delivered')
+                            }
+                        }}
                     />
                 ];
             }
         }
     ]
+    //confirmation possible via useRef
+    function updateOrderStatus(orderWithCost: any, orderId: string, orderStatus: string) {
+        delete orderWithCost.cost
+        const order: Order = { ...orderWithCost, status: orderStatus }
+        ordersService.setOrderStatus(orderId, order)
 
+    }
+    const [openUserDetails, setOpenUserDetails] = useState(false)
+    const userInfo = useRef<UserData>()
     //code below TODO move to useSelectorOrders in hooks
     const [orders, setOrders] = useState<Order[]>([]);
     useEffect(() => {
@@ -132,13 +174,37 @@ const Customers: React.FC = () => {
         return order.cart.reduce((res, cur) => (res + (cur.count * cur.product.price)), 0)
     }
 
-    return <Box sx={centerStyle}>
+    const [openOrderDetails, setOpenOrderDetails] = useState(false)
+    const cart = useRef<PickedProduct[]>()
+
+    return <Box className="center-style">
         <Box sx={{ height: '70vh', width: '95vw' }}>
             <DataGrid
                 columns={columns}
                 rows={getRows()}
             />
         </Box>
+        <Modal
+            open={openUserDetails}
+            onClose={() => setOpenUserDetails(false)}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+        >
+            <Box className="modal-window">
+                <UserInfoCard userInfo={userInfo.current!} />
+            </Box>
+        </Modal>
+
+        <Modal
+            open={openOrderDetails}
+            onClose={() => setOpenOrderDetails(false)}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+        >
+            <Box className="modal-window-table">
+                <OrderDetails cart={cart.current as PickedProduct[]} />
+            </Box>
+        </Modal>
     </Box>
 }
 export default Customers

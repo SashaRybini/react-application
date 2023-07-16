@@ -67,7 +67,7 @@ export default class OrdersServiceFire implements OrdersService {
             orderDate: getISODateStr(new Date()),
             cart,
             deliveryDate,
-            status: 'ordered'
+            status: "ordered"
         }
         await setDoc(doc(this.ordersRef, order.id), order);
 
@@ -87,5 +87,9 @@ export default class OrdersServiceFire implements OrdersService {
     }
     getOrders(): Observable<Order[]> { //todo handle ERRORS
         return collectionData(this.ordersRef) as Observable<Order[]>
+    }
+    async setOrderStatus(orderId: string, order: Order): Promise<void> {
+        const docRef = doc(this.ordersRef, orderId)
+        setDoc(docRef, order)
     }
 }
