@@ -72,6 +72,10 @@ export default class OrdersServiceFire implements OrdersService {
         await setDoc(doc(this.ordersRef, order.id), order);
 
         // ===== and clear shopping =====
+        cart.forEach(async p => {
+            const docRef = doc(this.dataBase, email, p.id)
+            await deleteDoc(docRef)
+        })
     }
     private async getId(): Promise<string> {
         let id: string = '';

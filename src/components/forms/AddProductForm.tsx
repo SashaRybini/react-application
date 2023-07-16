@@ -21,6 +21,7 @@ export const AddProductForm: React.FC<Props> = ({ submitFn, productUpdated }) =>
     const [product, setProduct] = useState<Product>(productUpdated || initialProduct);
     // const [errorMessage, setErrorMessage] = useState('');
 
+    const [imagePreview, setImagePreview] = useState('')
 
     //todo one common handler
     function handlerImageUrl(event: any) {
@@ -28,6 +29,7 @@ export const AddProductForm: React.FC<Props> = ({ submitFn, productUpdated }) =>
         const prodCopy = { ...product };
         prodCopy.imageUrl = imageUrl;
         setProduct(prodCopy);
+        setImagePreview(imageUrl)
     }
     function handlerPrice(event: any) {
         const price: number = +event.target.value;
@@ -83,12 +85,15 @@ export const AddProductForm: React.FC<Props> = ({ submitFn, productUpdated }) =>
                 <Grid item xs={8} sm={5} >
                     <TextField type="text" required fullWidth label="Image url"
                         helperText="enter image url" onChange={handlerImageUrl}
-                        value={product.imageUrl} />
+                        value={product.imageUrl} 
+                    />
+                    {imagePreview && <img style={{maxWidth: '100%'}} src={imagePreview}></img>}
                 </Grid>
                 <Grid item xs={8} sm={5} >
                     <TextField type="text" required fullWidth label="Title"
                         helperText="enter title" onChange={handlerTitle}
-                        value={product.title} />
+                        value={product.title} 
+                    />
                 </Grid>
                 <Grid item xs={8} sm={5} >
                     <TextField type="text" required fullWidth label="Content"
@@ -110,7 +115,8 @@ export const AddProductForm: React.FC<Props> = ({ submitFn, productUpdated }) =>
                         inputProps={{
                             min: 0,
                             max: Number.MAX_VALUE
-                        }} />
+                        }} 
+                    />
                 </Grid>                              
             </Grid>
             <Box sx={{ marginTop: { xs: "10vh", sm: "5vh" }, textAlign: "center" }}>

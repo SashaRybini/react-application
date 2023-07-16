@@ -108,6 +108,8 @@ const Orders: React.FC = () => {
             aria-describedby="modal-modal-description"
         >
             <Box sx={style}>
+                {/* maybe: if just Ordered - show table like in shopping catr, 
+                    else (accepted or delivered) - show only details like below */}
                 <OrderDetails cart={cart.current as PickedProduct[]}  />
             </Box>
         </Modal>

@@ -5,7 +5,6 @@ type Props = {
     userInfo: UserData
 }
 const UserInfoCard: React.FC<Props> = ({ userInfo }) => {
-    console.log(userInfo)
     return <Card>
         {userInfo && <CardContent>
             <Typography>
