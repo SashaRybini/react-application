@@ -1,5 +1,5 @@
 import { Box, Button, Card, CardContent, Modal, Tooltip, Typography } from "@mui/material"
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Order } from "../../model/Order";
 import { Subscription } from "rxjs";
 import { authService, ordersService } from "../../config/service-config";
@@ -9,7 +9,6 @@ import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined
 import UserData from "../../model/UserData";
 import UserInfoCard from "../common/UserInfoCard";
 import { PickedProduct } from "../../model/PickedProduct";
-import OrderDetails from "../common/OrderDetails";
 import CheckIcon from '@mui/icons-material/Check';
 import Confirm from "../common/Confirm";
 import OrderDetailsAdmin from "../common/OrderDetailsAdmin";
@@ -84,7 +83,6 @@ const Customers: React.FC = () => {
             field: 'id', headerName: 'Order ID', flex: 0.5, headerClassName: 'data-grid-header',
             align: 'center', headerAlign: 'center',
             type: "actions", getActions: (params) => {
-                const test = params.row.status
                 return [
                     <GridActionsCellItem label="orderDetails" icon={
                         <Box sx={{ fontSize: '0.8em', color: 'black' }}>{params.id}</Box>
@@ -116,31 +114,34 @@ const Customers: React.FC = () => {
         },
         {
             field: 'actionsStatus', type: "actions", getActions: (params) => {
+                const isOrdered = params.row.status == 'ordered'
+                const isAccepted = params.row.status == 'accepted'
+                const isDelivered = params.row.status == 'delivered'
                 return [
-                    <GridActionsCellItem label="status" icon={<CheckIcon />}
+                    <GridActionsCellItem label="status" disabled={isAccepted || isDelivered} icon={<CheckIcon />}
                         onClick={() => {
-                            if (params.row.status == 'ordered') {
-                                // updateOrderStatus(params.row, params.id.toString(), 'accepted')
-                                // const orderWithCost = params.row
-                                // delete orderWithCost.cost
-                                // const order: Order = { ...orderWithCost, status: 'accepted' }
-                                // currentOrder.current = order
-                                // setOpenConfirmStatus(true)
-                                convertOrderAndUpdateStatus(params.row, 'accepted')
-                            }
+                            // if (params.row.status == 'ordered') {
+                            // updateOrderStatus(params.row, params.id.toString(), 'accepted')
+                            // const orderWithCost = params.row
+                            // delete orderWithCost.cost
+                            // const order: Order = { ...orderWithCost, status: 'accepted' }
+                            // currentOrder.current = order
+                            // setOpenConfirmStatus(true)
+                            convertOrderAndUpdateStatus(params.row, 'accepted')
+                            // }
                         }}
                     />,
-                    <GridActionsCellItem label="update" icon={<LocalShippingOutlinedIcon />}
+                    <GridActionsCellItem label="update" disabled={isDelivered || isOrdered} icon={<LocalShippingOutlinedIcon />}
                         onClick={() => {
-                            if (params.row.status == 'accepted') {
-                                // updateOrderStatus(params.row, params.id.toString(), 'delivered')
-                                // const orderWithCost = params.row
-                                // delete orderWithCost.cost
-                                // const order: Order = { ...orderWithCost, status: 'delivered' }
-                                // currentOrder.current = order
-                                // setOpenConfirmStatus(true)
-                                convertOrderAndUpdateStatus(params.row, 'delivered')
-                            }
+                            // if (params.row.status == 'accepted') {
+                            // updateOrderStatus(params.row, params.id.toString(), 'delivered')
+                            // const orderWithCost = params.row
+                            // delete orderWithCost.cost
+                            // const order: Order = { ...orderWithCost, status: 'delivered' }
+                            // currentOrder.current = order
+                            // setOpenConfirmStatus(true)
+                            convertOrderAndUpdateStatus(params.row, 'delivered')
+                            // }
                         }}
                     />
                 ];
@@ -193,9 +194,13 @@ const Customers: React.FC = () => {
             });
         return () => subscription.unsubscribe();
     }, [])
-
+    //probably getRows moves to useMemo in depence on button
     function getRows() {
-        return orders.map(o => ({ ...o, cost: getCost(o) }))
+        let rows = orders.map(o => ({ ...o, cost: getCost(o) }))
+        if (hideDelivered) {
+            rows = rows.filter(r => r.status != 'delivered')
+        }
+        return rows
     }
     function getCost(order: Order): number {
         return order.cart.reduce((res, cur) => (res + (cur.count * cur.product.price)), 0)
@@ -204,11 +209,30 @@ const Customers: React.FC = () => {
     const [openOrderDetails, setOpenOrderDetails] = useState(false)
     const cart = useRef<PickedProduct[]>()
 
+    const [buttonName, setButtonName] = useState('hide delivered')
+    const [hideDelivered, setHideDelivered] = useState(false)
+
+    const rows = useMemo(() => getRows(), [hideDelivered, orders])
+
     return <Box className="center-style">
+        <Button
+            onClick={() => {
+                setButtonName(
+                    buttonName == 'hide delivered'
+                        ?
+                        'show delivered'
+                        :
+                        'hide delivered'
+                )
+                setHideDelivered(buttonName == 'hide delivered')
+            }}
+        >
+            {buttonName}
+        </Button>
         <Box sx={{ height: '70vh', width: '95vw' }}>
             <DataGrid
                 columns={columns}
-                rows={getRows()}
+                rows={rows}
             />
         </Box>
         <Modal

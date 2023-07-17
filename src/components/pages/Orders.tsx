@@ -1,5 +1,5 @@
-import { Box, Modal, Typography } from "@mui/material"
-import { useEffect, useRef, useState } from "react";
+import { Box, Button, Modal, Typography } from "@mui/material"
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Subscription } from "rxjs";
 import { Order } from "../../model/Order";
 import { ordersService } from "../../config/service-config";
@@ -52,7 +52,7 @@ const Orders: React.FC = () => {
             field: 'actions', headerName: "Order Details", flex: 0.8,
             type: "actions", getActions: (params) => {
                 return [
-                    <GridActionsCellItem label="details"  icon={<VisibilityIcon />}
+                    <GridActionsCellItem label="details" icon={<VisibilityIcon />}
                         onClick={() => {
                             setOpenOrderDetails(true)
                             cart.current = params.row.cart
@@ -99,14 +99,18 @@ const Orders: React.FC = () => {
     const cart = useRef([])
 
     function getRows() {
-        const userOrders = orders.filter(o => o.email === userData?.email)
-        return userOrders.map(uo => ({
+        let userOrders = orders.filter(o => o.email === userData?.email)
+        userOrders.map(uo => ({
             ...uo,
             cost: getCost(uo),
             orderDate: uo.orderDate,
             deliveryDate: uo.deliveryDate,
             status: uo.status
         }))
+        if (hideDelivered) {
+            userOrders = userOrders.filter(uo => uo.status != 'delivered')
+        }
+        return userOrders
     }
     function getCost(order: Order): number {
         return order.cart.reduce((res, cur) => (res + (cur.count * cur.product.price)), 0)
@@ -125,11 +129,31 @@ const Orders: React.FC = () => {
         }
     }
 
+    const [buttonName, setButtonName] = useState('hide delivered')
+    const [hideDelivered, setHideDelivered] = useState(false)
+
+    const rows = useMemo(() => getRows(), [hideDelivered, orders])
+
     return <Box sx={centerStyle}>
+        <Button
+            onClick={() => {
+                setButtonName(
+                    buttonName == 'hide delivered'
+                        ?
+                        'show delivered'
+                        :
+                        'hide delivered'
+                )
+                setHideDelivered(buttonName == 'hide delivered')
+                console.log('knopka')
+            }}
+        >
+            {buttonName}
+        </Button>
         <Box sx={{ height: '70vh', width: '95vw' }}>
             <DataGrid
                 columns={columns}
-                rows={getRows()}
+                rows={rows}
             />
         </Box>
         <Modal
