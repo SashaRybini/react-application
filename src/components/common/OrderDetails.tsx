@@ -72,19 +72,6 @@ const OrderDetails: React.FC<Props> = ({ orderId, orderStatus }) => {
                     ];
                 }
             }
-            // ,
-            // {
-            //     field: 'actionsRemoveRow', type: "actions", getActions: (params) => {
-            //         return [
-            //             <GridActionsCellItem label="remove" icon={<Delete />}
-            //                 onClick={() => {
-            //                     console.log('remove')
-            //                     // deleteOrder()
-            //                 }}
-            //             />
-            //         ];
-            //     }
-            // }
         ]
         if (orderStatus != 'ordered') {
             columns = columns.filter(c => c.field != 'actionsRemove' && c.field != 'actionsAdd')
