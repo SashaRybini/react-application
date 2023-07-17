@@ -12,6 +12,7 @@ import { PickedProduct } from "../../model/PickedProduct";
 import OrderDetails from "../common/OrderDetails";
 import CheckIcon from '@mui/icons-material/Check';
 import Confirm from "../common/Confirm";
+import OrderDetailsAdmin from "../common/OrderDetailsAdmin";
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -233,7 +234,7 @@ const Customers: React.FC = () => {
             aria-describedby="modal-modal-description"
         >
             <Box className="modal-window-table">
-                <OrderDetails cart={cart.current as PickedProduct[]} />
+                <OrderDetailsAdmin cart={cart.current as PickedProduct[]} />
             </Box>
         </Modal>
     </Box>

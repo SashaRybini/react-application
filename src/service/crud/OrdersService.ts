@@ -12,4 +12,7 @@ export default interface ProductsService {
     createOrder(email: string, cart: PickedProduct[], deliveryDate: string): Promise<void>
     getOrders(): Observable<Order[]>
     setOrderStatus(orderId: string, order: Order): Promise<void>
+    getOrder(orderId: string): Promise<Order>
+    updateOrder(order: Order): Promise<void>
+    deleteOrder(orderId: string): Promise<void>
 }

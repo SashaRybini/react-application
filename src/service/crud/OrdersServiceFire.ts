@@ -30,8 +30,8 @@ export default class OrdersServiceFire implements OrdersService {
         if (docData) {
             count = docData.count;
         }
-        const prod: PickedProduct = {product, id: product.id, count: count + 1}
-        await setDoc(docRef, prod)   
+        const prod: PickedProduct = { product, id: product.id, count: count + 1 }
+        await setDoc(docRef, prod)
     }
 
     private getDocRef(email: string, id: string): DocumentReference {
@@ -45,11 +45,11 @@ export default class OrdersServiceFire implements OrdersService {
         if (docData) {
             count = docData.count
         }
-        const prod: PickedProduct = {product, id: product.id, count: count - 1}
+        const prod: PickedProduct = { product, id: product.id, count: count - 1 }
         if (prod.count < 1) {
             this.removeProductFromCartAtAll(email, product.id)
         } else {
-            await setDoc(docRef, prod)   
+            await setDoc(docRef, prod)
         }
     }
     async removeProductFromCartAtAll(email: string, id: string): Promise<void> {
@@ -95,5 +95,19 @@ export default class OrdersServiceFire implements OrdersService {
     async setOrderStatus(orderId: string, order: Order): Promise<void> {
         const docRef = doc(this.ordersRef, orderId)
         setDoc(docRef, order)
+    }
+    async getOrder(orderId: string): Promise<Order> { 
+        const docRef = doc(this.ordersRef, orderId)
+        const docSnapshot = await getDoc(docRef)
+        const docData = docSnapshot.data()
+        return docData as Promise<Order>
+    }
+    async updateOrder(order: Order): Promise<void> { //handle errors?
+        const docRef = doc(this.ordersRef, order.id)
+        await setDoc(docRef, order)
+    }
+    async deleteOrder(orderId: string): Promise<void> { //?handle errors like in deleteProduct in ProductServiceFire
+        const docRef = doc(this.ordersRef, orderId)
+        await deleteDoc(docRef)
     }
 }

@@ -9,6 +9,7 @@ import { DataGrid, GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import OrderDetails from "../common/OrderDetails";
 import { PickedProduct } from "../../model/PickedProduct";
+import ShoppingCart from "./ShoppingCart";
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -49,10 +50,15 @@ const Orders: React.FC = () => {
             field: 'actions', headerName: "Order Details", flex: 0.8,
             type: "actions", getActions: (params) => {
                 return [
-                    <GridActionsCellItem label="remove" icon={<VisibilityIcon />}
+                    <GridActionsCellItem label="details" icon={<VisibilityIcon />}
                         onClick={() => {
                             setOpenOrderDetails(true)
                             cart.current = params.row.cart
+
+                            orderId.current = params.id.toString()
+
+                            // console.log(params.row.status)
+                            orderStatus.current = params.row.status
                         }}
                     />
                 ];
@@ -63,7 +69,8 @@ const Orders: React.FC = () => {
             align: 'center', headerAlign: 'center'
         }
     ]
-
+    const orderStatus = useRef('')
+    const orderId = useRef('')
     //code below TODO move to useSelectorOrders in hooks
     const [orders, setOrders] = useState<Order[]>([]);
     useEffect(() => {
@@ -108,9 +115,11 @@ const Orders: React.FC = () => {
             aria-describedby="modal-modal-description"
         >
             <Box sx={style}>
-                {/* maybe: if just Ordered - show table like in shopping catr, 
-                    else (accepted or delivered) - show only details like below */}
-                <OrderDetails cart={cart.current as PickedProduct[]}  />
+                <OrderDetails 
+                    // cart={cart.current as PickedProduct[]}
+                    orderId={orderId.current!}
+                    orderStatus={orderStatus.current}
+                />
             </Box>
         </Modal>
     </Box>

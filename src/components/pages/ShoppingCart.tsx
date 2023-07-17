@@ -21,6 +21,10 @@ const ShoppingCart: React.FC = () => {
 
     const columns: GridColDef[] = [
         {
+            field: 'id', headerName: 'ID', flex: 0.8, headerClassName: 'data-grid-header',
+            align: 'center', headerAlign: 'center'
+        },
+        {
             field: 'imageUrl', headerName: 'Image', flex: 0.4, align: 'center', headerAlign: 'center',
             renderCell: (params) => {
                 return <img src={params.value} style={{ width: '100%' }} />
