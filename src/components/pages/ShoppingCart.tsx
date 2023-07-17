@@ -1,5 +1,5 @@
 import { Delete } from "@mui/icons-material"
-import { Box, Button, TextField, Typography } from "@mui/material"
+import { Box, Button, Grid, TextField, Typography } from "@mui/material"
 import { DataGrid, GridActionsCellItem, GridColDef } from "@mui/x-data-grid"
 import { Product } from "../../model/Product"
 import { useEffect, useMemo, useRef, useState } from "react"
@@ -150,38 +150,53 @@ const ShoppingCart: React.FC = () => {
             handleClose={onSubmitConfirmDialog}
             open={openConfirmDialog}
         />
-        <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-            <Typography sx={{ mt: 4 }} variant="h5">Total amout: ${totalAmount}</Typography>
+        <Grid container justifyContent={'center'} spacing={1} >
+            <Grid item xs={12} sm={6} md={4}>
+                <Typography
+                    className="center-style"
+                    sx={{ mt: 4 }}
+                    variant="h5"
+                >
+                    Total amount: ${totalAmount}
+                </Typography>
+            </Grid>
+            <Grid item xs={6} sm={4} md={4}>
+                <TextField
+                size="small"
+                    sx={{ mt: 4 }}
+                    type="date"
+                    required
+                    fullWidth
+                    label="Order Date"
+                    value={deliveryDate}
+                    inputProps={{
+                        min: getEndDate(new Date(), 30),
+                        max: getEndDate(new Date(), 300)
+                    }}
+                    InputLabelProps={{
+                        shrink: true
+                    }}
+                    onChange={handlerDeliveryDate}
+                />
+            </Grid>
+            <Grid item xs={6} sm={4} md={4}>
+                <Box className="center-style">
+                    <Button
+                        variant="contained"
+                        sx={{ mt: 4 }}
+                        fullWidth
+                        disabled={totalAmount == 0 || !deliveryDate}
+                        onClick={() => {
+                            // ordersService.createOrder(userData!.email, cart)
+                            setOpenConfirmOrder(true)
+                        }}
+                    >
+                        order
+                    </Button>
+                </Box>
+            </Grid>
+        </Grid>
 
-            <TextField
-                sx={{ mt: 4 }}
-                type="date"
-                required
-                fullWidth
-                label="Order Date"
-                value={deliveryDate}
-                inputProps={{
-                    min: getEndDate(new Date(), 30),
-                    max: getEndDate(new Date(), 300)
-                }}
-                InputLabelProps={{
-                    shrink: true
-                }}
-                onChange={handlerDeliveryDate}
-            />
-
-            <Button
-                variant="contained"
-                sx={{ mt: 4, ml: 12 }}
-                disabled={totalAmount == 0 || !deliveryDate}
-                onClick={() => {
-                    // ordersService.createOrder(userData!.email, cart)
-                    setOpenConfirmOrder(true)
-                }}
-            >
-                order
-            </Button>
-        </Box>
         <Confirm
             title='create order?'
             content=''

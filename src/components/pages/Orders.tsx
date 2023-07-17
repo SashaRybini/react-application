@@ -100,12 +100,12 @@ const Orders: React.FC = () => {
 
     function getRows() {
         let userOrders = orders.filter(o => o.email === userData?.email)
-        userOrders.map(uo => ({
+        userOrders = userOrders.map(uo => ({
             ...uo,
-            cost: getCost(uo),
-            orderDate: uo.orderDate,
-            deliveryDate: uo.deliveryDate,
-            status: uo.status
+            cost: getCost(uo)
+            // orderDate: uo.orderDate, //already in userorder
+            // deliveryDate: uo.deliveryDate,
+            // status: uo.status
         }))
         if (hideDelivered) {
             userOrders = userOrders.filter(uo => uo.status != 'delivered')

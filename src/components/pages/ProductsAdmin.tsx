@@ -3,9 +3,9 @@ import {
     Box, FormHelperText, Link, MenuItem, Modal, Select, Typography 
 } from "@mui/material"
 import {
-    DataGrid, GridActionsCellItem, GridColDef, GridRenderCellParams
+    DataGrid, GridActionsCellItem, GridColDef, GridRenderCellParams, GridRowModel, GridValidRowModel
 } from "@mui/x-data-grid"
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useDispatchCode, useSelectorProducts } from "../../hooks/hooks";
 import Confirm from "../common/Confirm";
 import { productsService } from "../../config/service-config";
@@ -68,7 +68,7 @@ const ProductsAdmin: React.FC = () => {
         },
         {
             field: 'price', headerName: 'Price in $', flex: 0.6, headerClassName: 'data-grid-header',
-            align: 'center', headerAlign: 'center'
+            align: 'center', headerAlign: 'center', editable: true
         },
         {
             field: 'content', headerName: 'Content', flex: 0.8, headerClassName: 'data-grid-header',
@@ -144,6 +144,16 @@ const ProductsAdmin: React.FC = () => {
         setFilteredProducts(filtered)
     }
 
+    function priceInARowUpdate(newRow: any, oldRow: any) {
+        const prodId = newRow.id
+        const newPrice = newRow.price
+        if (newPrice > 0) {
+            console.log(prodId, newPrice)
+            //update product through service I guess
+        }
+        return newPrice > 0 ? newRow : oldRow
+    }
+
     return <Box sx={centerStyle}>
         <CategorySelect 
             category={category} 
@@ -156,6 +166,8 @@ const ProductsAdmin: React.FC = () => {
                 getRowHeight={() => 'auto'}
                 columns={columns}
                 rows={filteredProducts.length != 0 ? filteredProducts : products}
+                processRowUpdate={priceInARowUpdate}
+                onProcessRowUpdateError={(error) => console.log(error)} //snackbar alert ?
             />
         </Box>
         <Confirm

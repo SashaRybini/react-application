@@ -41,57 +41,63 @@ const ProductsUser: React.FC = () => {
 
     function getProductsCards() {
         const prods = filteredProducts.length == 0 ? products : filteredProducts
-        return prods.map((p, index) => <Card key={index} sx={{ maxWidth: 345 }}>
-            <CardMedia
-                sx={{ height: 200 }}
-                image={p.imageUrl}
-            />
-            <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
-                    {p.title}
-                </Typography>
-                <Typography gutterBottom variant="h6" component="div">
-                    Price: ${p.price}
-                </Typography>
-            </CardContent>
-            <CardActions>
-                <Button size="small" onClick={() => {
-                    setOpenContent(true)
-                    setContent(p.content)
-                }}
-                >
-                    Learn More
-                </Button>
-            </CardActions>
-            <Grid container>
-                <Grid item xs={4}>
-                <Button
-                        onClick={() => {
-                            ordersService.removeProductFromCart(userData!.email, p)
-                        }}
-                        disabled={counts[index] == 0}
-                    ><RemoveIcon /></Button>
-                </Grid>
-                <Grid item xs={4}>
-                    <Typography
-                        style={{ display: 'flex', justifyContent: 'center' }}
-                    >
-                        {counts[index]}
+        return prods.map((p, index) =>
+            <Card key={index} sx={{ maxWidth: 345 }}>
+                <CardMedia
+                    sx={{ height: 150 }}
+                    image={p.imageUrl}
+                />
+                <CardContent style={{ paddingBottom: 0 }}>
+                    <Typography gutterBottom variant="h5" component="div">
+                        {p.title}
                     </Typography>
+                    <Typography gutterBottom variant="h6" component="div">
+                        Price: ${p.price}
+                    </Typography>
+                </CardContent>
+                <CardActions style={{ paddingTop: 0, paddingLeft: 12 }}>
+                    <Button size="small" onClick={() => {
+                        setOpenContent(true)
+                        setContent(p.content)
+                    }}
+                    >
+                        Learn More
+                    </Button>
+                </CardActions>
+                <Grid container>
+                    <Grid item xs={4}>
+                        <Button
+                            onClick={() => {
+                                ordersService.removeProductFromCart(userData!.email, p)
+                            }}
+                            disabled={counts[index] == 0}
+                        >
+                            <RemoveIcon />
+                        </Button>
+                    </Grid>
+                    <Grid item xs={4}>
+                        <Typography
+                            style={{ display: 'flex', justifyContent: 'center' }}
+                        >
+                            {counts[index]}
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={4}>
+                        <Button
+                            onClick={() => {
+                                if (!userData) {
+                                    navigate('/signin')
+                                } else {
+                                    ordersService.addProductToCart(userData.email, p)
+                                }
+                            }}
+                        >
+                            <AddIcon />
+                        </Button>
+                    </Grid>
                 </Grid>
-                <Grid item xs={4}>   
-                    <Button
-                        onClick={() => {
-                            if (!userData) {
-                                navigate('/signin')
-                            } else {
-                                ordersService.addProductToCart(userData.email, p)
-                            }
-                        }}
-                    ><AddIcon /></Button>
-                </Grid>
-            </Grid>
-        </Card>)
+            </Card>
+        )
     }
 
     const [category, setCategory] = useState('')
@@ -120,7 +126,7 @@ const ProductsUser: React.FC = () => {
         }
     }, [])
 
-    const counts = useMemo(() => getAmount(), [products, cart, filteredProducts]) //products?
+    const counts = useMemo(() => getAmount(), [products, cart, filteredProducts]) //products ?
     function getAmount(): number[] {
         const prods = filteredProducts.length == 0 ? products : filteredProducts
         return prods.map(prod => {

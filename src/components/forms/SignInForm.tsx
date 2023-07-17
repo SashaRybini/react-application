@@ -39,8 +39,8 @@ const SignInForm: React.FC<Props> = ({ loginSubmitFn, registerSubmitFn }) => {
     const handleSubmitSignIn = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        const email: string = data.get('email')! as string
-        const password: string = data.get('password')! as string
+        const email: string = data.get('email') as string //!
+        const password: string = data.get('password') as string //!
         const res = await loginSubmitFn({ email, password })
     };
 
@@ -116,15 +116,14 @@ const SignInForm: React.FC<Props> = ({ loginSubmitFn, registerSubmitFn }) => {
                             <Grid item xs={12} sm={6} md={12}>
                                 <Box style={{ display: 'flex', justifyContent: 'center' }}>
                                     <Button
+                                        fullWidth
+                                        variant="contained"
                                         onClick={() => setOpenRegisterModal(true)}
-                                        style={{ border: 'solid' }}
-                                        sx={{ mt: 2.5, mb: 2 }}
+                                        sx={{ mt: 3, mb: 2 }}
                                     >
                                         Sign Up
                                     </Button>
                                 </Box>
-
-
                             </Grid>
 
 
@@ -150,7 +149,7 @@ const SignInForm: React.FC<Props> = ({ loginSubmitFn, registerSubmitFn }) => {
                 aria-describedby="modal-modal-description"
             >
                 <Box sx={style}>
-                    <RegisterForm submitFn={handleSubmitRegister}/>
+                    <RegisterForm submitFn={handleSubmitRegister} />
                 </Box>
             </Modal>
         </ThemeProvider>
