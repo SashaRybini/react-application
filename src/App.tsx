@@ -20,6 +20,7 @@ import CodeType from './model/CodeType';
 import { authService } from './config/service-config';
 import { authActions } from './redux/slices/authSlice';
 import AddProduct from './components/pages/AddProduct';
+import SignUp from './components/pages/SignUp';
 
 const { always, authenticated, admin, noadmin, noauthenticated } = routesConfig;
 
@@ -75,6 +76,7 @@ function App() {
         <Route path="shoppingcart" element={<ShoppingCart />} />
         <Route path="addproduct" element={<AddProduct />} />
         <Route path="signin" element={<SignIn />} />
+        <Route path="signup" element={<SignUp />} />
         <Route path="signout" element={<SignOut />} />
         <Route path="/*" element={<NotFound />} />
       </Route>

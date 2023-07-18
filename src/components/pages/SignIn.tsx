@@ -21,16 +21,16 @@ const SignIn: React.FC = () => {
         dispatch(codeActions.set(alert))
     }
 
-    function registerSubmitFn(newUser: UserData) {
-        authService.registerNewUser(newUser)
-        //todo registerNewUser should return something //mby login data for login ^
-        //todo alert message ^
-        //oooor auto login after registration
-    }
+    // function registerSubmitFn(newUser: UserData) {
+    //     authService.registerNewUser(newUser)
+    //     //todo registerNewUser should return something //mby login data for login ^
+    //     //todo alert message ^
+    //     //oooor auto login after registration
+    // }
 
     return <SignInForm
         loginSubmitFn={loginSubmitFn}
-        registerSubmitFn={registerSubmitFn}
+        // registerSubmitFn={registerSubmitFn}
     />
 }
 
