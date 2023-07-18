@@ -75,7 +75,7 @@ const RegistrationForm: React.FC<Props> = ({ submitFn }) => {
 
     const handleChange = (event: any) => {
         const { name, value } = event.target;
-        setUserData((prevData) => ({          
+        setUserData((prevData) => ({
             ...prevData,
             [name]: value,
         }));
@@ -85,7 +85,7 @@ const RegistrationForm: React.FC<Props> = ({ submitFn }) => {
         event.preventDefault();
         submitFn(userData);
     };
-    
+
 
 
     return <Box sx={{ marginTop: { sm: "1vh" } }}>
@@ -159,12 +159,17 @@ const RegistrationForm: React.FC<Props> = ({ submitFn }) => {
                         Register
                     </Button>
                 </Grid>
-
-
-               
-
             </Grid>
         </form>
+        <Grid item xs={12} sm={6} md={12}>
+            <Button
+                color="primary"
+                fullWidth
+                onClick={() => submitFn({ email: 'GOOGLE', password: '' })}
+            >
+                Sign up w google
+            </Button>
+        </Grid>
     </Box>
 
 }

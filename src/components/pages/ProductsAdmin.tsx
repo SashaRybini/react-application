@@ -89,7 +89,7 @@ const ProductsAdmin: React.FC = () => {
         }
     ]
     const products = useSelectorProducts()
-
+// console.log(products)
     const productId = useRef('')
     const [confirmTitle, setConfirmTitle] = useState('')
     const [confirmContent, setConfirmContent] = useState('')
@@ -145,11 +145,10 @@ const ProductsAdmin: React.FC = () => {
     }
 
     function priceInARowUpdate(newRow: any, oldRow: any) {
-        const prodId = newRow.id
         const newPrice = newRow.price
         if (newPrice > 0) {
-            console.log(prodId, newPrice)
-            //update product through service I guess
+            const product: Product = {...newRow}
+            productsService.updateProduct(product) //handle errors 
         }
         return newPrice > 0 ? newRow : oldRow
     }
@@ -167,7 +166,7 @@ const ProductsAdmin: React.FC = () => {
                 columns={columns}
                 rows={filteredProducts.length != 0 ? filteredProducts : products}
                 processRowUpdate={priceInARowUpdate}
-                onProcessRowUpdateError={(error) => console.log(error)} //snackbar alert ?
+                onProcessRowUpdateError={(error) => console.log(error)} //alert ?
             />
         </Box>
         <Confirm

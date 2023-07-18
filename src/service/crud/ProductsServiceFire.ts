@@ -99,7 +99,7 @@ export default class ProductsServiceFire implements ProductsService {
         if (!prod.id || !await this.exists(prod.id)) {
             throw 'not found';
         }
-        const product = convertProduct(prod);
+        const product = convertProduct(prod); // why
         const docRef = this.getDocRef(prod.id);
         try {
             await setDoc(docRef, product)

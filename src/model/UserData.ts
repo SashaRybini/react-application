@@ -1,6 +1,6 @@
 type UserData = {
     email: string,
-    role: string,
+    role?: string,
     name?: string,
     phone?: string,
     address?: string,

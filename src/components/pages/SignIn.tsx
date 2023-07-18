@@ -23,8 +23,8 @@ const SignIn: React.FC = () => {
 
     function registerSubmitFn(newUser: UserData) {
         authService.registerNewUser(newUser)
-        //todo registerNewUser should return something
-        //todo alert message
+        //todo registerNewUser should return something //mby login data for login ^
+        //todo alert message ^
         //oooor auto login after registration
     }
 
