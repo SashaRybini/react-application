@@ -46,7 +46,6 @@ export default class AuthServiceFire implements AuthService {
     }
 
     async login(loginData: LoginData): Promise<UserData> {
-        console.log(loginData)
         let userData: UserData = null
         try {
             const userAuth = loginData.email === 'GOOGLE'
@@ -72,5 +71,10 @@ export default class AuthServiceFire implements AuthService {
     }
     getUsers(): Observable<UserData[]> { //todo handle errors
         return collectionData(this.users) as Observable<UserData[]>
+    }
+    async updateUserData(userData: UserData): Promise<void> {
+        console.log(userData)
+        const docRef = doc(this.users, userData!.email)
+        setDoc(docRef, userData)
     }
 }

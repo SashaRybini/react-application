@@ -21,6 +21,7 @@ import { authService } from './config/service-config';
 import { authActions } from './redux/slices/authSlice';
 import AddProduct from './components/pages/AddProduct';
 import SignUp from './components/pages/SignUp';
+import Profile from './components/pages/Profile';
 
 const { always, authenticated, admin, noadmin, noauthenticated } = routesConfig;
 
@@ -77,6 +78,7 @@ function App() {
         <Route path="addproduct" element={<AddProduct />} />
         <Route path="signin" element={<SignIn />} />
         <Route path="signup" element={<SignUp />} />
+        <Route path="profile" element={<Profile />} />
         <Route path="signout" element={<SignOut />} />
         <Route path="/*" element={<NotFound />} />
       </Route>

@@ -15,15 +15,9 @@ const SignUp: React.FC = () => {
 
         const loginData: LoginData = await authService.registerNewUser(newUser)
 
-        console.log(loginData)
-
-        console.log(newUser)
-
-        loginData.password == '' ? console.log('ok') : console.log('ne ok')
-
         const res: UserData = loginData.password == ''
             ?
-            await authService.login({ email: 'GOOGLE', password: '' }) //in google case we have to use newUser fields
+            await authService.login({ email: newUser!.email, password: newUser!.password! }) //{email: 'GOOGLE', password: ''}
             :
             await authService.login(loginData)
         res && dispatch(authActions.set(res))

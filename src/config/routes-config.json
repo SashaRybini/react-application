@@ -47,6 +47,11 @@
             "to": "/orders",
             "label": "Orders",
             "order": 3
+        },
+        {
+            "to": "/profile",
+            "label": "Profile",
+            "order": 4
         }
     ]
 }

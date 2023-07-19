@@ -35,8 +35,6 @@ const RegistrationForm: React.FC<Props> = ({ submitFn }) => {
         submitFn({ email: 'GOOGLE', password: '' })
     }
 
-
-
     return <Box sx={{ marginTop: { sm: "1vh" } }}>
         <form onSubmit={onSubmitFn} >
             <Container component="main" maxWidth="xs">
@@ -124,7 +122,9 @@ const RegistrationForm: React.FC<Props> = ({ submitFn }) => {
             </Container>
         </form>
         <Grid item xs={12} sm={6} md={12}>
-            <Divider sx={{ width: "100%", fontWeight: "bold", mt: 2}}>or</Divider>
+            <Box className="center-style">
+                <Divider sx={{ width: "40%", fontWeight: "bold",  mt: 2}}>or</Divider>
+            </Box>
             <Box style={{ display: 'flex', justifyContent: 'center' }}>
                 <Button
                     onClick={googleSubmit}

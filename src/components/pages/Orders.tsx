@@ -145,7 +145,6 @@ const Orders: React.FC = () => {
                         'hide delivered'
                 )
                 setHideDelivered(buttonName == 'hide delivered')
-                console.log('knopka')
             }}
         >
             {buttonName}

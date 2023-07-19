@@ -183,7 +183,7 @@ const Customers: React.FC = () => {
         return () => subscription.unsubscribe();
     }, [])
 
-    //code below maybe also TODO move to useSelectorUsers in hooks
+    //code below TODO move to useSelectorUsers in hooks
     const [users, setUsers] = useState<UserData[]>([]);
     useEffect(() => {
         const subscription: Subscription = authService.getUsers()
