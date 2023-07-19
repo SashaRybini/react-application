@@ -10,7 +10,6 @@ const CategorySelect: React.FC<Props> = ({ category, handlerCategoryFilter, cate
 
     return <Box>
         <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-            {/* <InputLabel id="demo-select-small-label">Age</InputLabel> */}
             <Select
                 labelId="demo-select-small-label"
                 id="demo-select-small"

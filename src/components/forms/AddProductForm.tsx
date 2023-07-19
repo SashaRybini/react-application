@@ -72,7 +72,7 @@ export const AddProductForm: React.FC<Props> = ({ submitFn, productUpdated }) =>
     return <Box sx={{ marginTop: { sm: "5vh" } }}>
         <form onSubmit={onSubmitFn} onReset={onResetFn}>
             <Grid container spacing={4} justifyContent="center">
-                <Grid item xs={8} sm={5} >
+                <Grid item xs={8} sm={4} >
                     <FormControl fullWidth required>
                         <InputLabel id="select-category-id">Category</InputLabel>
                         <Select labelId="select-category-id" label="Category"
@@ -82,14 +82,14 @@ export const AddProductForm: React.FC<Props> = ({ submitFn, productUpdated }) =>
                         </Select>
                     </FormControl>
                 </Grid>
-                <Grid item xs={8} sm={5} >
+                <Grid item xs={8} sm={4} >
                     <TextField type="text" required fullWidth label="Image url"
                         helperText="enter image url" onChange={handlerImageUrl}
                         value={product.imageUrl} 
                     />
                     {imagePreview && <img style={{maxWidth: '100%'}} src={imagePreview}></img>}
                 </Grid>
-                <Grid item xs={8} sm={5} >
+                <Grid item xs={8} sm={4} >
                     <TextField type="text" required fullWidth label="Title"
                         helperText="enter title" onChange={handlerTitle}
                         value={product.title} 

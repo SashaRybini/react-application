@@ -81,7 +81,6 @@ export default class AuthServiceFire implements AuthService {
         return collectionData(this.users) as Observable<UserData[]>
     }
     async updateUserData(userData: UserData): Promise<void> {
-        console.log(userData)
         const docRef = doc(this.users, userData!.email)
         setDoc(docRef, userData)
     }

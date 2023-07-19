@@ -1,5 +1,6 @@
 import { DataGrid, GridColDef } from "@mui/x-data-grid"
 import { PickedProduct } from "../../model/PickedProduct"
+import { Typography, useMediaQuery, useTheme } from "@mui/material";
 
 type Props = {
     cart: PickedProduct[]
@@ -30,12 +31,30 @@ const columns: GridColDef[] = [
     }
 ]
 
-const OrderDetailsAdmin: React.FC<Props> = ({cart}) => {
-    
+const OrderDetailsAdmin: React.FC<Props> = ({ cart }) => {
+
+    const theme = useTheme()
+    const isPortrait = useMediaQuery(theme.breakpoints.down('sm'))
+    // const rotateStyle = isPortrait ? 'rotate' : ''
+
     function getRows() {
-        return cart.map(pp => ({...pp.product, id: pp.id, count: pp.count}))
+        return cart.map(pp => ({ ...pp.product, id: pp.id, count: pp.count }))
     }
 
-    return <DataGrid columns={columns} rows={getRows()} />
+    return isPortrait
+        ?
+        <Typography>ROTATE PHONE YOU ARE AT WORK ACTUALLY</Typography>
+        :
+        <DataGrid columns={columns} rows={getRows()} />
 }
 export default OrderDetailsAdmin
+
+// <Box className={rotateStyle}>
+//         <Box sx={{
+//             height: '60vh', width: isPortrait ? '160vw' : '80vw',
+//              ml: isPortrait ? '9vw' : ''
+//         }}
+//         >
+//             <DataGrid columns={columns} rows={getRows()} />
+//         </Box>
+//     </Box>

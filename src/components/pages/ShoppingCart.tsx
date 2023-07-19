@@ -1,5 +1,5 @@
 import { Delete } from "@mui/icons-material"
-import { Box, Button, Grid, Modal, TextField, Typography } from "@mui/material"
+import { Box, Button, Grid, Modal, TextField, Typography, useMediaQuery, useTheme } from "@mui/material"
 import { DataGrid, GridActionsCellItem, GridColDef } from "@mui/x-data-grid"
 import { Product } from "../../model/Product"
 import { useEffect, useMemo, useRef, useState } from "react"
@@ -20,67 +20,74 @@ const centerStyle = {
 }
 const ShoppingCart: React.FC = () => {
 
-    const columns: GridColDef[] = [
-        {
-            field: 'id', headerName: 'ID', flex: 0.8, headerClassName: 'data-grid-header',
-            align: 'center', headerAlign: 'center'
-        },
-        {
-            field: 'imageUrl', headerName: 'Image', flex: 0.4, align: 'center', headerAlign: 'center',
-            renderCell: (params) => {
-                return <img src={params.value} style={{ width: '100%' }} />
+    function getColumns() {
+        let columns: GridColDef[] = [
+            {
+                field: 'id', headerName: 'ID', flex: 0.8, headerClassName: 'data-grid-header',
+                align: 'center', headerAlign: 'center'
+            },
+            {
+                field: 'imageUrl', headerName: 'Image', flex: 0.4, align: 'center', headerAlign: 'center',
+                renderCell: (params) => {
+                    return <img src={params.value} style={{ width: '100%' }} />
+                }
+            },
+            {
+                field: 'title', headerName: 'Title', flex: 0.8, headerClassName: 'data-grid-header',
+                align: 'center', headerAlign: 'center'
+            },
+            {
+                field: 'actionsRemove', flex: 0.4, type: "actions", getActions: (params) => {
+                    return [
+                        <GridActionsCellItem label="remove" icon={<RemoveIcon />}
+                            onClick={() => {
+                                const product: Product = params.row.product
+                                const count = params.row.count
+                                if (count < 2) {
+                                    removeProduct(product)
+                                } else {
+                                    ordersService.removeProductFromCart(userData!.email, product)
+                                }
+                            }}
+                        />
+                    ];
+                }
+            },
+            {
+                field: 'count', headerName: 'Count', flex: 0.4, headerClassName: 'data-grid-header',
+                align: 'center', headerAlign: 'center'
+            },
+            {
+                field: 'actionsAdd', flex: 0.4, type: "actions", getActions: (params) => {
+                    return [
+                        <GridActionsCellItem label="remove" icon={<AddIcon />}
+                            onClick={() => {
+                                ordersService.addProductToCart(userData!.email, params.row.product)
+                            }}
+                        />
+                    ];
+                }
+            },
+            {
+                field: 'amount', headerName: 'Amount in $', flex: 0.4, headerClassName: 'data-grid-header',
+                align: 'center', headerAlign: 'center'
+            },
+            {
+                field: 'actionsRemoveRow', type: "actions", getActions: (params) => {
+                    return [
+                        <GridActionsCellItem label="remove" icon={<Delete />}
+                            onClick={() => removeProduct(params.row)}
+                        />
+                    ];
+                }
             }
-        },
-        {
-            field: 'title', headerName: 'Title', flex: 0.8, headerClassName: 'data-grid-header',
-            align: 'center', headerAlign: 'center'
-        },
-        {
-            field: 'actionsRemove', type: "actions", getActions: (params) => {
-                return [
-                    <GridActionsCellItem label="remove" icon={<RemoveIcon />}
-                        onClick={() => {
-                            const product: Product = params.row.product
-                            const count = params.row.count
-                            if (count < 2) {
-                                removeProduct(product)
-                            } else {
-                                ordersService.removeProductFromCart(userData!.email, product)
-                            }
-                        }}
-                    />
-                ];
-            }
-        },
-        {
-            field: 'count', headerName: 'Count', flex: 0.4, headerClassName: 'data-grid-header',
-            align: 'center', headerAlign: 'center'
-        },
-        {
-            field: 'actionsAdd', type: "actions", getActions: (params) => {
-                return [
-                    <GridActionsCellItem label="remove" icon={<AddIcon />}
-                        onClick={() => {
-                            ordersService.addProductToCart(userData!.email, params.row.product)
-                        }}
-                    />
-                ];
-            }
-        },
-        {
-            field: 'amount', headerName: 'Amount in $', flex: 0.4, headerClassName: 'data-grid-header',
-            align: 'center', headerAlign: 'center'
-        },
-        {
-            field: 'actionsRemoveRow', type: "actions", getActions: (params) => {
-                return [
-                    <GridActionsCellItem label="remove" icon={<Delete />}
-                        onClick={() => removeProduct(params.row)}
-                    />
-                ];
-            }
+        ]
+        if (isPortrait) {
+            columns = columns.filter(c => c.field != 'imageUrl' && c.field != 'id' 
+                && c.field != 'actionsRemoveRow')
         }
-    ]
+        return columns
+    }
     const productId = useRef('')
     const [confirmTitle, setConfirmTitle] = useState('')
     const [confirmContent, setConfirmContent] = useState('')
@@ -160,10 +167,13 @@ const ShoppingCart: React.FC = () => {
     const [openWarning, setOpenWarning] = useState(false)
     const navigate = useNavigate()
 
+    const theme = useTheme()
+    const isPortrait = useMediaQuery(theme.breakpoints.down('sm'))
+
     return <Box sx={centerStyle}>
         <Box sx={{ height: '60vh', width: '95vw' }}>
             <DataGrid
-                columns={columns}
+                columns={getColumns()}
                 rows={getRows()}
             />
         </Box>

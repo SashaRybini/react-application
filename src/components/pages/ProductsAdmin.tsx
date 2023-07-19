@@ -1,6 +1,6 @@
 import { Delete, Edit } from "@mui/icons-material";
-import { 
-    Box, FormHelperText, Link, MenuItem, Modal, Select, Typography 
+import {
+    Box, FormHelperText, Link, MenuItem, Modal, Select, Typography, useMediaQuery, useTheme
 } from "@mui/material"
 import {
     DataGrid, GridActionsCellItem, GridColDef, GridRenderCellParams, GridRowModel, GridValidRowModel
@@ -24,9 +24,9 @@ const style = {
     boxShadow: 24,
     p: 4,
 };
-const centerStyle = { 
-    display: 'flex', flexDirection: 'column', 
-    justifyContent: 'center', alignItems: 'center' 
+const centerStyle = {
+    display: 'flex', flexDirection: 'column',
+    justifyContent: 'center', alignItems: 'center'
 }
 
 
@@ -51,45 +51,53 @@ function ExpandableCell({ value }: GridRenderCellParams) {
 }
 
 const ProductsAdmin: React.FC = () => {
-    const columns: GridColDef[] = [
-        {
-            field: 'id', headerName: 'ID', flex: 0.5, headerClassName: 'data-grid-header',
-            align: 'center', headerAlign: 'center'
-        },
-        {
-            field: 'imageUrl', headerName: 'Image', flex: 0.4, align: 'center', headerAlign: 'center',
-            renderCell: (params) => {
-                return <img src={params.value} style={{ width: '100%' }} />
+
+    function getColumns() {
+        let columns: GridColDef[] = [
+            {
+                field: 'id', headerName: 'ID', flex: 0.5, headerClassName: 'data-grid-header',
+                align: 'center', headerAlign: 'center'
+            },
+            {
+                field: 'imageUrl', headerName: 'Image', flex: 0.4, align: 'center', headerAlign: 'center',
+                renderCell: (params) => {
+                    return <img src={params.value} style={{ width: '100%' }} />
+                }
+            },
+            {
+                field: 'title', headerName: 'Title', flex: 0.8, headerClassName: 'data-grid-header',
+                align: 'center', headerAlign: 'center'
+            },
+            {
+                field: 'price', headerName: 'Price in $', flex: 0.6, headerClassName: 'data-grid-header',
+                align: 'center', headerAlign: 'center', editable: true
+            },
+            {
+                field: 'content', headerName: 'Content', flex: 0.8, headerClassName: 'data-grid-header',
+                align: 'center', headerAlign: 'center',
+                renderCell: (params: GridRenderCellParams) => <ExpandableCell {...params} />,
+            },
+            {
+                field: 'actions', type: "actions", getActions: (params) => {
+                    return [
+                        <GridActionsCellItem label="remove" icon={<Delete />}
+                            onClick={() => removeProduct(params.row)}
+                        />,
+                        <GridActionsCellItem label="update" icon={<Edit />}
+                            onClick={() => updateProduct(params.row)}
+                        />
+                    ];
+                }
             }
-        },
-        {
-            field: 'title', headerName: 'Title', flex: 0.8, headerClassName: 'data-grid-header',
-            align: 'center', headerAlign: 'center'
-        },
-        {
-            field: 'price', headerName: 'Price in $', flex: 0.6, headerClassName: 'data-grid-header',
-            align: 'center', headerAlign: 'center', editable: true
-        },
-        {
-            field: 'content', headerName: 'Content', flex: 0.8, headerClassName: 'data-grid-header',
-            align: 'center', headerAlign: 'center',
-            renderCell: (params: GridRenderCellParams) => <ExpandableCell {...params} />,
-        },
-        {
-            field: 'actions', type: "actions", getActions: (params) => {
-                return [
-                    <GridActionsCellItem label="remove" icon={<Delete />}
-                        onClick={() => removeProduct(params.row)}
-                    />,
-                    <GridActionsCellItem label="update" icon={<Edit />}
-                        onClick={() => updateProduct(params.row)}
-                    />
-                ];
-            }
+        ]
+        if (isPortrait) {
+            columns = columns.filter(c => c.field != 'content' && c.field != 'actions')
         }
-    ]
+        return columns
+    }
+
     const products = useSelectorProducts()
-// console.log(products)
+    // console.log(products)
     const productId = useRef('')
     const [confirmTitle, setConfirmTitle] = useState('')
     const [confirmContent, setConfirmContent] = useState('')
@@ -147,23 +155,26 @@ const ProductsAdmin: React.FC = () => {
     function priceInARowUpdate(newRow: any, oldRow: any) {
         const newPrice = newRow.price
         if (newPrice > 0) {
-            const product: Product = {...newRow}
+            const product: Product = { ...newRow }
             productsService.updateProduct(product) //handle errors 
         }
         return newPrice > 0 ? newRow : oldRow
     }
 
+    const theme = useTheme()
+    const isPortrait = useMediaQuery(theme.breakpoints.down('sm'))
+
     return <Box sx={centerStyle}>
-        <CategorySelect 
-            category={category} 
-            handlerCategoryFilter={handlerCategoryFilter} 
+        <CategorySelect
+            category={category}
+            handlerCategoryFilter={handlerCategoryFilter}
             categories={categories}
         />
         <Box sx={{ height: '70vh', width: '95vw' }}>
             <DataGrid
                 // getEstimatedRowHeight={() => 100}
                 getRowHeight={() => 'auto'}
-                columns={columns}
+                columns={getColumns()}
                 rows={filteredProducts.length != 0 ? filteredProducts : products}
                 processRowUpdate={priceInARowUpdate}
                 onProcessRowUpdateError={(error) => console.log(error)} //alert ?

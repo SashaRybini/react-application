@@ -214,7 +214,11 @@ const Customers: React.FC = () => {
 
     const rows = useMemo(() => getRows(), [hideDelivered, orders])
 
-    return <Box className="center-style">
+    const theme = useTheme()
+    const isPortrait = useMediaQuery(theme.breakpoints.down('sm'))
+    const rotateStyle = isPortrait ? 'rotate' : ''
+
+    return <Box className={`center-style ${rotateStyle}`}>
         <Button
             onClick={() => {
                 setButtonName(
@@ -229,7 +233,8 @@ const Customers: React.FC = () => {
         >
             {buttonName}
         </Button>
-        <Box sx={{ height: '70vh', width: '95vw' }}>
+        {/* <Box sx={{ height: '70vh', width: '95vw' }}> */}
+        <Box sx={{ height: isPortrait ? '40vh' : '65vh', width: isPortrait ? '180vw' : '95vw' }}>
             <DataGrid
                 columns={columns}
                 rows={rows}
