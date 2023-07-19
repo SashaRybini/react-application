@@ -1,4 +1,4 @@
-import { Box, Button, Modal, Typography } from "@mui/material"
+import { Box, Button, Modal, Typography, useMediaQuery, useTheme } from "@mui/material"
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Subscription } from "rxjs";
 import { Order } from "../../model/Order";
@@ -19,6 +19,7 @@ const style = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: '80%',
+    height: '70%', //
     bgcolor: 'background.paper',
     border: '2px solid #000',
     boxShadow: 24,
@@ -30,57 +31,63 @@ const centerStyle = {
 }
 
 const Orders: React.FC = () => {
-
-    const columns: GridColDef[] = [
-        {
-            field: 'id', headerName: 'Order ID', flex: 0.5, headerClassName: 'data-grid-header',
-            align: 'center', headerAlign: 'center'
-        },
-        {
-            field: 'cost', headerName: 'Cost in $', flex: 0.6, headerClassName: 'data-grid-header',
-            align: 'center', headerAlign: 'center'
-        },
-        {
-            field: 'orderDate', headerName: 'Order Date', flex: 0.8, headerClassName: 'data-grid-header',
-            align: 'center', headerAlign: 'center'
-        },
-        {
-            field: 'deliveryDate', headerName: 'Delivery Date', flex: 0.8, headerClassName: 'data-grid-header',
-            align: 'center', headerAlign: 'center'
-        },
-        {
-            field: 'actions', headerName: "Order Details", flex: 0.8,
-            type: "actions", getActions: (params) => {
-                return [
-                    <GridActionsCellItem label="details" icon={<VisibilityIcon />}
-                        onClick={() => {
-                            setOpenOrderDetails(true)
-                            cart.current = params.row.cart
-                            orderId.current = params.id.toString()
-                            orderStatus.current = params.row.status
-                        }}
-                    />
-                ];
+    function getColumns() {
+        let columns: GridColDef[] = [
+            {
+                field: 'id', headerName: 'Order ID', flex: 0.5, headerClassName: 'data-grid-header',
+                align: 'center', headerAlign: 'center', editable: true
+            },
+            {
+                field: 'cost', headerName: 'Cost in $', flex: 0.7, headerClassName: 'data-grid-header',
+                align: 'center', headerAlign: 'center'
+            },
+            {
+                field: 'orderDate', headerName: 'Order Date', flex: 0.8, headerClassName: 'data-grid-header',
+                align: 'center', headerAlign: 'center'
+            },
+            {
+                field: 'deliveryDate', headerName: 'Delivery Date', flex: 0.7, headerClassName: 'data-grid-header',
+                align: 'center', headerAlign: 'center'
+            },
+            {
+                field: 'actions', headerName: "Order Details", flex: 0.8,
+                type: "actions", getActions: (params) => {
+                    return [
+                        <GridActionsCellItem label="details" icon={<VisibilityIcon />}
+                            onClick={() => {
+                                setOpenOrderDetails(true)
+                                cart.current = params.row.cart
+                                orderId.current = params.id.toString()
+                                orderStatus.current = params.row.status
+                            }}
+                        />
+                    ];
+                }
+            },
+            {
+                field: 'status', headerName: 'Status', flex: 0.6, headerClassName: 'data-grid-header',
+                align: 'center', headerAlign: 'center'
+            },
+            {
+                field: 'actionsRemoveRow', type: "actions", getActions: (params) => {
+                    const isDisabled = params.row.status != 'ordered'
+                    return [
+                        <GridActionsCellItem label="remove" disabled={isDisabled} icon={<Delete />}
+                            onClick={() => {
+                                setOpenConfirm(true)
+                                orderId.current = params.id.toString()
+                            }}
+                        />
+                    ];
+                }
             }
-        },
-        {
-            field: 'status', headerName: 'Status', flex: 0.6, headerClassName: 'data-grid-header',
-            align: 'center', headerAlign: 'center'
-        },
-        {
-            field: 'actionsRemoveRow', type: "actions", getActions: (params) => {
-                const isDisabled = params.row.status != 'ordered'
-                return [
-                    <GridActionsCellItem label="remove" disabled={isDisabled} icon={<Delete />}
-                        onClick={() => {
-                            setOpenConfirm(true)
-                            orderId.current = params.id.toString()
-                        }}
-                    />
-                ];
-            }
+        ]
+        if (isMobile) {
+            columns = columns.filter(c => c.field != 'id' && c.field != 'orderDate')
         }
-    ]
+        return columns
+    }
+
     const orderStatus = useRef('')
     const orderId = useRef('')
     //code below TODO move to useSelectorOrders in hooks
@@ -134,7 +141,13 @@ const Orders: React.FC = () => {
 
     const rows = useMemo(() => getRows(), [hideDelivered, orders])
 
-    return <Box sx={centerStyle}>
+    const theme = useTheme()
+    const isPortrait = useMediaQuery(theme.breakpoints.down('sm'))
+    const rotateStyle = isPortrait ? 'rotate' : ''
+
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'))
+
+    return <Box sx={centerStyle} className={rotateStyle}>
         <Button
             onClick={() => {
                 setButtonName(
@@ -149,9 +162,9 @@ const Orders: React.FC = () => {
         >
             {buttonName}
         </Button>
-        <Box sx={{ height: '70vh', width: '95vw' }}>
+        <Box sx={{ height: '65vh', width: isPortrait ? '180vw' : '95vw' }}>
             <DataGrid
-                columns={columns}
+                columns={getColumns()}
                 rows={rows}
             />
         </Box>

@@ -10,7 +10,7 @@ import { useSelectorAuth } from "../../redux/store";
 import { Order } from "../../model/Order";
 import { useEffect, useState } from "react";
 import { Subscription } from "rxjs";
-import { Box } from "@mui/material";
+import { Box, useMediaQuery, useTheme } from "@mui/material";
 import Confirm from "./Confirm";
 
 type Props = {
@@ -28,7 +28,7 @@ const OrderDetails: React.FC<Props> = ({ orderId, orderStatus }) => {
         // if admin => filter //it looks like there will be no admin
         let columns: GridColDef[] = [
             {
-                field: 'id', headerName: 'ID', flex: 0.5, headerClassName: 'data-grid-header',
+                field: 'id', headerName: 'ID', flex: 0.7, headerClassName: 'data-grid-header',
                 align: 'center', headerAlign: 'center'
             },
             {
@@ -41,13 +41,13 @@ const OrderDetails: React.FC<Props> = ({ orderId, orderStatus }) => {
                 field: 'title', headerName: 'Title', flex: 0.8, headerClassName: 'data-grid-header',
                 align: 'center', headerAlign: 'center'
             },
-    
+
             {
                 field: 'price', headerName: 'Price in $', flex: 0.6, headerClassName: 'data-grid-header',
                 align: 'center', headerAlign: 'center'
             },
             {
-                field: 'actionsRemove', type: "actions", getActions: (params) => {
+                field: 'actionsRemove', flex: 0.4, type: "actions", getActions: (params) => {
                     return [
                         <GridActionsCellItem label="remove" icon={<RemoveIcon />}
                             onClick={() => {
@@ -62,7 +62,7 @@ const OrderDetails: React.FC<Props> = ({ orderId, orderStatus }) => {
                 align: 'center', headerAlign: 'center'
             },
             {
-                field: 'actionsAdd', type: "actions", getActions: (params) => {
+                field: 'actionsAdd', flex: 0.4, type: "actions", getActions: (params) => {
                     return [
                         <GridActionsCellItem label="add" icon={<AddIcon />}
                             onClick={() => {
@@ -132,8 +132,18 @@ const OrderDetails: React.FC<Props> = ({ orderId, orderStatus }) => {
         return rows
     }
 
-    return <Box>
-        <DataGrid columns={getColumns()} rows={getRows()} />
+    const theme = useTheme()
+    const isPortrait = useMediaQuery(theme.breakpoints.down('sm'))
+    const rotateStyle = isPortrait ? 'rotate' : ''
+
+    return <Box className={rotateStyle}>
+        <Box sx={{
+            height: '60vh', width: isPortrait ? '160vw' : '80vw', 
+             ml: isPortrait ? '9vw' : ''
+        }}
+        >
+            <DataGrid columns={getColumns()} rows={getRows()} />
+        </Box>
         <Confirm
             title='delete order?'
             content=''

@@ -153,7 +153,6 @@ const ShoppingCart: React.FC = () => {
     }, [])
 
     const isAdressExist: boolean = isAdress()
-    console.log(isAdressExist)
     function isAdress(): boolean {
         const userdata = users.filter(u => u?.email == userData?.email)[0]!
         return userdata && userdata?.address != ''
@@ -175,10 +174,10 @@ const ShoppingCart: React.FC = () => {
             open={openConfirmDialog}
         />
         <Grid container justifyContent={'center'} spacing={1} >
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={12} sm={4} md={4}>
                 <Typography
                     className="center-style"
-                    sx={{ mt: 4 }}
+                    sx={{ mt: 2 }}
                     variant="h5"
                 >
                     Total amount: ${totalAmount}
@@ -187,7 +186,7 @@ const ShoppingCart: React.FC = () => {
             <Grid item xs={6} sm={4} md={4}>
                 <TextField
                     size="small"
-                    sx={{ mt: 4 }}
+                    sx={{ mt: 2 }}
                     type="date"
                     required
                     fullWidth
@@ -207,7 +206,7 @@ const ShoppingCart: React.FC = () => {
                 <Box className="center-style">
                     <Button
                         variant="contained"
-                        sx={{ mt: 4 }}
+                        sx={{ mt: 2 }}
                         fullWidth
                         disabled={totalAmount == 0 || !deliveryDate}
                         onClick={() => {
