@@ -1,17 +1,18 @@
 import { Delete } from "@mui/icons-material"
-import { Box, Button, Grid, TextField, Typography } from "@mui/material"
+import { Box, Button, Grid, Modal, TextField, Typography } from "@mui/material"
 import { DataGrid, GridActionsCellItem, GridColDef } from "@mui/x-data-grid"
 import { Product } from "../../model/Product"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { PickedProduct } from "../../model/PickedProduct"
 import { Subscription } from "rxjs"
-import { ordersService } from "../../config/service-config"
+import { authService, ordersService } from "../../config/service-config"
 import UserData from "../../model/UserData"
 import { useSelectorAuth } from "../../redux/store"
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import Confirm from "../common/Confirm"
 import { getEndDate, getISODateStr } from "../../util/date-functions"
+import { useNavigate } from "react-router-dom"
 
 const centerStyle = {
     display: 'flex', flexDirection: 'column',
@@ -137,6 +138,29 @@ const ShoppingCart: React.FC = () => {
         setDeliveryDate(date);
     }
 
+
+
+    //code below TODO move to useSelectorUsers in hooks
+    const [users, setUsers] = useState<UserData[]>([]);
+    useEffect(() => {
+        const subscription: Subscription = authService.getUsers()
+            .subscribe({
+                next(usersArray: UserData[]) {
+                    setUsers(usersArray);
+                }
+            });
+        return () => subscription.unsubscribe();
+    }, [])
+
+    const isAdressExist: boolean = isAdress()
+    console.log(isAdressExist)
+    function isAdress(): boolean {
+        const userdata = users.filter(u => u?.email == userData?.email)[0]!
+        return userdata && userdata?.address != ''
+    }
+    const [openWarning, setOpenWarning] = useState(false)
+    const navigate = useNavigate()
+
     return <Box sx={centerStyle}>
         <Box sx={{ height: '60vh', width: '95vw' }}>
             <DataGrid
@@ -162,7 +186,7 @@ const ShoppingCart: React.FC = () => {
             </Grid>
             <Grid item xs={6} sm={4} md={4}>
                 <TextField
-                size="small"
+                    size="small"
                     sx={{ mt: 4 }}
                     type="date"
                     required
@@ -188,7 +212,11 @@ const ShoppingCart: React.FC = () => {
                         disabled={totalAmount == 0 || !deliveryDate}
                         onClick={() => {
                             // ordersService.createOrder(userData!.email, cart)
-                            setOpenConfirmOrder(true)
+                            if (!isAdressExist) {
+                                setOpenWarning(true)
+                            } else {
+                                setOpenConfirmOrder(true)
+                            }
                         }}
                     >
                         order
@@ -203,6 +231,26 @@ const ShoppingCart: React.FC = () => {
             handleClose={onSubmitConfirmOrder}
             open={openConfirmOrder}
         />
+
+        <Modal
+            open={openWarning}
+            onClose={() => setOpenWarning(false)}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+        >
+            <Box className="modal-window">
+                <Typography variant="h6">
+                    please enter your adress
+                </Typography>
+                <Button onClick={() => {
+                    setOpenWarning(false)
+                    navigate('/profile')
+                }}
+                >
+                    ok
+                </Button>
+            </Box>
+        </Modal>
     </Box>
 }
 export default ShoppingCart

@@ -26,6 +26,14 @@ export default class AuthServiceFire implements AuthService {
                 await signInWithPopup(this.auth, new GoogleAuthProvider())
                 :
                 await createUserWithEmailAndPassword(this.auth, newUser!.email, newUser!.password!)
+            if (newUser?.email === 'GOOGLE') { //we need empty fields for profile updating
+                newUser = {
+                    ...newUser,
+                    address: '',
+                    name: '',
+                    phone: ''
+                }
+            }
             newUser = {
                 ...newUser,
                 email: userAuth.user.email as string,

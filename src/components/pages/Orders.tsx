@@ -2,7 +2,7 @@ import { Box, Button, Modal, Typography } from "@mui/material"
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Subscription } from "rxjs";
 import { Order } from "../../model/Order";
-import { ordersService } from "../../config/service-config";
+import { authService, ordersService } from "../../config/service-config";
 import UserData from "../../model/UserData";
 import { useSelectorAuth } from "../../redux/store";
 import { DataGrid, GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
