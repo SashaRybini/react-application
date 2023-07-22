@@ -136,7 +136,6 @@ const RegistrationForm: React.FC<Props> = ({ submitFn }) => {
             </Box>
         </Grid>
     </Box>
-
 }
 
 export default RegistrationForm;

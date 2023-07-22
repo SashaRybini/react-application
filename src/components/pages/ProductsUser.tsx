@@ -1,9 +1,9 @@
 import {
     Box, Button, Card, CardActions, CardContent,
-    CardMedia, Grid, Modal, TextField, Typography
+    CardMedia, Grid, Modal, Typography
 } from "@mui/material"
-import { useEffect, useMemo, useState } from "react";
-import { useSelectorProducts } from "../../hooks/hooks";
+import { useMemo, useState } from "react";
+import { useSelectorCart, useSelectorProducts } from "../../hooks/hooks";
 import { Product } from "../../model/Product";
 import CategorySelect from "../common/CategorySelect";
 import { categories } from "../forms/AddProductForm";
@@ -14,29 +14,12 @@ import { useSelectorAuth } from "../../redux/store";
 import { useNavigate } from "react-router-dom";
 import { ordersService } from "../../config/service-config";
 import { PickedProduct } from "../../model/PickedProduct";
-import { Subscription } from "rxjs";
-
-const centerStyle = {
-    display: 'flex', flexDirection: 'column',
-    justifyContent: 'center', alignItems: 'center'
-}
-
-const style = {
-    position: 'absolute' as 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: "80%",
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
-};
 
 const ProductsUser: React.FC = () => {
 
     const [openContent, setOpenContent] = useState(false)
     const [content, setContent] = useState('')
+
     const products = useSelectorProducts()
 
     function getProductsCards() {
@@ -111,23 +94,10 @@ const ProductsUser: React.FC = () => {
     const userData: UserData = useSelectorAuth()
     const navigate = useNavigate()
 
+    const cart: PickedProduct[] = useSelectorCart()
 
-    //code below TODO move to useSelectorCart in hooks
-    const [cart, setCart] = useState<PickedProduct[]>([]);
-    useEffect(() => {
-        if (userData) {
-            const subscription: Subscription = ordersService.getShoppingCart(userData.email)
-                .subscribe({
-                    next(prodArray: PickedProduct[]) {
-                        setCart(prodArray);
-                    }
-                });
-            return () => subscription.unsubscribe();
-        }
-    }, [])
-
-    const counts = useMemo(() => getAmount(), [products, cart, filteredProducts]) //products ?
-    function getAmount(): number[] {
+    const counts = useMemo(() => getCounts(), [products, cart, filteredProducts])
+    function getCounts(): number[] {
         const prods = filteredProducts.length == 0 ? products : filteredProducts
         return prods.map(prod => {
             const pickedProd = cart.find(cartProd => cartProd.product.id == prod.id)
@@ -139,7 +109,7 @@ const ProductsUser: React.FC = () => {
         })
     }
 
-    return <Box sx={centerStyle}>
+    return <Box className='center-style'>
         <CategorySelect
             category={category}
             handlerCategoryFilter={handlerCategoryFilter}
@@ -153,7 +123,7 @@ const ProductsUser: React.FC = () => {
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
-                <Box sx={style}>
+                <Box className='modal-window-table'>
                     <Typography variant="body2" color="text.secondary">
                         {content}
                     </Typography>

@@ -1,11 +1,11 @@
 import { Delete, Edit } from "@mui/icons-material";
 import {
-    Box, FormHelperText, Link, MenuItem, Modal, Select, Typography, useMediaQuery, useTheme
+    Box, Link, Modal, Typography, useMediaQuery, useTheme
 } from "@mui/material"
 import {
-    DataGrid, GridActionsCellItem, GridColDef, GridRenderCellParams, GridRowModel, GridValidRowModel
+    DataGrid, GridActionsCellItem, GridColDef, GridRenderCellParams
 } from "@mui/x-data-grid"
-import { useCallback, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useDispatchCode, useSelectorProducts } from "../../hooks/hooks";
 import Confirm from "../common/Confirm";
 import { productsService } from "../../config/service-config";
@@ -13,30 +13,12 @@ import { Product } from "../../model/Product";
 import { AddProductForm, categories } from "../forms/AddProductForm";
 import CategorySelect from "../common/CategorySelect";
 
-const style = {
-    position: 'absolute' as 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
-};
-const centerStyle = {
-    display: 'flex', flexDirection: 'column',
-    justifyContent: 'center', alignItems: 'center'
-}
-
-
 function ExpandableCell({ value }: GridRenderCellParams) {
     const [expanded, setExpanded] = useState(false);
     return (
         <Box>
             {expanded ? value : value.slice(0, 50)}&nbsp;
             {value.length > 50 && (
-                // eslint-disable-next-line jsx-a11y/anchor-is-valid
                 <Link
                     type="button"
                     component="button"
@@ -59,7 +41,8 @@ const ProductsAdmin: React.FC = () => {
                 align: 'center', headerAlign: 'center'
             },
             {
-                field: 'imageUrl', headerName: 'Image', flex: 0.4, align: 'center', headerAlign: 'center',
+                field: 'imageUrl', headerName: 'Image', flex: 0.4, headerClassName: 'data-grid-header',
+                align: 'center', headerAlign: 'center',
                 renderCell: (params) => {
                     return <img src={params.value} style={{ width: '100%' }} />
                 }
@@ -97,7 +80,7 @@ const ProductsAdmin: React.FC = () => {
     }
 
     const products = useSelectorProducts()
-    // console.log(products)
+
     const productId = useRef('')
     const [confirmTitle, setConfirmTitle] = useState('')
     const [confirmContent, setConfirmContent] = useState('')
@@ -119,6 +102,7 @@ const ProductsAdmin: React.FC = () => {
         product.current = prod
     }
     const dispatch = useDispatchCode()
+    
     function onSubmitConfirmDialog(confirmation: boolean) { //fn performs deleting and updating
         setOpenConfirmDialog(false)
         if (confirmation && !isUpdate) {
@@ -132,7 +116,7 @@ const ProductsAdmin: React.FC = () => {
             setIsUpdate(false)
             try {
                 productsService.updateProduct(product.current!)
-                dispatch('', `product with id ${productId.current} has been deleted`)
+                dispatch('', `product with id ${productId.current} has been updated`)
             } catch (error: any) {
                 dispatch(error, '')
             }
@@ -164,7 +148,7 @@ const ProductsAdmin: React.FC = () => {
     const theme = useTheme()
     const isPortrait = useMediaQuery(theme.breakpoints.down('sm'))
 
-    return <Box sx={centerStyle}>
+    return <Box className='center-style'>
         <CategorySelect
             category={category}
             handlerCategoryFilter={handlerCategoryFilter}
@@ -172,7 +156,6 @@ const ProductsAdmin: React.FC = () => {
         />
         <Box sx={{ height: '70vh', width: '95vw' }}>
             <DataGrid
-                // getEstimatedRowHeight={() => 100}
                 getRowHeight={() => 'auto'}
                 columns={getColumns()}
                 rows={filteredProducts.length != 0 ? filteredProducts : products}
@@ -192,7 +175,7 @@ const ProductsAdmin: React.FC = () => {
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
         >
-            <Box sx={style}>
+            <Box className='modal-window-table'>
                 <Typography
                     variant="h6"
                 >

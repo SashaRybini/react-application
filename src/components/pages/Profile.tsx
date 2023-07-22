@@ -1,40 +1,36 @@
 import { useEffect, useState } from "react";
 import UserData from "../../model/UserData";
-import { Subscription } from "rxjs";
 import { authService } from "../../config/service-config";
 import { useSelectorAuth } from "../../redux/store";
 import { Box, Button, Grid, TextField } from "@mui/material";
+import { useDispatchCode, useSelectorUsers } from "../../hooks/hooks";
 
 const Profile: React.FC = () => {
     const userData: UserData = useSelectorAuth()
-    //code below TODO move to useSelectorUsers in hooks
-    const [users, setUsers] = useState<UserData[]>([]);
-    useEffect(() => {
-        const subscription: Subscription = authService.getUsers()
-            .subscribe({
-                next(usersArray: UserData[]) {
-                    setUsers(usersArray);
-                }
-            });
-        return () => subscription.unsubscribe();
-    }, [])
+
+    const users = useSelectorUsers()
 
     const initProfile: UserData = getUserProfile()
-    
     function getUserProfile(): UserData {
         return users.filter(u => u?.email == userData?.email)[0]! as UserData
     }
 
     const [profile, setProfile] = useState<UserData>();
 
-    //balagan below cuz users at first empty[]
+    //balagan below cuz users at first empty[]..
     useEffect(() => {
         setProfile(initProfile)
     }, [initProfile])
 
+    const dispatch = useDispatchCode()
     function onSubmitFn(event: any) {
         event.preventDefault()
-        authService.updateUserData(profile!) //errors ?
+        try {
+            const userData = authService.updateUserData(profile!)
+            dispatch('', 'updated')
+        } catch (error: any) {
+            dispatch(error, '')
+        }
     }
 
     function handlerName(event: any) {

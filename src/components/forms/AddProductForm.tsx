@@ -19,7 +19,6 @@ const initialProduct: Product = {
 export const AddProductForm: React.FC<Props> = ({ submitFn, productUpdated }) => {
 
     const [product, setProduct] = useState<Product>(productUpdated || initialProduct);
-    // const [errorMessage, setErrorMessage] = useState('');
 
     const [imagePreview, setImagePreview] = useState('')
 
@@ -57,12 +56,9 @@ export const AddProductForm: React.FC<Props> = ({ submitFn, productUpdated }) =>
     }
     async function onSubmitFn(event: any) {
         event.preventDefault();
-        // if (!product.category) {
-        //     setErrorMessage("Please select category")
-        // } else {
-            submitFn(product);
-            event.target.reset();
-        // }
+        submitFn(product);
+        event.target.reset();
+        setImagePreview('')
     }
     function onResetFn(event: any) {
         setProduct(productUpdated || initialProduct);
@@ -85,29 +81,31 @@ export const AddProductForm: React.FC<Props> = ({ submitFn, productUpdated }) =>
                 <Grid item xs={8} sm={4} >
                     <TextField type="text" required fullWidth label="Image url"
                         helperText="enter image url" onChange={handlerImageUrl}
-                        value={product.imageUrl} 
+                        value={product.imageUrl}
                     />
-                    {imagePreview && <img style={{maxWidth: '100%'}} src={imagePreview}></img>}
+                    {imagePreview && <img style={{ maxWidth: '100%' }} src={imagePreview}></img>}
                 </Grid>
                 <Grid item xs={8} sm={4} >
                     <TextField type="text" required fullWidth label="Title"
                         helperText="enter title" onChange={handlerTitle}
-                        value={product.title} 
+                        value={product.title}
                     />
                 </Grid>
-                <Grid item xs={8} sm={5} >
-                    <TextField type="text" required fullWidth label="Content"
-                        helperText="enter content" onChange={handlerContent}
-                        value={product.content} 
-                        multiline={multiline}
-                    />
-                    <Button 
-                        onClick={() => setMultiline(multiline? false : true)}
-                    >
-                        {multiline? <ExpandLessIcon/> : <ExpandMoreIcon />}
-                    </Button>
+                <Grid item xs={8} sm={8} md={8}>
+                    <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+                        <Button
+                            onClick={() => setMultiline(multiline ? false : true)}
+                        >
+                            {multiline ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                        </Button>
+                        <TextField type="text" required fullWidth label="Content"
+                            helperText="enter content" onChange={handlerContent}
+                            value={product.content}
+                            multiline={multiline}
+                        />
+                    </Box>
                 </Grid>
-                <Grid item xs={8} sm={4} md={5} >
+                <Grid item xs={8} sm={4} md={4} >
                     <TextField label="Price" fullWidth required
                         type="number" onChange={handlerPrice}
                         value={product.price || ''}
@@ -115,9 +113,9 @@ export const AddProductForm: React.FC<Props> = ({ submitFn, productUpdated }) =>
                         inputProps={{
                             min: 0,
                             max: Number.MAX_VALUE
-                        }} 
+                        }}
                     />
-                </Grid>                              
+                </Grid>
             </Grid>
             <Box sx={{ marginTop: { xs: "10vh", sm: "5vh" }, textAlign: "center" }}>
                 <Button type="submit" >Submit</Button>

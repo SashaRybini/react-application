@@ -1,8 +1,9 @@
-import { Box, Button, Card, CardContent, Modal, Tooltip, Typography, useMediaQuery, useTheme } from "@mui/material"
-import { useEffect, useMemo, useRef, useState } from "react";
+import { 
+    Box, Button,  Modal, Tooltip, useMediaQuery, useTheme 
+} from "@mui/material"
+import { useMemo, useRef, useState } from "react";
 import { Order } from "../../model/Order";
-import { Subscription } from "rxjs";
-import { authService, ordersService } from "../../config/service-config";
+import { ordersService } from "../../config/service-config";
 import { DataGrid, GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import Avatar from '@mui/material/Avatar';
 import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
@@ -12,30 +13,12 @@ import { PickedProduct } from "../../model/PickedProduct";
 import CheckIcon from '@mui/icons-material/Check';
 import Confirm from "../common/Confirm";
 import OrderDetailsAdmin from "../common/OrderDetailsAdmin";
-
-const style = {
-    position: 'absolute' as 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
-};
-
-const centerStyle = {
-    display: 'flex', flexDirection: 'column',
-    justifyContent: 'center', alignItems: 'center'
-}
-
+import { useSelectorOrders, useSelectorUsers } from "../../hooks/hooks";
 
 function stringToColor(string: string) {
     let hash = 0;
     let i;
 
-    /* eslint-disable no-bitwise */
     for (i = 0; i < string.length; i += 1) {
         hash = string.charCodeAt(i) + ((hash << 5) - hash);
     }
@@ -46,7 +29,6 @@ function stringToColor(string: string) {
         const value = (hash >> (i * 8)) & 0xff;
         color += `00${value.toString(16)}`.slice(-2);
     }
-    /* eslint-enable no-bitwise */
 
     return color;
 }
@@ -120,28 +102,12 @@ const Customers: React.FC = () => {
                 return [
                     <GridActionsCellItem label="status" disabled={isAccepted || isDelivered} icon={<CheckIcon />}
                         onClick={() => {
-                            // if (params.row.status == 'ordered') {
-                            // updateOrderStatus(params.row, params.id.toString(), 'accepted')
-                            // const orderWithCost = params.row
-                            // delete orderWithCost.cost
-                            // const order: Order = { ...orderWithCost, status: 'accepted' }
-                            // currentOrder.current = order
-                            // setOpenConfirmStatus(true)
                             convertOrderAndUpdateStatus(params.row, 'accepted')
-                            // }
                         }}
                     />,
                     <GridActionsCellItem label="update" disabled={isDelivered || isOrdered} icon={<LocalShippingOutlinedIcon />}
                         onClick={() => {
-                            // if (params.row.status == 'accepted') {
-                            // updateOrderStatus(params.row, params.id.toString(), 'delivered')
-                            // const orderWithCost = params.row
-                            // delete orderWithCost.cost
-                            // const order: Order = { ...orderWithCost, status: 'delivered' }
-                            // currentOrder.current = order
-                            // setOpenConfirmStatus(true)
                             convertOrderAndUpdateStatus(params.row, 'delivered')
-                            // }
                         }}
                     />
                 ];
@@ -149,52 +115,27 @@ const Customers: React.FC = () => {
         }
     ]
     function convertOrderAndUpdateStatus(orderWithCost: any, status: string) {
-        delete orderWithCost.cost
+        delete orderWithCost.cost //bug
         const order: Order = { ...orderWithCost, status }
         currentOrder.current = order
         setOpenConfirmStatus(true)
     }
     const currentOrder = useRef<Order>()
     const [openConfirmStatus, setOpenConfirmStatus] = useState(false)
-    //confirmation possible via useRef
-    // function updateOrderStatus(orderWithCost: any, orderId: string, orderStatus: string) {
-    //     delete orderWithCost.cost
-    //     const order: Order = { ...orderWithCost, status: orderStatus }
-    //     ordersService.setOrderStatus(orderId, order)
 
-    // }
-    function onSubmitConfirmStatus(confirmatin: boolean) {
+    function onSubmitConfirmStatus(confirmation: boolean) {
         setOpenConfirmStatus(false)
-        if (confirmatin) {
+        if (confirmation) {
             ordersService.setOrderStatus(currentOrder.current?.id, currentOrder.current!)
         }
     }
     const [openUserDetails, setOpenUserDetails] = useState(false)
     const userInfo = useRef<UserData>()
-    //code below TODO move to useSelectorOrders in hooks
-    const [orders, setOrders] = useState<Order[]>([]);
-    useEffect(() => {
-        const subscription: Subscription = ordersService.getOrders()
-            .subscribe({
-                next(ordersArray: Order[]) {
-                    setOrders(ordersArray);
-                }
-            });
-        return () => subscription.unsubscribe();
-    }, [])
 
-    //code below TODO move to useSelectorUsers in hooks
-    const [users, setUsers] = useState<UserData[]>([]);
-    useEffect(() => {
-        const subscription: Subscription = authService.getUsers()
-            .subscribe({
-                next(usersArray: UserData[]) {
-                    setUsers(usersArray);
-                }
-            });
-        return () => subscription.unsubscribe();
-    }, [])
-    //probably getRows moves to useMemo in depence on button
+    const orders = useSelectorOrders()
+
+    const users = useSelectorUsers()
+    
     function getRows() {
         let rows = orders.map(o => ({ ...o, cost: getCost(o) }))
         if (hideDelivered) {
@@ -233,7 +174,6 @@ const Customers: React.FC = () => {
         >
             {buttonName}
         </Button>
-        {/* <Box sx={{ height: '70vh', width: '95vw' }}> */}
         <Box sx={{ height: isPortrait ? '40vh' : '65vh', width: isPortrait ? '180vw' : '95vw' }}>
             <DataGrid
                 columns={columns}

@@ -22,9 +22,11 @@ const SignUp: React.FC = () => {
             await authService.login(loginData)
         res && dispatch(authActions.set(res))
 
-        const alert: CodePayload = { code: CodeType.OK, message: '' }
-        alert.code = res ? CodeType.OK : CodeType.SERVER_ERROR
-        alert.message = res ? 'Welcome' : 'Incorrect Credentials'
+        //in case of login after registration credentials will be always correct
+        
+        // const alert: CodePayload = { code: CodeType.OK, message: '' }
+        // alert.code = res ? CodeType.OK : CodeType.SERVER_ERROR
+        // alert.message = res ? 'Welcome' : 'Incorrect Credentials'
     }
 
     return <RegisterForm submitFn={signUpSubmitFn} />

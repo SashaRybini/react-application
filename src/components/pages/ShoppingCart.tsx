@@ -1,23 +1,20 @@
 import { Delete } from "@mui/icons-material"
-import { Box, Button, Grid, Modal, TextField, Typography, useMediaQuery, useTheme } from "@mui/material"
+import {
+    Box, Button, Grid, Modal, TextField, Typography, useMediaQuery, useTheme
+} from "@mui/material"
 import { DataGrid, GridActionsCellItem, GridColDef } from "@mui/x-data-grid"
 import { Product } from "../../model/Product"
-import { useEffect, useMemo, useRef, useState } from "react"
-import { PickedProduct } from "../../model/PickedProduct"
-import { Subscription } from "rxjs"
-import { authService, ordersService } from "../../config/service-config"
+import { useMemo, useRef, useState } from "react"
+import { ordersService } from "../../config/service-config"
 import UserData from "../../model/UserData"
 import { useSelectorAuth } from "../../redux/store"
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import Confirm from "../common/Confirm"
-import { getEndDate, getISODateStr } from "../../util/date-functions"
+import { getEndDate } from "../../util/date-functions"
 import { useNavigate } from "react-router-dom"
+import { useSelectorCart, useSelectorUsers } from "../../hooks/hooks"
 
-const centerStyle = {
-    display: 'flex', flexDirection: 'column',
-    justifyContent: 'center', alignItems: 'center'
-}
 const ShoppingCart: React.FC = () => {
 
     function getColumns() {
@@ -83,7 +80,7 @@ const ShoppingCart: React.FC = () => {
             }
         ]
         if (isPortrait) {
-            columns = columns.filter(c => c.field != 'imageUrl' && c.field != 'id' 
+            columns = columns.filter(c => c.field != 'imageUrl' && c.field != 'id'
                 && c.field != 'actionsRemoveRow')
         }
         return columns
@@ -93,7 +90,7 @@ const ShoppingCart: React.FC = () => {
     const [confirmContent, setConfirmContent] = useState('')
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false)
 
-    function removeProduct(prod: Product) { //we have same fn in ProductsAdmin
+    function removeProduct(prod: Product) {
         setConfirmTitle('delete product?')
         setConfirmContent(`you are going to delete ${prod.title} from cart`)
         productId.current = prod.id
@@ -106,19 +103,8 @@ const ShoppingCart: React.FC = () => {
         }
     }
     const userData: UserData = useSelectorAuth()
-    //code below TODO move to useSelectorCart in hooks
-    const [cart, setCart] = useState<PickedProduct[]>([]);
-    useEffect(() => {
-        if (userData) {
-            const subscription: Subscription = ordersService.getShoppingCart(userData.email)
-                .subscribe({
-                    next(prodArray: PickedProduct[]) {
-                        setCart(prodArray);
-                    }
-                });
-            return () => subscription.unsubscribe();
-        }
-    }, [])
+
+    const cart = useSelectorCart()
 
     function getRows() {
         return cart.map(pp => ({
@@ -145,19 +131,7 @@ const ShoppingCart: React.FC = () => {
         setDeliveryDate(date);
     }
 
-
-
-    //code below TODO move to useSelectorUsers in hooks
-    const [users, setUsers] = useState<UserData[]>([]);
-    useEffect(() => {
-        const subscription: Subscription = authService.getUsers()
-            .subscribe({
-                next(usersArray: UserData[]) {
-                    setUsers(usersArray);
-                }
-            });
-        return () => subscription.unsubscribe();
-    }, [])
+    const users = useSelectorUsers()
 
     const isAdressExist: boolean = isAdress()
     function isAdress(): boolean {
@@ -170,7 +144,7 @@ const ShoppingCart: React.FC = () => {
     const theme = useTheme()
     const isPortrait = useMediaQuery(theme.breakpoints.down('sm'))
 
-    return <Box sx={centerStyle}>
+    return <Box className='center-style'>
         <Box sx={{ height: '60vh', width: '95vw' }}>
             <DataGrid
                 columns={getColumns()}
@@ -233,14 +207,12 @@ const ShoppingCart: React.FC = () => {
                 </Box>
             </Grid>
         </Grid>
-
         <Confirm
             title='create order?'
             content=''
             handleClose={onSubmitConfirmOrder}
             open={openConfirmOrder}
         />
-
         <Modal
             open={openWarning}
             onClose={() => setOpenWarning(false)}

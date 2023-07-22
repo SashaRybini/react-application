@@ -17,6 +17,16 @@ import { getISODateStr } from "../../util/date-functions";
 const MIN_ID = 1000000;
 const MAX_ID = 10000000;
 
+function getErrorMessage(firestoreError: FirestoreError): string {
+    let errorMessage = '';
+    switch (firestoreError.code) {
+        case "unauthenticated":
+        case "permission-denied": errorMessage = "Authentication"; break;
+        default: errorMessage = firestoreError.message;
+    }
+    return errorMessage;
+}
+
 export default class OrdersServiceFire implements OrdersService {
 
     dataBase: Firestore = getFirestore(appFirebase)
@@ -56,9 +66,13 @@ export default class OrdersServiceFire implements OrdersService {
         const docRef = this.getDocRef(email, id)
         await deleteDoc(docRef)
     }
-    getShoppingCart(email: string): Observable<PickedProduct[]> { //toto handle errors? of? like in getProducts (ProductsServiceFire)
-        const collectionRef = collection(this.dataBase, email) //as CollectionReference<PickedProduct>;
-        return collectionData(collectionRef) as Observable<PickedProduct[]>
+    getShoppingCart(email: string): Observable<PickedProduct[] | string> {
+        const collectionRef = collection(this.dataBase, email)
+        return collectionData(collectionRef).pipe(catchError(error => {
+            const firestoreError: FirestoreError = error;
+            const errorMessage = getErrorMessage(firestoreError);
+            return of(errorMessage) //of puts message to the stream
+        })) as Observable<PickedProduct[] | string>
     }
     async createOrder(email: string, cart: PickedProduct[], deliveryDate: string): Promise<void> {
         const order: Order = {
@@ -69,9 +83,16 @@ export default class OrdersServiceFire implements OrdersService {
             deliveryDate,
             status: "ordered"
         }
-        await setDoc(doc(this.ordersRef, order.id), order);
+        const docRef = doc(this.ordersRef, order.id)
+        try {
+            await setDoc(docRef, order);
+        } catch (error: any) {
+            const firestoreError: FirestoreError = error;
+            const errorMessage = getErrorMessage(firestoreError);
+            throw errorMessage;
+        }
 
-        // ===== and clear shopping =====
+        //and clear shopping
         cart.forEach(async p => {
             const docRef = doc(this.dataBase, email, p.id)
             await deleteDoc(docRef)
@@ -89,25 +110,41 @@ export default class OrdersServiceFire implements OrdersService {
         const docSnap = await getDoc(docRef);
         return docSnap.exists();
     }
-    getOrders(): Observable<Order[]> { //todo handle ERRORS
-        return collectionData(this.ordersRef) as Observable<Order[]>
+    getOrders(): Observable<string | Order[]> { //todo handle ERRORS
+        return collectionData(this.ordersRef).pipe(catchError(error => {
+            const firestoreError: FirestoreError = error
+            const errorMessage = getErrorMessage(firestoreError)
+            return of(errorMessage)
+        })) as Observable<string | Order[]>
     }
     async setOrderStatus(orderId: string, order: Order): Promise<void> {
         const docRef = doc(this.ordersRef, orderId)
         setDoc(docRef, order)
     }
-    async getOrder(orderId: string): Promise<Order> { 
+    async getOrder(orderId: string): Promise<Order> {
         const docRef = doc(this.ordersRef, orderId)
         const docSnapshot = await getDoc(docRef)
         const docData = docSnapshot.data()
         return docData as Promise<Order>
     }
-    async updateOrder(order: Order): Promise<void> { //handle errors?
+    async updateOrder(order: Order): Promise<void> { //
         const docRef = doc(this.ordersRef, order.id)
-        await setDoc(docRef, order)
+        try {
+            await setDoc(docRef, order)
+        } catch (error: any) {
+            const firestorError: FirestoreError = error;
+            const errorMessage = getErrorMessage(firestorError);
+            throw errorMessage;
+        }
     }
-    async deleteOrder(orderId: string): Promise<void> { //?handle errors like in deleteProduct in ProductServiceFire
+    async deleteOrder(orderId: string): Promise<void> { //
         const docRef = doc(this.ordersRef, orderId)
-        await deleteDoc(docRef)
+        try {
+            await deleteDoc(docRef)
+        } catch (error: any) {
+            const firestorError: FirestoreError = error;
+            const errorMessage = getErrorMessage(firestorError);
+            throw errorMessage;
+        }
     }
 }

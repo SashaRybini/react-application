@@ -1,17 +1,17 @@
-import { Box, Button, Modal, Typography, useMediaQuery, useTheme } from "@mui/material"
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Subscription } from "rxjs";
+import { 
+    Box, Button, Modal, useMediaQuery, useTheme 
+} from "@mui/material"
+import { useMemo, useRef, useState } from "react";
 import { Order } from "../../model/Order";
-import { authService, ordersService } from "../../config/service-config";
+import { ordersService } from "../../config/service-config";
 import UserData from "../../model/UserData";
 import { useSelectorAuth } from "../../redux/store";
 import { DataGrid, GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import OrderDetails from "../common/OrderDetails";
-import { PickedProduct } from "../../model/PickedProduct";
-import ShoppingCart from "./ShoppingCart";
 import { Delete } from "@mui/icons-material";
 import Confirm from "../common/Confirm";
+import { useDispatchCode, useSelectorOrders } from "../../hooks/hooks";
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -56,7 +56,6 @@ const Orders: React.FC = () => {
                         <GridActionsCellItem label="details" icon={<VisibilityIcon />}
                             onClick={() => {
                                 setOpenOrderDetails(true)
-                                cart.current = params.row.cart
                                 orderId.current = params.id.toString()
                                 orderStatus.current = params.row.status
                             }}
@@ -90,29 +89,16 @@ const Orders: React.FC = () => {
 
     const orderStatus = useRef('')
     const orderId = useRef('')
-    //code below TODO move to useSelectorOrders in hooks
-    const [orders, setOrders] = useState<Order[]>([]);
-    useEffect(() => {
-        const subscription: Subscription = ordersService.getOrders()
-            .subscribe({
-                next(ordersArray: Order[]) {
-                    setOrders(ordersArray);
-                }
-            });
-        return () => subscription.unsubscribe();
-    }, [])
+    
+    const orders = useSelectorOrders()
 
     const userData: UserData = useSelectorAuth()
-    const cart = useRef([])
 
     function getRows() {
         let userOrders = orders.filter(o => o.email === userData?.email)
         userOrders = userOrders.map(uo => ({
             ...uo,
             cost: getCost(uo)
-            // orderDate: uo.orderDate, //already in userorder
-            // deliveryDate: uo.deliveryDate,
-            // status: uo.status
         }))
         if (hideDelivered) {
             userOrders = userOrders.filter(uo => uo.status != 'delivered')
@@ -124,9 +110,14 @@ const Orders: React.FC = () => {
     }
     const [openOrderDetails, setOpenOrderDetails] = useState(false)
 
+    const dispatch = useDispatchCode()
     function deleteOrder() {
-        console.log(orderId.current)
-        ordersService.deleteOrder(orderId.current)
+        try {
+            ordersService.deleteOrder(orderId.current)
+            dispatch('', `order ${orderId.current} has been deleted`) //hmm.. (rerenders too fast mby)
+        } catch (error: any) {
+            dispatch(error, '')
+        }
     }
     const [openConfirm, setOpenConfirm] = useState(false)
     function onSubmitConfirm(decision: boolean) {
@@ -176,7 +167,6 @@ const Orders: React.FC = () => {
         >
             <Box sx={style}>
                 <OrderDetails
-                    // cart={cart.current as PickedProduct[]}
                     orderId={orderId.current!}
                     orderStatus={orderStatus.current}
                 />

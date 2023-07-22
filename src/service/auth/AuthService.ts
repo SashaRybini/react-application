@@ -3,9 +3,11 @@ import LoginData from "../../model/LoginData";
 import UserData from "../../model/UserData";
 
 export default interface AuthService {
+
     login(loginData: LoginData): Promise<UserData>
     logout(): Promise<void>
     registerNewUser(newUser: UserData): Promise<LoginData>
-    getUsers(): Observable<UserData[]>
-    updateUserData(userData: UserData): Promise<void> //mby return data to handle errors
+    getUsers(): Observable<UserData[] | string>
+    updateUserData(userData: UserData): Promise<UserData> //mby return data to handle errors
+    
 }

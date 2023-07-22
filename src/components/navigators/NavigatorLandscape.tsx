@@ -3,7 +3,7 @@ import { ReactNode, useEffect, useState } from 'react'
 import { Link, Outlet, useLocation, useNavigate} from 'react-router-dom'
 import { RouteType } from './NavigatorDispatcher'
 
-const Navigator: React.FC<{ routes: RouteType[] }> = ({routes}) => {
+const NavigatorLandscape: React.FC<{ routes: RouteType[] }> = ({routes}) => {
     const navigate = useNavigate()
     const location = useLocation()
     const [value, setValue] = useState(0)
@@ -30,5 +30,4 @@ const Navigator: React.FC<{ routes: RouteType[] }> = ({routes}) => {
         <Outlet></Outlet>
     </Box>
 }
-export default Navigator;
-// useMediaQuery //useState
+export default NavigatorLandscape;

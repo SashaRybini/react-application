@@ -4,34 +4,19 @@ import LoginData from "../../model/LoginData";
 import { authService } from "../../config/service-config";
 import UserData from "../../model/UserData";
 import { authActions } from "../../redux/slices/authSlice";
-import CodePayload from "../../model/CodePayload";
-import CodeType from "../../model/CodeType";
-import { codeActions } from "../../redux/slices/codeSlice";
+import { useDispatchCode } from "../../hooks/hooks";
 
 const SignIn: React.FC = () => {
     const dispatch = useDispatch();
+    const dispatchCode = useDispatchCode()
 
     async function loginSubmitFn(loginData: LoginData) {
-        const res: UserData = await authService.login(loginData)
+        const res: UserData = await authService.login(loginData) //login returns null in case of any errors
         res && dispatch(authActions.set(res))
-
-        const alert: CodePayload = { code: CodeType.OK, message: '' }
-        alert.code = res ? CodeType.OK : CodeType.SERVER_ERROR
-        alert.message = res ? 'Welcome' : 'Incorrect Credentials'
-        dispatch(codeActions.set(alert))
+        res ? dispatchCode('', 'Welcome') : dispatchCode('Incorrect Credentials', '')
     }
 
-    // function registerSubmitFn(newUser: UserData) {
-    //     authService.registerNewUser(newUser)
-    //     //todo registerNewUser should return something //mby login data for login ^
-    //     //todo alert message ^
-    //     //oooor auto login after registration
-    // }
-
-    return <SignInForm
-        loginSubmitFn={loginSubmitFn}
-        // registerSubmitFn={registerSubmitFn}
-    />
+    return <SignInForm loginSubmitFn={loginSubmitFn}/>
 }
 
 export default SignIn;

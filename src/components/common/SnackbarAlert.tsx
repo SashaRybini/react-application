@@ -1,6 +1,6 @@
 import { Alert, Snackbar } from "@mui/material";
 import { StatusType } from "../../model/StatusType";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { codeActions } from "../../redux/slices/codeSlice";
 
@@ -12,11 +12,11 @@ type Props = {
 const DEFAULT_DURATION = 20000
 const SnackbarAlert: React.FC<Props> = ({ message, duration, severity }) => {
     const [open, setOpen] = useState(false);
-    const alertMessage = useRef('')
+    // const alertMessage = useRef('')
     const dispatch = useDispatch()
     useEffect(() => {
         message && setOpen(true);
-        alertMessage.current = message;
+        // alertMessage.current = message;
     }, [message])
     
     return <Snackbar 

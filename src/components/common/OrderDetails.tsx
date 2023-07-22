@@ -1,31 +1,21 @@
 import { DataGrid, GridActionsCellItem, GridColDef } from "@mui/x-data-grid"
-import { PickedProduct } from "../../model/PickedProduct"
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
-import { Delete } from "@mui/icons-material"
-import { Product } from "../../model/Product";
 import { ordersService } from "../../config/service-config";
-import UserData from "../../model/UserData";
-import { useSelectorAuth } from "../../redux/store";
 import { Order } from "../../model/Order";
-import { useEffect, useState } from "react";
-import { Subscription } from "rxjs";
+import { useState } from "react";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
 import Confirm from "./Confirm";
+import { useDispatchCode, useSelectorOrders } from "../../hooks/hooks";
 
 type Props = {
-    // cart: PickedProduct[]
     orderId: string
     orderStatus: string
 }
 
 const OrderDetails: React.FC<Props> = ({ orderId, orderStatus }) => {
 
-    // const userData: UserData = useSelectorAuth()
-
     function getColumns() {
-        // if accepted/delivered => filter
-        // if admin => filter //it looks like there will be no admin
         let columns: GridColDef[] = [
             {
                 field: 'id', headerName: 'ID', flex: 0.7, headerClassName: 'data-grid-header',
@@ -41,7 +31,6 @@ const OrderDetails: React.FC<Props> = ({ orderId, orderStatus }) => {
                 field: 'title', headerName: 'Title', flex: 0.8, headerClassName: 'data-grid-header',
                 align: 'center', headerAlign: 'center'
             },
-
             {
                 field: 'price', headerName: 'Price in $', flex: 0.6, headerClassName: 'data-grid-header',
                 align: 'center', headerAlign: 'center'
@@ -76,7 +65,6 @@ const OrderDetails: React.FC<Props> = ({ orderId, orderStatus }) => {
         if (orderStatus != 'ordered') {
             columns = columns.filter(c => c.field != 'actionsRemove' && c.field != 'actionsAdd')
         }
-
         return columns
     }
     async function updateOrder(prodId: string, isRemove: boolean) {
@@ -94,8 +82,14 @@ const OrderDetails: React.FC<Props> = ({ orderId, orderStatus }) => {
             ordersService.updateOrder(orderToUpdate)
         }
     }
+    const dispatch = useDispatchCode()
     function deleteOrder() {
-        ordersService.deleteOrder(orderId!)
+        try {
+            ordersService.deleteOrder(orderId!)
+            dispatch('', `order ${orderId!} has been deleted`) //hmm..
+        } catch (error: any) {
+            dispatch(error, '')
+        }
     }
     const [openConfirm, setOpenConfirm] = useState(false)
     function onSubmitConfirm(decision: boolean) {
@@ -105,17 +99,7 @@ const OrderDetails: React.FC<Props> = ({ orderId, orderStatus }) => {
         }
     }
 
-    //code below TODO move to useSelectorOrders in hooks
-    const [orders, setOrders] = useState<Order[]>([]);
-    useEffect(() => {
-        const subscription: Subscription = ordersService.getOrders()
-            .subscribe({
-                next(ordersArray: Order[]) {
-                    setOrders(ordersArray);
-                }
-            });
-        return () => subscription.unsubscribe();
-    }, [])
+    const orders = useSelectorOrders()
 
     function getRows() {
         let order: Order
@@ -126,9 +110,6 @@ const OrderDetails: React.FC<Props> = ({ orderId, orderStatus }) => {
                 rows = order.cart.map(pp => ({ ...pp.product, id: pp.id, count: pp.count }))
             }
         }
-        // if (userData?.role === 'admin') {
-        //     rows = cart.map(pp => ({...pp.product, id: pp.id, count: pp.count}))
-        // }
         return rows
     }
 
@@ -138,8 +119,8 @@ const OrderDetails: React.FC<Props> = ({ orderId, orderStatus }) => {
 
     return <Box className={rotateStyle}>
         <Box sx={{
-            height: '60vh', width: isPortrait ? '160vw' : '80vw', 
-             ml: isPortrait ? '9vw' : ''
+            height: '60vh', width: isPortrait ? '160vw' : '80vw',
+            ml: isPortrait ? '9vw' : ''
         }}
         >
             <DataGrid columns={getColumns()} rows={getRows()} />

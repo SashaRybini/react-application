@@ -1,30 +1,19 @@
-
 import { productsService } from "../../config/service-config";
-import { useDispatch } from "react-redux";
-import { codeActions } from "../../redux/slices/codeSlice";
-import CodeType from "../../model/CodeType";
-import CodePayload from "../../model/CodePayload";
 import { Product } from "../../model/Product";
 import { AddProductForm } from "../forms/AddProductForm";
+import { useDispatchCode } from "../../hooks/hooks";
 
 const AddProduct: React.FC = () => {
 
-    const dispatch = useDispatch();
+    const dispatch = useDispatchCode()
 
     async function submitFn(prod: Product) {
-        const alert: CodePayload = { code: CodeType.OK, message: ''}
         try {
             const product: Product = await productsService.addProduct(prod);
-            alert.message = `product: ${product.title} has been added`
+            dispatch('', `product: ${product.title} has been added`)
         } catch (error: any) {
-            alert.code = CodeType.SERVER_ERROR
-            alert.message = error;
-            
-            // if ((typeof (error) == 'string') && error.includes('Authentication')) {
-            //     alert.code = CodeType.AUTH_ERROR
-            // }
+            dispatch(error, '')
         }
-        dispatch(codeActions.set(alert))
     }
     return <AddProductForm submitFn={submitFn} />
 }

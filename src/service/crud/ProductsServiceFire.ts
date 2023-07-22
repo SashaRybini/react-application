@@ -79,7 +79,7 @@ export default class ProductsServiceFire implements ProductsService {
         return collectionData(this.collectionRef).pipe(catchError(error => {
             const firestoreError: FirestoreError = error;
             const errorMessage = getErrorMessage(firestoreError);
-            return of(errorMessage) //of закидывает мессадж в стрим
+            return of(errorMessage) //of puts message to the stream
         })) as Observable<string | Product[]>
     }
     async deleteProduct(id: any): Promise<void> {

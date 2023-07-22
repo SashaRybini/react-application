@@ -2,15 +2,25 @@ import LoginData from "../../model/LoginData";
 import UserData from "../../model/UserData";
 import AuthService from "./AuthService";
 import {
-    getFirestore, collection, getDoc, doc, setDoc
+    getFirestore, collection, getDoc, doc, setDoc, FirestoreError
 } from 'firebase/firestore';
 import {
     GoogleAuthProvider, getAuth, signInWithEmailAndPassword,
-    signInWithPopup, signOut, createUserWithEmailAndPassword, signInWithRedirect
+    signInWithPopup, signOut, createUserWithEmailAndPassword
 } from 'firebase/auth';
 import appFirebase from "../../config/firebase-config";
-import { Observable } from "rxjs";
+import { Observable, catchError, of } from "rxjs";
 import { collectionData } from "rxfire/firestore";
+
+function getErrorMessage(firestoreError: FirestoreError): string {
+    let errorMessage = '';
+    switch (firestoreError.code) {
+        case "unauthenticated":
+        case "permission-denied": errorMessage = "Authentication"; break;
+        default: errorMessage = firestoreError.message;
+    }
+    return errorMessage;
+}
 
 export default class AuthServiceFire implements AuthService {
 
@@ -19,7 +29,6 @@ export default class AuthServiceFire implements AuthService {
     private users = collection(getFirestore(appFirebase), 'users')
 
     async registerNewUser(newUser: UserData): Promise<LoginData> {
-
         try {
             const userAuth = newUser!.email === 'GOOGLE'
                 ?
@@ -48,7 +57,7 @@ export default class AuthServiceFire implements AuthService {
         delete newUser!.password
 
         const docRef = doc(this.users, newUser!.email)
-        await setDoc(docRef, newUser)
+        await setDoc(docRef, newUser) //try 
 
         return loginData
     }
@@ -77,11 +86,21 @@ export default class AuthServiceFire implements AuthService {
     logout(): Promise<void> {
         return signOut(this.auth)
     }
-    getUsers(): Observable<UserData[]> { //todo handle errors
-        return collectionData(this.users) as Observable<UserData[]>
+    getUsers(): Observable<UserData[] | string> {
+        return collectionData(this.users).pipe(catchError(error => {
+            const firestoreError: FirestoreError = error;
+            const errorMessage = getErrorMessage(firestoreError);
+            return of(errorMessage)
+        })) as Observable<UserData[]>
     }
-    async updateUserData(userData: UserData): Promise<void> {
+    async updateUserData(userData: UserData): Promise<UserData> {
         const docRef = doc(this.users, userData!.email)
-        setDoc(docRef, userData)
+        try {
+            setDoc(docRef, userData)
+        } catch (error: any) {
+            const firestorError: FirestoreError = error;
+            throw firestorError.message
+        }
+        return userData
     }
 }

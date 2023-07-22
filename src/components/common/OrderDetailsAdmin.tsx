@@ -35,7 +35,6 @@ const OrderDetailsAdmin: React.FC<Props> = ({ cart }) => {
 
     const theme = useTheme()
     const isPortrait = useMediaQuery(theme.breakpoints.down('sm'))
-    // const rotateStyle = isPortrait ? 'rotate' : ''
 
     function getRows() {
         return cart.map(pp => ({ ...pp.product, id: pp.id, count: pp.count }))
@@ -48,13 +47,3 @@ const OrderDetailsAdmin: React.FC<Props> = ({ cart }) => {
         <DataGrid columns={columns} rows={getRows()} />
 }
 export default OrderDetailsAdmin
-
-// <Box className={rotateStyle}>
-//         <Box sx={{
-//             height: '60vh', width: isPortrait ? '160vw' : '80vw',
-//              ml: isPortrait ? '9vw' : ''
-//         }}
-//         >
-//             <DataGrid columns={columns} rows={getRows()} />
-//         </Box>
-//     </Box>
