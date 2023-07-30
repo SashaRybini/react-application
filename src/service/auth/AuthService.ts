@@ -8,6 +8,6 @@ export default interface AuthService {
     logout(): Promise<void>
     registerNewUser(newUser: UserData): Promise<LoginData>
     getUsers(): Observable<UserData[] | string>
-    updateUserData(userData: UserData): Promise<UserData> //mby return data to handle errors
+    updateUserData(userData: UserData): Promise<UserData>
     
 }
