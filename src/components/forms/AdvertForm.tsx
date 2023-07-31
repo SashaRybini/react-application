@@ -1,73 +1,77 @@
 import React, { useRef, useState } from "react";
 import { FormControl, Grid, TextField, InputLabel, Select, Box, MenuItem, Button, FormLabel, RadioGroup, FormControlLabel, Radio, FormHelperText, Snackbar, Alert } from '@mui/material';
-import Employee from "../../model/Employee";
-import employeeConfig from "../../config/employee-config.json"
+
+
 import InputResult from "../../model/InputResult";
 import { StatusType } from "../../model/StatusType";
 import { useDispatch } from "react-redux";
 import { codeActions } from "../../redux/slices/codeSlice";
+import advertsConfig from "../../config/adverts-config.json"
+const categories = advertsConfig.categories;
+import Advert from "../../Advert";
 type Props = {
-    submitFn: (empl: Employee) => void
-    employeeUpdated?: Employee
+    submitFn: (ad: Advert) => void
+    advertUpdated?: Advert
 }
-const initialDate: any = 0;
-const initialGender: any = '';
-const initialEmployee: Employee = {
-    id: 0, birthDate: initialDate, name: '', department: '', salary: 0,
-    gender: initialGender
+
+const initialAdvert: Advert = {
+    id: 0,
+    category: "",
+    price: 0,
+    name: "",
+    details: ""
 };
-export const EmployeeForm: React.FC<Props> = ({ submitFn, employeeUpdated }) => {
-    const { minYear, minSalary, maxYear, maxSalary, departments }
-        = employeeConfig;
-    const [employee, setEmployee] = useState<Employee>(employeeUpdated || initialEmployee);
+export const AdvertForm: React.FC<Props> = ({ submitFn, advertUpdated }) => {
+    
+    const [employee, setEmployee] = useState<Advert>(advertUpdated || initialAdvert);
     const [errorMessage, setErrorMessage] = useState('');
 
-    function handlerName(event: any) {
-        const name = event.target.value;
-        const emplCopy = { ...employee };
-        emplCopy.name = name;
-        setEmployee(emplCopy);
-    }
-    function handlerBirthdate(event: any) {
-        const birthDate = event.target.value;
-        const emplCopy = { ...employee };
-        emplCopy.birthDate = new Date(birthDate);
-        setEmployee(emplCopy);
-    }
-    function handlerSalary(event: any) {
-        const salary: number = +event.target.value;
-        const emplCopy = { ...employee };
-        emplCopy.salary = salary;
-        setEmployee(emplCopy);
-    }
-    function handlerDepartment(event: any) {
-        const department = event.target.value;
-        const emplCopy = { ...employee };
-        emplCopy.department = department;
-        setEmployee(emplCopy);
-    }
-    function genderHandler(event: any) {
-        setErrorMessage('');
-        const gender: 'male' | 'female' = event.target.value;
-        const emplCopy = { ...employee };
-        emplCopy.gender = gender;
-        setEmployee(emplCopy);
-    }
-    async function onSubmitFn(event: any) {
-        event.preventDefault();
-        if (!employee.gender) {
-            setErrorMessage("Please select gender")
-        } else {
-            const res = await submitFn(employee);
-            event.target.reset();
-        }
-    }
+    // function handlerName(event: any) {
+    //     const name = event.target.value;
+    //     const emplCopy = { ...employee };
+    //     emplCopy.name = name;
+    //     setEmployee(emplCopy);
+    // }
+    // function handlerBirthdate(event: any) {
+    //     const birthDate = event.target.value;
+    //     const emplCopy = { ...employee };
+    //     emplCopy.birthDate = new Date(birthDate);
+    //     setEmployee(emplCopy);
+    // }
+    // function handlerSalary(event: any) {
+    //     const salary: number = +event.target.value;
+    //     const emplCopy = { ...employee };
+    //     emplCopy.salary = salary;
+    //     setEmployee(emplCopy);
+    // }
+    // function handlerDepartment(event: any) {
+    //     const department = event.target.value;
+    //     const emplCopy = { ...employee };
+    //     emplCopy.department = department;
+    //     setEmployee(emplCopy);
+    // }
+    // function genderHandler(event: any) {
+    //     setErrorMessage('');
+    //     const gender: 'male' | 'female' = event.target.value;
+    //     const emplCopy = { ...employee };
+    //     emplCopy.gender = gender;
+    //     setEmployee(emplCopy);
+    // }
+    // async function onSubmitFn(event: any) {
+    //     event.preventDefault();
+    //     if (!employee.gender) {
+    //         setErrorMessage("Please select gender")
+    //     } else {
+    //         const res = await submitFn(employee);
+    //         event.target.reset();
+    //     }
+    // }
     function onResetFn(event: any) {
-        setEmployee(initialEmployee);
+        setEmployee(initialAdvert);
     }
 
     return <Box sx={{ marginTop: { sm: "25vh" } }}>
-        <form onSubmit={onSubmitFn} onReset={onResetFn}>
+        {/* <form onSubmit={onSubmitFn} onReset={onResetFn}>
             <Grid container spacing={4} justifyContent="center">
                 <Grid item xs={8} sm={5} >
                     <FormControl fullWidth required>
@@ -126,6 +130,6 @@ export const EmployeeForm: React.FC<Props> = ({ submitFn, employeeUpdated }) => 
                 <Button type="submit" >Submit</Button>
                 <Button type="reset">Reset</Button>
             </Box>
-        </form>
+        </form> */}
     </Box>
 }

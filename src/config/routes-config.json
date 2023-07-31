@@ -1,45 +1,24 @@
 {
-    "always": [],
-    "authenticated": [
+    "routes": [
         {
             "to": "/",
-            "label": "Employees Table",
-            "order": 1
+            "label": "Adverts",
+            "order": 10
         },
         {
-            "to": "/signout",
-            "label": "Sign Out",
-            "order": 1000
+            "to": "adverts/bycategory",
+            "label": "Ads by category",
+            "order": 20
         },
         {
-            "to": "/statistics/age",
-            "label": "Age Statistics",
-            "order": 100
+            "to": "adverts/byprice",
+            "label": "Ads by price",
+            "order": 30
         },
         {
-            "to": "/statistics/salary",
-            "label": "Salary Statistics",
-            "order": 100
-        }
-    ],
-    "admin": [
-        {
-            "to": "/employees/add",
-            "label": "Add Employee",
-            "order": 2
-        },
-        {
-            "to": "/employees/generation",
-            "label": "Empl Generation",
-            "order": 3 
-        }
-    ],
-    "noadmin": [],
-    "noauthenticated": [
-        {
-            "to": "/signin",
-            "label": "Sign In",
-            "order": 2
+            "to": "adverts/add",
+            "label": "Add an advert",
+            "order": 40
         }
     ]
 }
