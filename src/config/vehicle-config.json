@@ -1,0 +1,8 @@
+{
+    "vehicleDetailsStrings": [
+        "manufacturer", "model", "color"
+    ],
+    "vehicleDetailsNumbers": [
+        "year", "mileage"
+    ]
+}

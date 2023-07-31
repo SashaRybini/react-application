@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { ReactNode, useRef, useState } from "react";
 import { FormControl, Grid, TextField, InputLabel, Select, Box, MenuItem, Button, FormLabel, RadioGroup, FormControlLabel, Radio, FormHelperText, Snackbar, Alert } from '@mui/material';
 
 
@@ -6,11 +6,16 @@ import InputResult from "../../model/InputResult";
 import { StatusType } from "../../model/StatusType";
 import { useDispatch } from "react-redux";
 import { codeActions } from "../../redux/slices/codeSlice";
-import advertsConfig from "../../config/adverts-config.json"
+
+import advertsConfig from "../../config/categories-config.json"
+import Advert from "../../model/Advert";
+import { HousesForm } from "./HousesForm";
+import { VehiclesForm } from "./VehiclesForm";
+import { ElectricalForm } from "./ElectricalForm";
 const categories = advertsConfig.categories;
-import Advert from "../../Advert";
+
 type Props = {
-    submitFn: (ad: Advert) => void
+    submitFn: (advert: Advert) => void
     advertUpdated?: Advert
 }
 
@@ -20,116 +25,92 @@ const initialAdvert: Advert = {
     price: 0,
     name: "",
     details: ""
-};
+}
+
+
 export const AdvertForm: React.FC<Props> = ({ submitFn, advertUpdated }) => {
     
-    const [employee, setEmployee] = useState<Advert>(advertUpdated || initialAdvert);
-    const [errorMessage, setErrorMessage] = useState('');
+    const [advert, setAdvert] = useState<Advert>(advertUpdated || initialAdvert);
+    
+    const components: Map<string, ReactNode> = new Map([
+        [`${categories[0]}`, <HousesForm handlerDetails={handlerDetails} advert={advert}/>],
+        [`${categories[1]}`, <VehiclesForm />],
+        [`${categories[2]}`, <ElectricalForm />]
+    ])
 
-    // function handlerName(event: any) {
-    //     const name = event.target.value;
-    //     const emplCopy = { ...employee };
-    //     emplCopy.name = name;
-    //     setEmployee(emplCopy);
-    // }
-    // function handlerBirthdate(event: any) {
-    //     const birthDate = event.target.value;
-    //     const emplCopy = { ...employee };
-    //     emplCopy.birthDate = new Date(birthDate);
-    //     setEmployee(emplCopy);
-    // }
-    // function handlerSalary(event: any) {
-    //     const salary: number = +event.target.value;
-    //     const emplCopy = { ...employee };
-    //     emplCopy.salary = salary;
-    //     setEmployee(emplCopy);
-    // }
-    // function handlerDepartment(event: any) {
-    //     const department = event.target.value;
-    //     const emplCopy = { ...employee };
-    //     emplCopy.department = department;
-    //     setEmployee(emplCopy);
-    // }
-    // function genderHandler(event: any) {
-    //     setErrorMessage('');
-    //     const gender: 'male' | 'female' = event.target.value;
-    //     const emplCopy = { ...employee };
-    //     emplCopy.gender = gender;
-    //     setEmployee(emplCopy);
-    // }
-    // async function onSubmitFn(event: any) {
-    //     event.preventDefault();
-    //     if (!employee.gender) {
-    //         setErrorMessage("Please select gender")
-    //     } else {
-    //         const res = await submitFn(employee);
-    //         event.target.reset();
-    //     }
-    // }
-    function onResetFn(event: any) {
-        setEmployee(initialAdvert);
+    function handlerCategory(event: any) {
+        const category = event.target.value;
+        const advertCopy = { ...advert };
+        advertCopy.category = category;
+        setAdvert(advertCopy);
+    }
+    function handlerName(event: any) {
+        const name = event.target.value;
+        const advertCopy = { ...advert };
+        advertCopy.name = name;
+        setAdvert(advertCopy);
+    }
+    function handlerPrice(event: any) {
+        const price: number = +event.target.value;
+        const advertCopy = { ...advert };
+        advertCopy.price = price;
+        setAdvert(advertCopy);
+    }
+    advert.details = `{
+        "houseType": "flat",
+        "advertType": "sell",
+        "rooms": 2,
+        "square": 22
+    }`
+    function handlerDetails(event: any) {
+        console.log(event.target.value)
+        // const price: number = +event.target.value;
+        // const advertCopy = { ...advert };
+        // advertCopy.price = price;
+        // setAdvert(advertCopy);
     }
 
-    return <Box sx={{ marginTop: { sm: "25vh" } }}>
-        {/* <form onSubmit={onSubmitFn} onReset={onResetFn}>
+    async function onSubmitFn(event: any) {
+        event.preventDefault();
+        submitFn(advert);
+        event.target.reset();
+    }
+    function onResetFn(event: any) {
+        setAdvert(initialAdvert);
+    }
+
+    return <Box sx={{ marginTop: { sm: "3vh" } }}>
+        <form onSubmit={onSubmitFn} onReset={onResetFn}>
             <Grid container spacing={4} justifyContent="center">
                 <Grid item xs={8} sm={5} >
                     <FormControl fullWidth required>
-                        <InputLabel id="select-department-id">Department</InputLabel>
-                        <Select labelId="select-department-id" label="Department"
-                            value={employee.department} onChange={handlerDepartment}>
+                        <InputLabel id="select-category-id">Category</InputLabel>
+                        <Select labelId="select-category-id" label="Department"
+                            value={advert.category} onChange={handlerCategory}>
                             <MenuItem value=''>None</MenuItem>
-                            {departments.map(dep => <MenuItem value={dep} key={dep}>{dep}</MenuItem>)}
+                            {categories.map(c => <MenuItem value={c} key={c}>{c}</MenuItem>)}
                         </Select>
                     </FormControl>
                 </Grid>
                 <Grid item xs={8} sm={5} >
-                    <TextField type="text" required fullWidth label="Employee name"
-                        helperText="enter Employee name" onChange={handlerName}
-                        value={employee.name} />
+                    <TextField type="text" required fullWidth label="Advert name"
+                        onChange={handlerName}
+                        value={advert.name} />
                 </Grid>
-                <Grid item xs={8} sm={4} md={5}>
-                    <TextField type="date" required fullWidth label="birthDate"
-                        value={employee.birthDate ? employee.birthDate.toISOString()
-                            .substring(0, 10) : ''} inputProps={{
-                                readOnly: !!employeeUpdated,
-                                min: `${minYear}-01-01`,
-                                max: `${maxYear}-12-31`
-                            }} InputLabelProps={{
-                                shrink: true
-                            }} onChange={handlerBirthdate} />
-                </Grid>
-                <Grid item xs={8} sm={4} md={5} >
-                    <TextField label="salary" fullWidth required
-                        type="number" onChange={handlerSalary}
-                        value={employee.salary || ''}
-                        helperText={`enter salary in range [${minSalary}-${maxSalary}]`}
+                <Grid item xs={8} sm={5} >
+                    <TextField type="number" required fullWidth label="Price"
                         inputProps={{
-                            min: `${minSalary}`,
-                            max: `${maxSalary}`
-                        }} />
-                </Grid>
-                <Grid item xs={8} sm={4} md={5}>
-                    <FormControl required error={!!errorMessage}>
-                        <FormLabel id="gender-group-label">Gender</FormLabel>
-                        <RadioGroup
-                            aria-labelledby="gender-group-label"
-                            defaultValue=""
-                            value={employee.gender || ''}
-                            name="radio-buttons-group"
-                            row onChange={genderHandler}
-                        >
-                            <FormControlLabel value="female" control={<Radio />} label="Female" disabled={!!employeeUpdated}/>
-                            <FormControlLabel value="male" control={<Radio />} label="Male" disabled={!!employeeUpdated}/>
-                            <FormHelperText>{errorMessage}</FormHelperText>
-                        </RadioGroup>
-                    </FormControl>
+                            min: 1
+                        }}
+                        onChange={handlerPrice}
+                        value={advert.price || ""} />
                 </Grid>
             </Grid>
+            {components.get(advert.category)}
             <Box sx={{ marginTop: { xs: "10vh", sm: "5vh" }, textAlign: "center" }}>
                 <Button type="submit" >Submit</Button>
                 <Button type="reset">Reset</Button>
             </Box>
-        </form> */}
+        </form>
     </Box>
 }

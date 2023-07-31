@@ -1,0 +1,8 @@
+{
+    "productType": [
+        "new", "used"
+    ],
+    "electricalDetails": [
+        "fridge", "TV", "computer", "smartphone"
+    ]
+}

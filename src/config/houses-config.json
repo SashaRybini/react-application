@@ -1,0 +1,12 @@
+{
+    "houseType": [
+        "flat", "townhouse", "villa"
+    ],
+    "minRooms": 1,
+    "maxRooms": 7,
+    "minSquare": 20,
+    "maxSquare": 500,
+    "advertType": [
+        "rent", "sell"
+    ]
+}
