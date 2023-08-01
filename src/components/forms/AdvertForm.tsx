@@ -1,4 +1,4 @@
-import React, { ReactNode, useRef, useState } from "react";
+import React, { ReactNode, useMemo, useRef, useState } from "react";
 import { FormControl, Grid, TextField, InputLabel, Select, Box, MenuItem, Button, FormLabel, RadioGroup, FormControlLabel, Radio, FormHelperText, Snackbar, Alert } from '@mui/material';
 
 
@@ -68,8 +68,14 @@ export const AdvertForm: React.FC<Props> = ({ submitFn, advertUpdated }) => {
         event.target.reset();
     }
     function onResetFn(event: any) {
-        setAdvert(initialAdvert);
+        //parse (details...)
+        setAdvert(advertUpdated || initialAdvert);
     }
+    // const subFormComponent = useMemo(() => getSubFormComponent(), [advertUpdated?.details, advert.category, detailsFlag])
+    // function getSubFormComponent() {
+
+    //     return components.get(advert.category)
+    // }
 
     return <Box sx={{ marginTop: { sm: "3vh" } }}>
         <form onSubmit={onSubmitFn} onReset={onResetFn}>
@@ -100,6 +106,7 @@ export const AdvertForm: React.FC<Props> = ({ submitFn, advertUpdated }) => {
             </Grid>
 
             {components.get(advert.category)}
+            {/* {subFormComponent} */}
 
             <Box sx={{ marginTop: { xs: "10vh", sm: "5vh" }, textAlign: "center" }}>
                 <Button type="submit" >Submit</Button>

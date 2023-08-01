@@ -27,9 +27,30 @@ export default class AdcertsServiceRest implements AdvertsService {
     // private cache: Cache = new Cache();
 
     constructor(private url: string) { }
-    
-    addAdvert(ad: Advert): Promise<Advert> {
-        throw new Error("Method not implemented.");
+
+    async addAdvert(advert: Advert): Promise<Advert> {
+        let responseText = '';
+        try {
+            const response = await fetch(this.url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(advert)
+            });
+            if (!response.ok) {
+                // const { status, statusText } = response;
+                // responseText = status == 401 || status == 403 ? 'Authentication' : statusText;
+                console.log('response ne ok')
+                // throw response.statusText
+                // throw responseText;
+            }
+            // console.log("12311")
+            // console.log(response)
+            return response.json();
+        } catch (error: any) {
+            throw responseText ? responseText : "Server is unavailable. Repeat later on";
+        }
     }
     getAdverts(): Observable<string | Advert[]> {
         throw new Error("Method not implemented.");
@@ -47,6 +68,6 @@ export default class AdcertsServiceRest implements AdvertsService {
         throw new Error("Method not implemented.");
     }
 
-    
+
 
 }

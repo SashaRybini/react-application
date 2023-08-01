@@ -73,8 +73,8 @@ export const HousesForm: React.FC<Props> = ({ handlerDetails, advert }) => {
             <Grid item xs={8} sm={5} >
                 <TextField type="number" required fullWidth label="Rooms"
                     inputProps={{
-                        min: { minRooms },
-                        max: { maxRooms }
+                        min: minRooms,
+                        max: maxRooms
                     }}
                     onChange={handlerRooms}
                     value={details.rooms || ""} />
@@ -82,8 +82,8 @@ export const HousesForm: React.FC<Props> = ({ handlerDetails, advert }) => {
             <Grid item xs={8} sm={5} >
                 <TextField type="number" required fullWidth label="Square"
                     inputProps={{
-                        min: { minSquare },
-                        max: { maxSquare }
+                        min: minSquare,
+                        max: maxSquare
                     }}
                     onChange={handlerSquare}
                     value={details.square || ""} />

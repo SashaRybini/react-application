@@ -4,7 +4,11 @@ import EditIcon from '@mui/icons-material/Edit'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import { Box, Modal, Typography } from "@mui/material"
 import Advert from "../../model/Advert"
-import { useState } from "react"
+import { useRef, useState } from "react"
+import Confirm from "../common/Confirm"
+import { AdvertForm } from "../forms/AdvertForm"
+import { advertsService } from "../../config/service-config"
+import { useDispatchCode } from "../../hooks/hooks"
 
 const centerStyle = {
     display: 'flex',
@@ -46,29 +50,79 @@ const Adverts: React.FC = () => {
             field: 'actions', type: 'actions', flex: 0.6, getActions: (params: GridRowParams) => {
                 return [
                     <GridActionsCellItem icon={<VisibilityIcon />} onClick={() => {
-                        setOpenModal(true)
+                        setOpenDetailsModal(true)
                     }} label="Details" />,
                     <GridActionsCellItem icon={<DeleteIcon />} onClick={() => {
-                        console.log("delete")
+                        removeAdvert(params.row)
                     }} label="Delete" />,
                     <GridActionsCellItem icon={<EditIcon />} onClick={() => {
-                        console.log("update")
+                        updateAdvert(params.row)
                     }} label="Update" />
                 ]
             }
         }
     ]
-    const [openModal, setOpenModal] = useState(false);
+    const [openDetailsModal, setOpenDetailsModal] = useState(false);
 
-    const adverts: Advert[] = [{id: 0, category: 'flats, houses', price: 123, name: 'qwe', details: '{"houseType":"flat","advertType":"rent","rooms":"2","square":"22"}'}]
+    const adverts: Advert[] = [{ id: 0, category: 'flats, houses', price: 123, name: 'qwe', details: '{"houseType":"flat","advertType":"rent","rooms":"2","square":"22"}' }]
+
+    const [confirmTitle, setConfirmTitle] = useState('')
+    const [confirmContent, setConfirmContent] = useState('')
+    const [openConfirmDialog, setOpenConfirmDialog] = useState(false)
+    const advertId = useRef(0)
+    function removeAdvert(adv: Advert) {
+        console.log(adv)
+        setConfirmTitle('delete advert?')
+        setConfirmContent(`you are going to delete #${adv.id}`)
+        advertId.current = adv.id
+        setOpenConfirmDialog(true)
+    }
+    const [openUpdateModal, setOpenUpdateModal] = useState(false)
+    const [isUpdate, setIsUpdate] = useState(false)
+    const advert = useRef<Advert>()
+    function updateAdvert(adv: Advert) {
+        setConfirmTitle('update product?')
+        setConfirmContent(`we are going to update #${adv.id}`)
+        setOpenUpdateModal(true)
+        advert.current = adv
+    }
+    function updateSubmitFn(adv: Advert) {
+        advert.current = adv
+        setIsUpdate(true)
+        setOpenConfirmDialog(true)
+        setOpenUpdateModal(false)
+    }
+    const dispatch = useDispatchCode()
+    function onSubmitConfirmDialog(confirmation: boolean) { //fn performs deleting and updating
+        setOpenConfirmDialog(false)
+        if (confirmation && !isUpdate) {
+            try {
+                advertsService.deleteAdvert(advertId.current)
+                dispatch('', `advert #${advertId.current} has been deleted`)
+            } catch (error: any) {
+                dispatch(error, '')
+            }
+        } else if (confirmation && isUpdate) {
+            setIsUpdate(false)
+            // console.log(advert.current)
+            try {
+                advertsService.updateAdvert(advert.current!)
+                dispatch('', `advert #${advertId.current} has been updated`)
+            } catch (error: any) {
+                dispatch(error, '')
+            }
+        }
+    }
+
 
     return <Box sx={centerStyle}>
         <Box sx={{ height: '80vh', width: '95vw' }}>
             <DataGrid columns={columns} rows={adverts} />
         </Box>
+
         <Modal
-            open={openModal}
-            onClose={() => setOpenModal(false)}
+            open={openDetailsModal}
+            onClose={() => setOpenDetailsModal(false)}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
         >
@@ -82,6 +136,32 @@ const Adverts: React.FC = () => {
                 })}
             </Box>
         </Modal>
+
+        <Confirm
+            title={confirmTitle}
+            content={confirmContent}
+            handleClose={onSubmitConfirmDialog}
+            open={openConfirmDialog}
+        />
+        <Modal
+            open={openUpdateModal}
+            onClose={() => setOpenUpdateModal(false)}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+        >
+            <Box sx={style}>
+                <Typography
+                    variant="h6"
+                >
+                    {`we are on updating #${advert.current?.id}`}
+                </Typography>
+                <AdvertForm
+                    submitFn={updateSubmitFn}
+                    advertUpdated={advert.current}
+                />
+            </Box>
+        </Modal>
+
     </Box>
 }
 export default Adverts
