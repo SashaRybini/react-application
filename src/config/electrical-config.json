@@ -1,8 +1,8 @@
 {
-    "productType": [
+    "productAge": [
         "new", "used"
     ],
-    "electricalDetails": [
+    "productType": [
         "fridge", "TV", "computer", "smartphone"
     ]
 }

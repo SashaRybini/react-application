@@ -28,10 +28,7 @@ const initialDetails: HouseDetails = {
 export const HousesForm: React.FC<Props> = ({ handlerDetails, advert }) => {
 
     const [details, setDetails] = useState<HouseDetails>(advert.details ? JSON.parse(advert.details) : initialDetails);
-    // console.log(advert.details)
-    // console.log(details)
 
-    // console.log(JSON.stringify(details))
     function handlerHouseType(event: any) {
         const housetype = event.target.value;
         const detCopy = { ...details };

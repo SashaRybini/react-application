@@ -24,20 +24,19 @@ const initialAdvert: Advert = {
     category: "",
     price: 0,
     name: "",
-    details: '{"houseType":"flat","advertType":"rent","rooms":"2","square":"22"}'
+    details: ""
 }
-
+// details: '{"houseType":"flat","advertType":"rent","rooms":"2","square":"22"}'
 
 export const AdvertForm: React.FC<Props> = ({ submitFn, advertUpdated }) => {
     
     const [advert, setAdvert] = useState<Advert>(advertUpdated || initialAdvert);
     
     const components: Map<string, ReactNode> = new Map([
-        [`${categories[0]}`, <HousesForm handlerDetails={handlerDetails} advert={advert}/>],
-        [`${categories[1]}`, <VehiclesForm />],
-        [`${categories[2]}`, <ElectricalForm />]
+        [`${categories[0]}`, <HousesForm handlerDetails={handlerDetails} advert={advert} />],
+        [`${categories[1]}`, <VehiclesForm handlerDetails={handlerDetails} advert={advert} />],
+        [`${categories[2]}`, <ElectricalForm handlerDetails={handlerDetails} advert={advert} />]
     ])
-
 
     function handlerCategory(event: any) {
         const category = event.target.value;
@@ -57,12 +56,6 @@ export const AdvertForm: React.FC<Props> = ({ submitFn, advertUpdated }) => {
         advertCopy.price = price;
         setAdvert(advertCopy);
     }
-    // advert.details = `{
-    //     "houseType": "flat",
-    //     "advertType": "sell",
-    //     "rooms": 2,
-    //     "square": 22
-    // }`
     function handlerDetails(details: string) {
         const advertCopy = { ...advert };
         advertCopy.details = details;
@@ -84,7 +77,7 @@ export const AdvertForm: React.FC<Props> = ({ submitFn, advertUpdated }) => {
                 <Grid item xs={8} sm={5} >
                     <FormControl fullWidth required>
                         <InputLabel id="select-category-id">Category</InputLabel>
-                        <Select labelId="select-category-id" label="Department"
+                        <Select labelId="select-category-id" label="Category"
                             value={advert.category} onChange={handlerCategory}>
                             <MenuItem value=''>None</MenuItem>
                             {categories.map(c => <MenuItem value={c} key={c}>{c}</MenuItem>)}
@@ -105,7 +98,9 @@ export const AdvertForm: React.FC<Props> = ({ submitFn, advertUpdated }) => {
                         value={advert.price || ""} />
                 </Grid>
             </Grid>
+
             {components.get(advert.category)}
+
             <Box sx={{ marginTop: { xs: "10vh", sm: "5vh" }, textAlign: "center" }}>
                 <Button type="submit" >Submit</Button>
                 <Button type="reset">Reset</Button>

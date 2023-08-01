@@ -1,8 +1,4 @@
 {
-    "vehicleDetailsStrings": [
-        "manufacturer", "model", "color"
-    ],
-    "vehicleDetailsNumbers": [
-        "year", "mileage"
-    ]
+    "minYear": 1950,
+    "maxMileage": 1000000
 }
