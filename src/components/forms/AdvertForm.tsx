@@ -24,7 +24,7 @@ const initialAdvert: Advert = {
     category: "",
     price: 0,
     name: "",
-    details: ""
+    details: '{"houseType":"flat","advertType":"rent","rooms":"2","square":"22"}'
 }
 
 
@@ -37,6 +37,7 @@ export const AdvertForm: React.FC<Props> = ({ submitFn, advertUpdated }) => {
         [`${categories[1]}`, <VehiclesForm />],
         [`${categories[2]}`, <ElectricalForm />]
     ])
+
 
     function handlerCategory(event: any) {
         const category = event.target.value;
@@ -56,18 +57,16 @@ export const AdvertForm: React.FC<Props> = ({ submitFn, advertUpdated }) => {
         advertCopy.price = price;
         setAdvert(advertCopy);
     }
-    advert.details = `{
-        "houseType": "flat",
-        "advertType": "sell",
-        "rooms": 2,
-        "square": 22
-    }`
-    function handlerDetails(event: any) {
-        console.log(event.target.value)
-        // const price: number = +event.target.value;
-        // const advertCopy = { ...advert };
-        // advertCopy.price = price;
-        // setAdvert(advertCopy);
+    // advert.details = `{
+    //     "houseType": "flat",
+    //     "advertType": "sell",
+    //     "rooms": 2,
+    //     "square": 22
+    // }`
+    function handlerDetails(details: string) {
+        const advertCopy = { ...advert };
+        advertCopy.details = details;
+        setAdvert(advertCopy);
     }
 
     async function onSubmitFn(event: any) {

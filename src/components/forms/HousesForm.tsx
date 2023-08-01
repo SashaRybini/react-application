@@ -1,9 +1,10 @@
-import { Box, Grid, FormControl, InputLabel, Select, MenuItem, TextField } from "@mui/material"
+import { Box, Grid, FormControl, InputLabel, Select, MenuItem, TextField, FormControlLabel, FormHelperText, FormLabel, Radio, RadioGroup } from "@mui/material"
 
 import housesConfig from "../../config/houses-config.json"
 import Advert from "../../model/Advert";
-import { useState } from "react";
-const housesTypes = housesConfig.houseType;
+import { useEffect, useMemo, useState } from "react";
+
+const { houseType, minRooms, maxRooms, minSquare, maxSquare, advertType } = housesConfig;
 
 type HouseDetails = {
     houseType: string,
@@ -13,7 +14,7 @@ type HouseDetails = {
 }
 
 type Props = {
-    handlerDetails: (event: any) => void,
+    handlerDetails: (details: string) => void,
     advert: Advert
 }
 
@@ -24,20 +25,41 @@ const initialDetails: HouseDetails = {
     square: 0
 }
 
-export const HousesForm: React.FC<Props> = ({handlerDetails, advert}) => {
+export const HousesForm: React.FC<Props> = ({ handlerDetails, advert }) => {
 
     const [details, setDetails] = useState<HouseDetails>(advert.details ? JSON.parse(advert.details) : initialDetails);
-    console.log(advert.details)
-    console.log(details)
+    // console.log(advert.details)
+    // console.log(details)
 
-    console.log(JSON.stringify(details))
+    // console.log(JSON.stringify(details))
     function handlerHouseType(event: any) {
         const housetype = event.target.value;
         const detCopy = { ...details };
         detCopy.houseType = housetype;
         setDetails(detCopy);
     }
-    //useMemo on handlerDetails?
+    function handlerRooms(event: any) {
+        const rooms = event.target.value;
+        const detCopy = { ...details };
+        detCopy.rooms = rooms;
+        setDetails(detCopy);
+    }
+    function handlerSquare(event: any) {
+        const square = event.target.value;
+        const detCopy = { ...details };
+        detCopy.square = square;
+        setDetails(detCopy);
+    }
+    function handlerAdverttype(event: any) {
+        const type = event.target.value;
+        const detCopy = { ...details };
+        detCopy.advertType = type;
+        setDetails(detCopy);
+    }
+    // useMemo(() => handlerDetails(JSON.stringify(details)), [details])
+    useEffect(() => {
+        handlerDetails(JSON.stringify(details))
+    }, [details])
 
     return <Box sx={{ marginTop: { sm: "3vh" } }}>
         <Grid container spacing={4} justifyContent="center">
@@ -47,25 +69,43 @@ export const HousesForm: React.FC<Props> = ({handlerDetails, advert}) => {
                     <Select labelId="select-housetype-id" label="House type"
                         value={details.houseType} onChange={handlerHouseType}>
                         <MenuItem value=''>None</MenuItem>
-                        {housesTypes.map(h => <MenuItem value={h} key={h}>{h}</MenuItem>)}
+                        {houseType.map(h => <MenuItem value={h} key={h}>{h}</MenuItem>)}
                     </Select>
                 </FormControl>
             </Grid>
-            {/* <Grid item xs={8} sm={5} >
-                <TextField type="text" required fullWidth label="Advert name"
-                    onChange={handlerName}
-                    value={advert.name} />
+            <Grid item xs={8} sm={5} >
+                <TextField type="number" required fullWidth label="Rooms"
+                    inputProps={{
+                        min: { minRooms },
+                        max: { maxRooms }
+                    }}
+                    onChange={handlerRooms}
+                    value={details.rooms || ""} />
             </Grid>
             <Grid item xs={8} sm={5} >
-                <TextField type="number" required fullWidth label="Price"
+                <TextField type="number" required fullWidth label="Square"
                     inputProps={{
-                        min: 1
+                        min: { minSquare },
+                        max: { maxSquare }
                     }}
-                    onChange={handlerPrice}
-                    value={advert.price || ""} />
-            </Grid> */}
+                    onChange={handlerSquare}
+                    value={details.square || ""} />
+            </Grid>
+            <Grid item xs={8} sm={4} md={5}>
+                <FormControl required >
+                    <FormLabel id="adtype-group-label">Type</FormLabel>
+                    <RadioGroup
+                        aria-labelledby="adtype-group-label"
+                        defaultValue=""
+                        value={details.advertType || ''}
+                        name="radio-buttons-group"
+                        row onChange={handlerAdverttype}
+                    >
+                        <FormControlLabel value={advertType[0]} control={<Radio />} label={advertType[0]} />
+                        <FormControlLabel value={advertType[1]} control={<Radio />} label={advertType[1]} />
+                    </RadioGroup>
+                </FormControl>
+            </Grid>
         </Grid>
-        
-   
-</Box>
+    </Box>
 }
