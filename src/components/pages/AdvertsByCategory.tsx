@@ -1,8 +1,12 @@
 import { Box, Grid, FormControl, InputLabel, Select, MenuItem } from "@mui/material"
 import advertsConfig from "../../config/categories-config.json"
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { advertsService } from "../../config/service-config";
+import Advert from "../../model/Advert";
+import CodePayload from "../../model/CodePayload";
+import CodeType from "../../model/CodeType";
+import { useDispatchCode } from "../../hooks/hooks";
 
 const categories = advertsConfig.categories;
 
@@ -40,27 +44,67 @@ const AdvertsByCategory: React.FC = () => {
         setCategory(cat)
     }
 
-    const adverts: any[] = []
-    // const adverts = useMemo(() => advertsService.getAdvertsByCategory(category), [category])
+    // const adverts: any[] = []
+    useMemo(() => getAdverts(), [category])
+    const [adverts, setAdverts] = useState<Advert[]>([]);
+    // useEffect(async () => {
+    //     const advArray: Advert[] | string = await advertsService.getAdvertsByCategory(category)
+    //     const alert: CodePayload = { code: CodeType.OK, message: '' }
+    //     if (typeof advArray === 'string') {
+    //         alert.code = CodeType.SERVER_ERROR
+    //         alert.message = advArray
+    //     } else {
+    //         setAdverts(advArray)
+    //     }
+    //     // dispatch(codeActions.set(alert)) //
+
+    // }, [])
+    const dispatch = useDispatchCode()
+    async function getAdverts() {
+        if (category) {
+            const advArray = await advertsService.getAdvertsByCategory(category)
+            if (typeof advArray === 'string') {
+                dispatch(advArray, '')
+            } else {
+                console.log(advArray)
+                setAdverts(advArray)
+                // dispatch('', `${category}`)
+            }
+            // dispatch(codeActions.set(alert)) //
+        }
+    }
+    // async function submitFn(adv: Advert) {
+    //     // const adv: Advert = await advertsService.addAdvert(advert)
+    //     try {
+    //         const res: string = await advertsService.addAdvert(adv)
+    //         console.log(res)
+    //         // dispatch('', `advert: ${advert.name} with id ${advert.id} has been added`)
+    //         dispatch('', res)
+    //     } catch (error: any) {
+    //         console.log(error)
+    //         dispatch(error, '')
+    //     }
+    // }
+
 
     return <Box sx={centerStyle}>
-    <Box sx={{ marginTop: { sm: "1vh" } }}>
-        <Grid container spacing={4} justifyContent="center">
-            <Grid item xs={8} sm={5} >
-                <FormControl fullWidth required>
-                    <InputLabel id="select-category-id">Category</InputLabel>
-                    <Select labelId="select-category-id" label="Category"
-                        value={category} onChange={handlerCategory}>
-                        {/* <MenuItem value=''>None</MenuItem> */}
-                        {categories.map(c => <MenuItem value={c} key={c}>{c}</MenuItem>)}
-                    </Select>
-                </FormControl>
+        <Box sx={{ marginTop: { sm: "1vh" } }}>
+            <Grid container spacing={4} justifyContent="center">
+                <Grid item xs={8} sm={5} >
+                    <FormControl fullWidth required>
+                        <InputLabel id="select-category-id">Category</InputLabel>
+                        <Select labelId="select-category-id" label="Category"
+                            value={category} onChange={handlerCategory}>
+                            {/* <MenuItem value=''>None</MenuItem> */}
+                            {categories.map(c => <MenuItem value={c} key={c}>{c}</MenuItem>)}
+                        </Select>
+                    </FormControl>
+                </Grid>
             </Grid>
-        </Grid>
-        <Box sx={{ height: '70vh', width: '95vw', marginTop: "2vh" }}>
-            <DataGrid columns={columns} rows={adverts} />
+            <Box sx={{ height: '70vh', width: '95vw', marginTop: "2vh" }}>
+                <DataGrid columns={columns} rows={adverts} />
+            </Box>
         </Box>
-    </Box>
     </Box>
 }
 export default AdvertsByCategory

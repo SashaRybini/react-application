@@ -1,4 +1,4 @@
-import React, { ReactNode, useMemo, useRef, useState } from "react";
+import React, { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { FormControl, Grid, TextField, InputLabel, Select, Box, MenuItem, Button, FormLabel, RadioGroup, FormControlLabel, Radio, FormHelperText, Snackbar, Alert } from '@mui/material';
 
 
@@ -76,6 +76,7 @@ export const AdvertForm: React.FC<Props> = ({ submitFn, advertUpdated }) => {
 
     //     return components.get(advert.category)
     // }
+    // useMemo(() => setAdvert({...advert, details: ""}), [advert.category])
 
     return <Box sx={{ marginTop: { sm: "3vh" } }}>
         <form onSubmit={onSubmitFn} onReset={onResetFn}>

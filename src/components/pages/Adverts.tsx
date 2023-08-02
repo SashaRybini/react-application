@@ -4,11 +4,14 @@ import EditIcon from '@mui/icons-material/Edit'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import { Box, Modal, Typography } from "@mui/material"
 import Advert from "../../model/Advert"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Confirm from "../common/Confirm"
 import { AdvertForm } from "../forms/AdvertForm"
 import { advertsService } from "../../config/service-config"
 import { useDispatchCode } from "../../hooks/hooks"
+import CodePayload from "../../model/CodePayload"
+import CodeType from "../../model/CodeType"
+import { codeActions } from "../../redux/slices/codeSlice"
 
 const centerStyle = {
     display: 'flex',
@@ -50,6 +53,7 @@ const Adverts: React.FC = () => {
             field: 'actions', type: 'actions', flex: 0.6, getActions: (params: GridRowParams) => {
                 return [
                     <GridActionsCellItem icon={<VisibilityIcon />} onClick={() => {
+                        advert.current = params.row as Advert
                         setOpenDetailsModal(true)
                     }} label="Details" />,
                     <GridActionsCellItem icon={<DeleteIcon />} onClick={() => {
@@ -64,7 +68,23 @@ const Adverts: React.FC = () => {
     ]
     const [openDetailsModal, setOpenDetailsModal] = useState(false);
 
-    const adverts: Advert[] = [{ id: 0, category: 'flats, houses', price: 123, name: 'qwe', details: '{"houseType":"flat","advertType":"rent","rooms":"2","square":"22"}' }]
+    // const adverts: Advert[] = [{ id: 115702, category: 'flats, houses', price: 555, name: 'qwe', details: '{"houseType":"flat","advertType":"rent","rooms":"2","square":"22"}' }]
+
+    const [adverts, setAdverts] = useState<Advert[]>([]);
+    useEffect(() => {
+        const subscription = advertsService.getAdverts().subscribe({
+            next(advArray: Advert[] | string) {
+                if (typeof advArray === 'string') {
+                    dispatch(advArray, "");
+                } else {
+                    setAdverts(advArray)
+                    // dispatch("", advArray.length.toString())
+                }
+            }
+        })
+        return () => subscription.unsubscribe()
+    }, [])
+
 
     const [confirmTitle, setConfirmTitle] = useState('')
     const [confirmContent, setConfirmContent] = useState('')
@@ -84,6 +104,7 @@ const Adverts: React.FC = () => {
         setConfirmTitle('update product?')
         setConfirmContent(`we are going to update #${adv.id}`)
         setOpenUpdateModal(true)
+        console.log(adv)
         advert.current = adv
     }
     function updateSubmitFn(adv: Advert) {
@@ -93,12 +114,13 @@ const Adverts: React.FC = () => {
         setOpenUpdateModal(false)
     }
     const dispatch = useDispatchCode()
-    function onSubmitConfirmDialog(confirmation: boolean) { //fn performs deleting and updating
+    async function onSubmitConfirmDialog(confirmation: boolean) { //fn performs deleting and updating
         setOpenConfirmDialog(false)
         if (confirmation && !isUpdate) {
             try {
-                advertsService.deleteAdvert(advertId.current)
-                dispatch('', `advert #${advertId.current} has been deleted`)
+                const res: string = await advertsService.deleteAdvert(advertId.current)
+                // dispatch('', `advert #${advertId.current} has been deleted`)
+                dispatch('', res)
             } catch (error: any) {
                 dispatch(error, '')
             }
@@ -106,8 +128,9 @@ const Adverts: React.FC = () => {
             setIsUpdate(false)
             // console.log(advert.current)
             try {
-                advertsService.updateAdvert(advert.current!)
-                dispatch('', `advert #${advertId.current} has been updated`)
+                const res: string = await advertsService.updateAdvert(advert.current!)
+                // dispatch('', `advert #${advertId.current} has been updated`)
+                dispatch('', res)
             } catch (error: any) {
                 dispatch(error, '')
             }
@@ -127,12 +150,16 @@ const Adverts: React.FC = () => {
             aria-describedby="modal-modal-description"
         >
             <Box sx={style}>
-                {adverts.map(a => {
+                {/* {adverts.map(a => {
                     const detailsObj = JSON.parse(a.details)
                     return Object.entries(detailsObj).map(([key, value]) => {
                         const text = `${key}: ${value}`
                         return <Typography key={key}>{text}</Typography>
                     })
+                })} */}
+                {advert.current && Object.entries(JSON.parse(advert.current!.details)).map(([key, value]) => {
+                        const text = `${key}: ${value}`
+                        return <Typography key={key}>{text}</Typography>
                 })}
             </Box>
         </Modal>
