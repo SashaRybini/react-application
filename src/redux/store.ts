@@ -1,9 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
-
 import { useSelector } from "react-redux";
-
 import { codeReducer } from "./slices/codeSlice";
-import CodeType from "../model/CodeType";
 import CodePayload from "../model/CodePayload";
 
 export const store = configureStore({

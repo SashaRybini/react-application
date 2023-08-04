@@ -3,6 +3,7 @@ import AdvertsService from "./AdvertsService";
 import Advert from "../model/Advert";
 
 const POLLER_INTERVAL = 22000;
+
 class Cache {
     cacheString: string = '';
     set(ads: Advert[]): void {
@@ -25,8 +26,8 @@ class Cache {
 function getResponseText(response: Response): string {
     let res = '';
     if (!response.ok) {
-        const { status, statusText } = response;
-        res = statusText;
+        // const { status, statusText } = response;
+        res = response.statusText;
     }
     return res;
 
@@ -70,7 +71,9 @@ async function fetchAllAdverts(url: string): Promise<Advert[] | string> {
 }
 
 export default class AdcertsServiceRest implements AdvertsService {
+
     private observable: Observable<Advert[] | string> | null = null;
+
     private cache: Cache = new Cache();
 
     constructor(private url: string) { }
@@ -86,13 +89,13 @@ export default class AdcertsServiceRest implements AdvertsService {
                 body: JSON.stringify(advert)
             });
             if (!response.ok) {
-                const { status, statusText } = response;
-                responseText = statusText;
+                // const { status, statusText } = response;
+                responseText = response.statusText;
                 throw responseText;
-                // throw response.statusText
-            }
+            } 
 
             return await response.text();
+
         } catch (error: any) {
             throw responseText ? responseText : "Server is unavailable. Repeat later on";
         }
@@ -119,28 +122,16 @@ export default class AdcertsServiceRest implements AdvertsService {
         }).catch(error => subscriber.next(error));
     }
 
-
-
     async deleteAdvert(id: number): Promise<string> {
-        // const response = await fetchRequest(this.url + `/${id}`, {
-        //     method: 'DELETE',
-        // });
-        // return await response.text();
         let responseText = '';
         try {
             const response = await fetch(this.url + `/${id}`, {
                 method: 'DELETE'
             });
             if (!response.ok) {
-                // const { status, statusText } = response;
-                // console.log(await response.text())
-                // responseText = statusText;
                 responseText = await response.text();
-                // console.log(responseText);
                 throw responseText;
-                // throw response.statusText
             }
-
             return await response.text();
         } catch (error: any) {
             console.log(error)
@@ -159,25 +150,19 @@ export default class AdcertsServiceRest implements AdvertsService {
                 body: JSON.stringify(advert)
             });
             if (!response.ok) {
-                // const { status, statusText } = response;
-                // responseText = statusText;
-                // console.log(responseText)
-                // throw responseText;
-                // throw response.statusText
                 responseText = await response.text();
                 throw responseText;
             }
-
             return await response.text();
         } catch (error: any) {
             throw responseText ? responseText : "Server is unavailable. Repeat later on";
         }
     }
+    
     async getAdvertsByCategory(category: string): Promise<string | Advert[]> {
         let responseText = '';
         try {
             const response = await fetch(this.url + `/category/${category}`, {
-            // const response = await fetch(this.url + '/category/flats, houses', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -187,14 +172,29 @@ export default class AdcertsServiceRest implements AdvertsService {
                 responseText = await response.text();
                 throw responseText;
             }
-            // console.log(await response.json())
             return await response.json();
         } catch (error: any) {
             throw responseText ? responseText : "Server is unavailable. Repeat later on";
         }
     }
-    getAdvertsByPrice(price: number): Observable<string | Advert[]> {
-        throw new Error("Method not implemented.");
+
+    async getAdvertsByPrice(price: number): Promise<string | Advert[]> {
+        let responseText = '';
+        try {
+            const response = await fetch(this.url + `/price/${price}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            if (!response.ok) {
+                responseText = await response.text();
+                throw responseText;
+            }
+            return await response.json();
+        } catch (error: any) {
+            throw responseText ? responseText : "Server is unavailable. Repeat later on";
+        }
     }
 
 

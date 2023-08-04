@@ -1,8 +1,9 @@
 import Advert from "../../model/Advert"
-
 import electricalConfig from "../../config/electrical-config.json"
 import { useState, useEffect } from "react";
-import { Box, Grid, FormControl, InputLabel, Select, MenuItem, TextField, FormLabel, RadioGroup, FormControlLabel, Radio } from "@mui/material";
+import { 
+    Box, Grid, FormControl, InputLabel, Select, MenuItem, FormLabel, RadioGroup, FormControlLabel, Radio 
+} from "@mui/material";
 
 const { productAge, productType } = electricalConfig;
 
@@ -37,11 +38,11 @@ export const ElectricalForm: React.FC<Props> = ({ handlerDetails, advert }) => {
         detCopy.productAge = age;
         setDetails(detCopy);
     }
-
+    //
     useEffect(() => {
         handlerDetails(JSON.stringify(details))
     }, [details])
-
+    //
     return <Box sx={{ marginTop: { sm: "3vh" } }}>
         <Grid container spacing={4} justifyContent="center">
             <Grid item xs={8} sm={5} >
@@ -54,7 +55,6 @@ export const ElectricalForm: React.FC<Props> = ({ handlerDetails, advert }) => {
                     </Select>
                 </FormControl>
             </Grid>
-            
             <Grid item xs={8} sm={4} md={5}>
                 <FormControl required >
                     <FormLabel id="adtype-group-label">Type</FormLabel>

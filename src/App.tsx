@@ -1,22 +1,14 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { RouteType } from "./components/navigators/Navigator";
-
 import './App.css'
 import { useSelectorCode } from "./redux/store";
 import { useMemo } from "react";
 import routesConfig from './config/routes-config.json';
 import NotFound from "./components/pages/NotFound";
 import Navigator from "./components/navigators/Navigator";
-
-
-import { Alert, Snackbar } from "@mui/material";
 import CodeType from "./model/CodeType";
 import { StatusType } from "./model/StatusType";
-import { useDispatch } from "react-redux";
 import SnackbarAlert from "./components/common/SnackbarAlert";
-
 import CodePayload from "./model/CodePayload";
-import { codeActions } from "./redux/slices/codeSlice";
 import Adverts from "./components/pages/Adverts";
 import AdvertsByCategory from "./components/pages/AdvertsByCategory";
 import AdvertsByPrice from "./components/pages/AdvertsByPrice";
@@ -26,7 +18,6 @@ const { routes } = routesConfig;
 
 const App: React.FC = () => {
 
-  const dispatch = useDispatch()
   const codeMessage: CodePayload = useSelectorCode()
   const [alertMessage, severity] = useMemo(() => codeProcessing(), [codeMessage])
 
@@ -34,10 +25,7 @@ const App: React.FC = () => {
     const res: [string, StatusType] = ['', 'success']
     res[0] = codeMessage.message
     res[1] = codeMessage.code === CodeType.OK ? 'success' : 'error'
-    // if (codeMessage.code === CodeType.AUTH_ERROR) {
-    //   authService.logout()
-    //   dispatch(authActions.reset());
-    // }
+
     return res
   }
 

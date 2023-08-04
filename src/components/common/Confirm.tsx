@@ -1,4 +1,6 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material'
+import { 
+    Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle 
+} from '@mui/material'
 
 type Props = {
     title: string,

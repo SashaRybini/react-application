@@ -9,7 +9,7 @@ type Props = {
     duration?: number;
     severity: StatusType;
 }
-const DEFAULT_DURATION = 2000
+const DEFAULT_DURATION = 5000
 const SnackbarAlert: React.FC<Props> = ({ message, duration, severity }) => {
     const [open, setOpen] = useState(false);
     const alertMessage = useRef('')

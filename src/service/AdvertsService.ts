@@ -9,6 +9,6 @@ export default interface AdvertsService {
     deleteAdvert(id: any): Promise<string>
     updateAdvert(ad: Advert): Promise<string>
     getAdvertsByCategory(category: string): Promise<Advert[] | string>
-    getAdvertsByPrice(price: number): Observable<Advert[] | string>
+    getAdvertsByPrice(price: number): Promise<Advert[] | string>
 
 }

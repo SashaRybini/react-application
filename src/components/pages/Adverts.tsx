@@ -9,29 +9,8 @@ import Confirm from "../common/Confirm"
 import { AdvertForm } from "../forms/AdvertForm"
 import { advertsService } from "../../config/service-config"
 import { useDispatchCode } from "../../hooks/hooks"
-import CodePayload from "../../model/CodePayload"
-import CodeType from "../../model/CodeType"
-import { codeActions } from "../../redux/slices/codeSlice"
-
-const centerStyle = {
-    display: 'flex',
-    justifyContent: 'center',
-    alignContent: 'center'
-}
-const style = {
-    position: 'absolute' as 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
-};
 
 const Adverts: React.FC = () => {
-
     const columns: GridColDef[] = [
         {
             field: 'id', headerName: 'ID', flex: 0.5, headerClassName: 'data-grid-header',
@@ -68,8 +47,6 @@ const Adverts: React.FC = () => {
     ]
     const [openDetailsModal, setOpenDetailsModal] = useState(false);
 
-    // const adverts: Advert[] = [{ id: 115702, category: 'flats, houses', price: 555, name: 'qwe', details: '{"houseType":"flat","advertType":"rent","rooms":"2","square":"22"}' }]
-
     const [adverts, setAdverts] = useState<Advert[]>([]);
     useEffect(() => {
         const subscription = advertsService.getAdverts().subscribe({
@@ -78,13 +55,11 @@ const Adverts: React.FC = () => {
                     dispatch(advArray, "");
                 } else {
                     setAdverts(advArray)
-                    // dispatch("", advArray.length.toString())
                 }
             }
         })
         return () => subscription.unsubscribe()
     }, [])
-
 
     const [confirmTitle, setConfirmTitle] = useState('')
     const [confirmContent, setConfirmContent] = useState('')
@@ -119,17 +94,14 @@ const Adverts: React.FC = () => {
         if (confirmation && !isUpdate) {
             try {
                 const res: string = await advertsService.deleteAdvert(advertId.current)
-                // dispatch('', `advert #${advertId.current} has been deleted`)
                 dispatch('', res)
             } catch (error: any) {
                 dispatch(error, '')
             }
         } else if (confirmation && isUpdate) {
             setIsUpdate(false)
-            // console.log(advert.current)
             try {
                 const res: string = await advertsService.updateAdvert(advert.current!)
-                // dispatch('', `advert #${advertId.current} has been updated`)
                 dispatch('', res)
             } catch (error: any) {
                 dispatch(error, '')
@@ -137,19 +109,17 @@ const Adverts: React.FC = () => {
         }
     }
 
-
-    return <Box sx={centerStyle}>
+    return <Box className='center-style'>
         <Box sx={{ height: '80vh', width: '95vw' }}>
             <DataGrid columns={columns} rows={adverts} />
         </Box>
-
         <Modal
             open={openDetailsModal}
             onClose={() => setOpenDetailsModal(false)}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
         >
-            <Box sx={style}>
+            <Box className='modal-window'>
                 {/* {adverts.map(a => {
                     const detailsObj = JSON.parse(a.details)
                     return Object.entries(detailsObj).map(([key, value]) => {
@@ -158,12 +128,11 @@ const Adverts: React.FC = () => {
                     })
                 })} */}
                 {advert.current && Object.entries(JSON.parse(advert.current!.details)).map(([key, value]) => {
-                        const text = `${key}: ${value}`
-                        return <Typography key={key}>{text}</Typography>
+                    const text = `${key}: ${value}`
+                    return <Typography key={key}>{text}</Typography>
                 })}
             </Box>
         </Modal>
-
         <Confirm
             title={confirmTitle}
             content={confirmContent}
@@ -176,7 +145,7 @@ const Adverts: React.FC = () => {
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
         >
-            <Box sx={style}>
+            <Box className='modal-window'>
                 <Typography
                     variant="h6"
                 >
@@ -188,7 +157,6 @@ const Adverts: React.FC = () => {
                 />
             </Box>
         </Modal>
-
     </Box>
 }
 export default Adverts

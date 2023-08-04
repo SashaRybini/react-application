@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react"
 import Advert from "../../model/Advert"
-import { Box, Grid, FormControl, InputLabel, Select, MenuItem, TextField, FormLabel, RadioGroup, FormControlLabel, Radio } from "@mui/material"
+import { Box, Grid, TextField } from "@mui/material"
 import vehicleConfig from "../../config/vehicle-config.json"
+
 const { minYear, maxMileage } = vehicleConfig;
 
 type VehicleDetails = {
@@ -99,7 +100,6 @@ export const VehiclesForm: React.FC<Props> = ({ handlerDetails, advert }) => {
                     onChange={handlerMileage}
                     value={details.mileage || ""} />
             </Grid>
-
         </Grid>
     </Box>
 }

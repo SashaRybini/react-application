@@ -1,17 +1,13 @@
-import React, { ReactNode, useEffect, useMemo, useRef, useState } from "react";
-import { FormControl, Grid, TextField, InputLabel, Select, Box, MenuItem, Button, FormLabel, RadioGroup, FormControlLabel, Radio, FormHelperText, Snackbar, Alert } from '@mui/material';
-
-
-import InputResult from "../../model/InputResult";
-import { StatusType } from "../../model/StatusType";
-import { useDispatch } from "react-redux";
-import { codeActions } from "../../redux/slices/codeSlice";
-
+import React, { ReactNode,  useState } from "react";
+import { 
+    FormControl, Grid, TextField, InputLabel, Select, Box, MenuItem, Button
+} from '@mui/material';
 import advertsConfig from "../../config/categories-config.json"
 import Advert from "../../model/Advert";
 import { HousesForm } from "./HousesForm";
 import { VehiclesForm } from "./VehiclesForm";
 import { ElectricalForm } from "./ElectricalForm";
+
 const categories = advertsConfig.categories;
 
 type Props = {
@@ -26,7 +22,6 @@ const initialAdvert: Advert = {
     name: "",
     details: ""
 }
-// details: '{"houseType":"flat","advertType":"rent","rooms":"2","square":"22"}'
 
 export const AdvertForm: React.FC<Props> = ({ submitFn, advertUpdated }) => {
     
@@ -77,7 +72,7 @@ export const AdvertForm: React.FC<Props> = ({ submitFn, advertUpdated }) => {
     //     return components.get(advert.category)
     // }
     // useMemo(() => setAdvert({...advert, details: ""}), [advert.category])
-
+    
     return <Box sx={{ marginTop: { sm: "3vh" } }}>
         <form onSubmit={onSubmitFn} onReset={onResetFn}>
             <Grid container spacing={4} justifyContent="center">
@@ -85,6 +80,7 @@ export const AdvertForm: React.FC<Props> = ({ submitFn, advertUpdated }) => {
                     <FormControl fullWidth required>
                         <InputLabel id="select-category-id">Category</InputLabel>
                         <Select labelId="select-category-id" label="Category"
+                            disabled={!!advertUpdated}
                             value={advert.category} onChange={handlerCategory}>
                             <MenuItem value=''>None</MenuItem>
                             {categories.map(c => <MenuItem value={c} key={c}>{c}</MenuItem>)}
@@ -99,7 +95,8 @@ export const AdvertForm: React.FC<Props> = ({ submitFn, advertUpdated }) => {
                 <Grid item xs={8} sm={5} >
                     <TextField type="number" required fullWidth label="Price"
                         inputProps={{
-                            min: 1
+                            min: 1,
+                            max: 1_000_000_000
                         }}
                         onChange={handlerPrice}
                         value={advert.price || ""} />

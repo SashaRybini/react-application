@@ -1,41 +1,43 @@
-import { Box, Grid, FormControl, InputLabel, Select, MenuItem } from "@mui/material"
+import { Box, Grid, FormControl, InputLabel, Select, MenuItem, Modal, Typography } from "@mui/material"
 import advertsConfig from "../../config/categories-config.json"
-import { useEffect, useMemo, useState } from "react";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { DataGrid, GridActionsCellItem, GridColDef, GridRowParams } from "@mui/x-data-grid";
 import { advertsService } from "../../config/service-config";
 import Advert from "../../model/Advert";
-import CodePayload from "../../model/CodePayload";
-import CodeType from "../../model/CodeType";
 import { useDispatchCode } from "../../hooks/hooks";
+import VisibilityIcon from '@mui/icons-material/Visibility'
 
 const categories = advertsConfig.categories;
 
-const centerStyle = {
-    display: 'flex',
-    justifyContent: 'center',
-    alignContent: 'center'
-}
-
-const columns: GridColDef[] = [
-    {
-        field: 'id', headerName: 'ID', flex: 0.5, headerClassName: 'data-grid-header',
-        align: 'center', headerAlign: 'center'
-    },
-    {
-        field: 'category', headerName: 'Category', flex: 0.7, headerClassName: 'data-grid-header',
-        align: 'center', headerAlign: 'center'
-    },
-    {
-        field: 'price', headerName: 'Price', flex: 1, headerClassName: 'data-grid-header',
-        align: 'center', headerAlign: 'center'
-    },
-    {
-        field: 'name', headerName: 'Name', flex: 0.8, headerClassName: 'data-grid-header',
-        align: 'center', headerAlign: 'center'
-    }
-]
-
 const AdvertsByCategory: React.FC = () => {
+    const columns: GridColDef[] = [
+        {
+            field: 'id', headerName: 'ID', flex: 0.5, headerClassName: 'data-grid-header',
+            align: 'center', headerAlign: 'center'
+        },
+        {
+            field: 'category', headerName: 'Category', flex: 0.7, headerClassName: 'data-grid-header',
+            align: 'center', headerAlign: 'center'
+        },
+        {
+            field: 'price', headerName: 'Price', flex: 1, headerClassName: 'data-grid-header',
+            align: 'center', headerAlign: 'center'
+        },
+        {
+            field: 'name', headerName: 'Name', flex: 0.8, headerClassName: 'data-grid-header',
+            align: 'center', headerAlign: 'center'
+        },
+        {
+            field: 'actions', type: 'actions', flex: 0.6, getActions: (params: GridRowParams) => {
+                return [
+                    <GridActionsCellItem icon={<VisibilityIcon />} onClick={() => {
+                        advert.current = params.row as Advert
+                        setOpenDetailsModal(true)
+                    }} label="Details" />
+                ]
+            }
+        }
+    ]
 
     const [category, setCategory] = useState("");
 
@@ -44,50 +46,27 @@ const AdvertsByCategory: React.FC = () => {
         setCategory(cat)
     }
 
-    // const adverts: any[] = []
     useMemo(() => getAdverts(), [category])
     const [adverts, setAdverts] = useState<Advert[]>([]);
-    // useEffect(async () => {
-    //     const advArray: Advert[] | string = await advertsService.getAdvertsByCategory(category)
-    //     const alert: CodePayload = { code: CodeType.OK, message: '' }
-    //     if (typeof advArray === 'string') {
-    //         alert.code = CodeType.SERVER_ERROR
-    //         alert.message = advArray
-    //     } else {
-    //         setAdverts(advArray)
-    //     }
-    //     // dispatch(codeActions.set(alert)) //
-
-    // }, [])
+   
     const dispatch = useDispatchCode()
     async function getAdverts() {
         if (category) {
-            const advArray = await advertsService.getAdvertsByCategory(category)
-            if (typeof advArray === 'string') {
-                dispatch(advArray, '')
-            } else {
-                console.log(advArray)
-                setAdverts(advArray)
-                // dispatch('', `${category}`)
+            try {
+                const advArray = await advertsService.getAdvertsByCategory(category)
+                if (typeof advArray !== 'string') {
+                    setAdverts(advArray)
+                }
+            } catch (error: any) {
+                dispatch(error, '')
             }
-            // dispatch(codeActions.set(alert)) //
+
         }
     }
-    // async function submitFn(adv: Advert) {
-    //     // const adv: Advert = await advertsService.addAdvert(advert)
-    //     try {
-    //         const res: string = await advertsService.addAdvert(adv)
-    //         console.log(res)
-    //         // dispatch('', `advert: ${advert.name} with id ${advert.id} has been added`)
-    //         dispatch('', res)
-    //     } catch (error: any) {
-    //         console.log(error)
-    //         dispatch(error, '')
-    //     }
-    // }
+    const advert = useRef<Advert>()
+    const [openDetailsModal, setOpenDetailsModal] = useState(false);
 
-
-    return <Box sx={centerStyle}>
+    return <Box className='center-style'>
         <Box sx={{ marginTop: { sm: "1vh" } }}>
             <Grid container spacing={4} justifyContent="center">
                 <Grid item xs={8} sm={5} >
@@ -105,6 +84,19 @@ const AdvertsByCategory: React.FC = () => {
                 <DataGrid columns={columns} rows={adverts} />
             </Box>
         </Box>
+        <Modal
+            open={openDetailsModal}
+            onClose={() => setOpenDetailsModal(false)}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+        >
+            <Box className='modal-window'>
+                {advert.current && Object.entries(JSON.parse(advert.current!.details)).map(([key, value]) => {
+                    const text = `${key}: ${value}`
+                    return <Typography key={key}>{text}</Typography>
+                })}
+            </Box>
+        </Modal>
     </Box>
 }
 export default AdvertsByCategory
