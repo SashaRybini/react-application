@@ -162,28 +162,19 @@ export default class AdcertsServiceRest implements AdvertsService {
     }
     
     async getAdvertsByCategory(category: string): Promise<string | Advert[]> {
-        let responseText = '';
-        try {
-            const response = await fetch(this.url + `/category/${category}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-            if (!response.ok) {
-                responseText = await response.text();
-                throw responseText;
-            }
-            return await response.json();
-        } catch (error: any) {
-            throw responseText ? responseText : "Server is unavailable. Repeat later on";
-        }
+
+        return this.getAdvertsByFilter(this.url + `/category/${category}`);
     }
 
     async getAdvertsByPrice(price: number): Promise<string | Advert[]> {
+
+        return this.getAdvertsByFilter(this.url + `/price/${price}`);
+    }
+
+    async getAdvertsByFilter(url: string) {
         let responseText = '';
         try {
-            const response = await fetch(this.url + `/price/${price}`, {
+            const response = await fetch(url, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

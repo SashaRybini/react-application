@@ -119,13 +119,6 @@ const Adverts: React.FC = () => {
             aria-describedby="modal-modal-description"
         >
             <Box className='modal-window'>
-                {/* {adverts.map(a => {
-                    const detailsObj = JSON.parse(a.details)
-                    return Object.entries(detailsObj).map(([key, value]) => {
-                        const text = `${key}: ${value}`
-                        return <Typography key={key}>{text}</Typography>
-                    })
-                })} */}
                 {advert.current && Object.entries(JSON.parse(advert.current!.details)).map(([key, value]) => {
                     const text = `${key}: ${value}`
                     return <Typography key={key}>{text}</Typography>

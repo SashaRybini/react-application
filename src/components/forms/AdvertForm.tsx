@@ -24,12 +24,6 @@ const initialAdvert: Advert = {
 }
 
 export const AdvertForm: React.FC<Props> = ({ submitFn, advertUpdated }) => {
-    
-    // const [advert, setAdvert] = useState<Advert>(advertUpdated
-    //     ? 
-    //     {...advertUpdated, details: JSON.parse(advertUpdated.details)} 
-    //     : 
-    //     initialAdvert);
 
     const [advert, setAdvert] = useState<Advert>(advertUpdated || initialAdvert);
     
@@ -72,7 +66,7 @@ export const AdvertForm: React.FC<Props> = ({ submitFn, advertUpdated }) => {
 
         setAdvert(advertUpdated || initialAdvert);
     }
-    
+
     return <Box sx={{ marginTop: { sm: "3vh" } }}>
         <form onSubmit={onSubmitFn} onReset={onResetFn}>
             <Grid container spacing={4} justifyContent="center">
