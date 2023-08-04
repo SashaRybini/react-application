@@ -79,7 +79,6 @@ const Adverts: React.FC = () => {
         setConfirmTitle('update product?')
         setConfirmContent(`we are going to update #${adv.id}`)
         setOpenUpdateModal(true)
-        console.log(adv)
         advert.current = adv
     }
     function updateSubmitFn(adv: Advert) {

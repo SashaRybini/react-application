@@ -15,7 +15,7 @@ type VehicleDetails = {
 
 type Props = {
     handlerDetails: (details: string) => void,
-    advert: Advert
+    advertUpd?: Advert
 }
 
 const initialDetails: VehicleDetails = {
@@ -26,9 +26,9 @@ const initialDetails: VehicleDetails = {
     mileage: 0
 }
 
-export const VehiclesForm: React.FC<Props> = ({ handlerDetails, advert }) => {
+export const VehiclesForm: React.FC<Props> = ({ handlerDetails, advertUpd }) => {
 
-    const [details, setDetails] = useState<VehicleDetails>(advert.details ? JSON.parse(advert.details) : initialDetails);
+    const [details, setDetails] = useState<VehicleDetails>(advertUpd ? JSON.parse(advertUpd.details) : initialDetails);
 
     function handlerManufacturer(event: any) {
         const manufacturer = event.target.value;

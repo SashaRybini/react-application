@@ -93,9 +93,7 @@ export default class AdcertsServiceRest implements AdvertsService {
                 responseText = response.statusText;
                 throw responseText;
             } 
-
             return await response.text();
-
         } catch (error: any) {
             throw responseText ? responseText : "Server is unavailable. Repeat later on";
         }
@@ -137,6 +135,10 @@ export default class AdcertsServiceRest implements AdvertsService {
             console.log(error)
             throw responseText ? responseText : "Server is unavailable. Repeat later on";
         }
+        // const response = await fetchRequest(this.url + `/${id}`, {
+        //     method: 'DELETE',
+        // });
+        // return await response.text();
     }
 
     async updateAdvert(advert: Advert): Promise<string> {

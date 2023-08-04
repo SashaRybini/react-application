@@ -14,7 +14,7 @@ type ElectricalDetails = {
 
 type Props = {
     handlerDetails: (details: string) => void,
-    advert: Advert
+    advertUpd?: Advert
 }
 
 const initialDetails: ElectricalDetails = {
@@ -22,9 +22,9 @@ const initialDetails: ElectricalDetails = {
     productType: ""
 }
 
-export const ElectricalForm: React.FC<Props> = ({ handlerDetails, advert }) => {
+export const ElectricalForm: React.FC<Props> = ({ handlerDetails, advertUpd }) => {
 
-    const [details, setDetails] = useState<ElectricalDetails>(advert.details ? JSON.parse(advert.details) : initialDetails);
+    const [details, setDetails] = useState<ElectricalDetails>(advertUpd ? JSON.parse(advertUpd.details) : initialDetails);
 
     function handlerProducttype(event: any) {
         const type = event.target.value;

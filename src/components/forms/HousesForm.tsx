@@ -17,7 +17,7 @@ type HouseDetails = {
 
 type Props = {
     handlerDetails: (details: string) => void,
-    advert: Advert
+    advertUpd?: Advert
 }
 
 const initialDetails: HouseDetails = {
@@ -27,9 +27,9 @@ const initialDetails: HouseDetails = {
     square: 0
 }
 
-export const HousesForm: React.FC<Props> = ({ handlerDetails, advert }) => {
+export const HousesForm: React.FC<Props> = ({ handlerDetails, advertUpd }) => {
 
-    const [details, setDetails] = useState<HouseDetails>(advert.details ? JSON.parse(advert.details) : initialDetails);
+    const [details, setDetails] = useState<HouseDetails>(advertUpd ? JSON.parse(advertUpd.details) : initialDetails);
 
     function handlerHouseType(event: any) {
         const housetype = event.target.value;
