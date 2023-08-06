@@ -21,11 +21,11 @@ const AdvertsByPrice: React.FC = () => {
             align: 'center', headerAlign: 'center'
         },
         {
-            field: 'category', headerName: 'Category', flex: 0.7, headerClassName: 'data-grid-header',
+            field: 'category', headerName: 'Category', flex: 0.8, headerClassName: 'data-grid-header',
             align: 'center', headerAlign: 'center'
         },
         {
-            field: 'price', headerName: 'Price', flex: 1, headerClassName: 'data-grid-header',
+            field: 'price', headerName: 'Price', flex: 0.8, headerClassName: 'data-grid-header',
             align: 'center', headerAlign: 'center'
         },
         {
@@ -75,7 +75,7 @@ const AdvertsByPrice: React.FC = () => {
             <Grid item xs={6} sm={4} md={4}>
                 <Box className="center-style">
                     <Button variant="contained"
-                        fullWidth disabled={maxPrice <= 0 && maxPrice >= Number.MAX_VALUE}
+                        fullWidth disabled={maxPrice <= 0 || maxPrice >= 1_000_000_000}
                         onClick={() => {
                             setPricetogo(maxPrice);
                         }}

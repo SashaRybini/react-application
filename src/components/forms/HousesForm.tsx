@@ -4,7 +4,7 @@ import {
 } from "@mui/material"
 import housesConfig from "../../config/houses-config.json"
 import Advert from "../../model/Advert";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 const { houseType, minRooms, maxRooms, minSquare, maxSquare, advertType } = housesConfig;
 
@@ -55,7 +55,7 @@ export const HousesForm: React.FC<Props> = ({ handlerDetails, advertUpd }) => {
         detCopy.advertType = type;
         setDetails(detCopy);
     }
-    // useMemo(() => handlerDetails(JSON.stringify(details)), [details])
+
     useEffect(() => {
         handlerDetails(JSON.stringify(details))
     }, [details])

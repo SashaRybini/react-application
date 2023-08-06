@@ -16,11 +16,11 @@ const AdvertsByCategory: React.FC = () => {
             align: 'center', headerAlign: 'center'
         },
         {
-            field: 'category', headerName: 'Category', flex: 0.7, headerClassName: 'data-grid-header',
+            field: 'category', headerName: 'Category', flex: 0.8, headerClassName: 'data-grid-header',
             align: 'center', headerAlign: 'center'
         },
         {
-            field: 'price', headerName: 'Price', flex: 1, headerClassName: 'data-grid-header',
+            field: 'price', headerName: 'Price', flex: 0.8, headerClassName: 'data-grid-header',
             align: 'center', headerAlign: 'center'
         },
         {

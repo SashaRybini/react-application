@@ -17,11 +17,11 @@ const Adverts: React.FC = () => {
             align: 'center', headerAlign: 'center'
         },
         {
-            field: 'category', headerName: 'Category', flex: 0.7, headerClassName: 'data-grid-header',
+            field: 'category', headerName: 'Category', flex: 0.8, headerClassName: 'data-grid-header',
             align: 'center', headerAlign: 'center'
         },
         {
-            field: 'price', headerName: 'Price', flex: 1, headerClassName: 'data-grid-header',
+            field: 'price', headerName: 'Price', flex: 0.8, headerClassName: 'data-grid-header',
             align: 'center', headerAlign: 'center'
         },
         {
@@ -66,7 +66,6 @@ const Adverts: React.FC = () => {
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false)
     const advertId = useRef(0)
     function removeAdvert(adv: Advert) {
-        console.log(adv)
         setConfirmTitle('delete advert?')
         setConfirmContent(`you are going to delete #${adv.id}`)
         advertId.current = adv.id

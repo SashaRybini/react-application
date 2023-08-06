@@ -5,7 +5,9 @@ import Advert from "../model/Advert";
 const POLLER_INTERVAL = 22000;
 
 class Cache {
+
     cacheString: string = '';
+
     set(ads: Advert[]): void {
         this.cacheString = JSON.stringify(ads);
     }
@@ -23,20 +25,20 @@ class Cache {
     }
 }
 
-function getResponseText(response: Response): string {
-    let res = '';
-    if (!response.ok) {
-        // const { status, statusText } = response;
-        res = response.statusText;
-    }
-    return res;
-
-}
 function getHeaders(): HeadersInit {
     const res: HeadersInit = {
         'Content-Type': 'application/json',
     }
     return res;
+}
+
+function getResponseText(response: Response): string {
+    let res = '';
+    if (!response.ok) {
+        res = response.statusText;
+    }
+    return res;
+
 }
 
 async function fetchRequest(url: string, options: RequestInit, adv?: Advert): Promise<Response> {
@@ -132,7 +134,6 @@ export default class AdcertsServiceRest implements AdvertsService {
             }
             return await response.text();
         } catch (error: any) {
-            console.log(error)
             throw responseText ? responseText : "Server is unavailable. Repeat later on";
         }
         // const response = await fetchRequest(this.url + `/${id}`, {

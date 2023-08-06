@@ -38,11 +38,11 @@ export const ElectricalForm: React.FC<Props> = ({ handlerDetails, advertUpd }) =
         detCopy.productAge = age;
         setDetails(detCopy);
     }
-    //
+    
     useEffect(() => {
         handlerDetails(JSON.stringify(details))
     }, [details])
-    //
+    
     return <Box sx={{ marginTop: { sm: "3vh" } }}>
         <Grid container spacing={4} justifyContent="center">
             <Grid item xs={8} sm={5} >
