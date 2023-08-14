@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useMemo, useState } from "react";
 import { 
     FormControl, Grid, TextField, InputLabel, Select, Box, MenuItem, Button
 } from '@mui/material';
@@ -7,6 +7,7 @@ import Advert from "../../model/Advert";
 import { HousesForm } from "./HousesForm";
 import { VehiclesForm } from "./VehiclesForm";
 import { ElectricalForm } from "./ElectricalForm";
+import { getSubformComponent } from "./SubformsMap";
 
 const categories = advertsConfig.categories;
 
@@ -26,12 +27,6 @@ const initialAdvert: Advert = {
 export const AdvertForm: React.FC<Props> = ({ submitFn, advertUpdated }) => {
 
     const [advert, setAdvert] = useState<Advert>(advertUpdated || initialAdvert);
-
-    const components: Map<string, ReactNode> = new Map([
-        [`${categories[0]}`, <HousesForm handlerDetails={handlerDetails} advertUpd={advertUpdated} />],
-        [`${categories[1]}`, <VehiclesForm handlerDetails={handlerDetails} advertUpd={advertUpdated} />],
-        [`${categories[2]}`, <ElectricalForm handlerDetails={handlerDetails} advertUpd={advertUpdated} />]
-    ])
 
     function handlerCategory(event: any) {
         const category = event.target.value;
@@ -67,6 +62,9 @@ export const AdvertForm: React.FC<Props> = ({ submitFn, advertUpdated }) => {
         setAdvert(advertUpdated || initialAdvert);
     }
 
+    const subformComponent = useMemo(() => 
+        getSubformComponent(advert.category, handlerDetails, advertUpdated), [advert.category])
+
     return <Box sx={{ marginTop: { sm: "3vh" } }}>
         <form onSubmit={onSubmitFn} onReset={onResetFn}>
             <Grid container spacing={4} justifyContent="center">
@@ -97,7 +95,7 @@ export const AdvertForm: React.FC<Props> = ({ submitFn, advertUpdated }) => {
                 </Grid>
             </Grid>
 
-            {components.get(advert.category)}
+            {subformComponent}
 
             <Box sx={{ marginTop: { xs: "10vh", sm: "5vh" }, textAlign: "center" }}>
                 <Button type="submit" >Submit</Button>
