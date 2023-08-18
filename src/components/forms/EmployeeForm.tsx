@@ -1,11 +1,11 @@
-import React, { useRef, useState } from "react";
-import { FormControl, Grid, TextField, InputLabel, Select, Box, MenuItem, Button, FormLabel, RadioGroup, FormControlLabel, Radio, FormHelperText, Snackbar, Alert } from '@mui/material';
+import React, { useState } from "react";
+import { 
+    FormControl, Grid, TextField, InputLabel, Select, Box, MenuItem, 
+    Button, FormLabel, RadioGroup, FormControlLabel, Radio, FormHelperText
+} from '@mui/material';
 import Employee from "../../model/Employee";
 import employeeConfig from "../../config/employee-config.json"
-import InputResult from "../../model/InputResult";
-import { StatusType } from "../../model/StatusType";
-import { useDispatch } from "react-redux";
-import { codeActions } from "../../redux/slices/codeSlice";
+
 type Props = {
     submitFn: (empl: Employee) => void
     employeeUpdated?: Employee
@@ -63,7 +63,7 @@ export const EmployeeForm: React.FC<Props> = ({ submitFn, employeeUpdated }) => 
         }
     }
     function onResetFn(event: any) {
-        setEmployee(initialEmployee);
+        setEmployee(employeeUpdated || initialEmployee);
     }
 
     return <Box sx={{ marginTop: { sm: "25vh" } }}>
