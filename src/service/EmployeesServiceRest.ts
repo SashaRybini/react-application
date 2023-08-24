@@ -13,8 +13,8 @@ async function getResponseText(response: Response): Promise<string> {
         res = status == 401 || status == 403 ? 'Authentication' : await response.text();
     }
     return res;
-
 }
+
 function getHeaders(): HeadersInit {
     const res: HeadersInit = {
         'Content-Type': 'application/json',
@@ -22,6 +22,7 @@ function getHeaders(): HeadersInit {
     }
     return res;
 }
+
 async function fetchRequest(url: string, options: RequestInit, empl?: Employee): Promise<Response> {
     options.headers = getHeaders();
     if (empl) {
@@ -48,12 +49,17 @@ async function fetchRequest(url: string, options: RequestInit, empl?: Employee):
         throw responseText ? responseText : "Server is unavailable. Repeat later on";
     }
 }
+
 async function fetchAllEmployees(url: string): Promise<Employee[] | string> {
     const response = await fetchRequest(url, {});
     return await response.json()
 }
 
+
+
 export default class EmployeesServiceRest implements EmployeesService {
+
+    private empls: Map<number, Employee> = new Map();
 
     private observable: Observable<Employee[] | string> | null = null;
     private subscriber: Subscriber<string | Employee[]> | undefined;
@@ -65,7 +71,6 @@ export default class EmployeesServiceRest implements EmployeesService {
     constructor(baseUrl: string) {
         this.urlService = `http://${baseUrl}/employees`;
         this.urlWebsocket = `ws://${baseUrl}/websocket/employees`;
-
         this.stompClient = Stomp.client(this.urlWebsocket)
     }
 
@@ -79,10 +84,11 @@ export default class EmployeesServiceRest implements EmployeesService {
         return `${this.urlService}/${id}`;
     }
 
-    private sibscriberNext(): void {
+    private subscriberNext(): void {
         fetchAllEmployees(this.urlService).then(employees => {
-            this.subscriber?.next(employees);
-        }).catch(error => this.subscriber?.next(error));
+            (employees as Employee[]).forEach(empl => this.empls.set(empl.id, empl))
+            this.subscriber?.next(employees)
+        }).catch(error => this.subscriber?.next(error))
     }
 
     async deleteEmployee(id: any): Promise<void> {
@@ -95,8 +101,8 @@ export default class EmployeesServiceRest implements EmployeesService {
         if (!this.observable) {
             this.observable = new Observable<Employee[] | string>(subscriber => {
                 this.subscriber = subscriber;
-                this.sibscriberNext();
                 this.connectWS();
+                this.subscriberNext();
                 return () => this.disconnectWS();
             })
         }
@@ -105,11 +111,20 @@ export default class EmployeesServiceRest implements EmployeesService {
     private disconnectWS(): void {
         this.stompClient?.disconnect()
     }
+
     private connectWS() {
         this.stompClient.connect({}, () => {
             this.stompClient.subscribe(TOPIC, message => {
                 console.log(message.body)
-                this.sibscriberNext()
+
+                const dto = JSON.parse(message.body);
+                switch(dto.msg) {
+                    case "add": this.empls.set(dto.empl.id, dto.empl); break;
+                    case "upd": this.empls.set(dto.empl.id, dto.empl); break;
+                    case "del": this.empls.delete(dto.empl.id); break;
+                }
+
+                this.subscriber?.next(Array.from(this.empls.values()))
             })
         }, (error: any) => this.subscriber?.next(JSON.stringify(error)), () => console.log('websocket disconnected'))
     }
