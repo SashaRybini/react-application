@@ -115,6 +115,9 @@ export default class EmployeesServiceRest implements EmployeesService {
         return this.observable;
     }
     async addEmployee(empl: Employee): Promise<Employee> {
+        if(empl.id == 0) {
+            delete empl.id
+        }
         const response = await fetchRequest(this.url, {
             method: 'POST',
         }, empl)
