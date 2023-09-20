@@ -2,9 +2,6 @@ import { Observable, Subscriber } from "rxjs";
 import Employee from "../model/Employee";
 import { AUTH_DATA_JWT } from "./AuthServiceJwt";
 import EmployeesService from "./EmployeesService";
-import { CompatClient, Stomp } from "@stomp/stompjs";
-
-const TOPIC = '/topic/employees'
 
 async function getResponseText(response: Response): Promise<string> {
     let res = '';
@@ -66,12 +63,11 @@ export default class EmployeesServiceRest implements EmployeesService {
 
     private urlService: string;
     private urlWebsocket: string;
-    private stompClient: CompatClient;
+    private webSocket: WebSocket | undefined;
 
     constructor(baseUrl: string) {
-        this.urlService = `http://${baseUrl}/employees`;
-        this.urlWebsocket = `ws://${baseUrl}/websocket/employees`;
-        this.stompClient = Stomp.client(this.urlWebsocket)
+        this.urlService = `http://${baseUrl}`;
+        this.urlWebsocket = `ws://${baseUrl}/websocket`;
     }
 
     async updateEmployee(empl: Employee): Promise<Employee> {
@@ -101,32 +97,23 @@ export default class EmployeesServiceRest implements EmployeesService {
         if (!this.observable) {
             this.observable = new Observable<Employee[] | string>(subscriber => {
                 this.subscriber = subscriber;
-                this.connectWS();
                 this.subscriberNext();
+                this.connectWS()
                 return () => this.disconnectWS();
             })
         }
         return this.observable;
     }
     private disconnectWS(): void {
-        this.stompClient?.disconnect()
+        this.webSocket?.close()
     }
 
     private connectWS() {
-        this.stompClient.connect({}, () => {
-            this.stompClient.subscribe(TOPIC, message => {
-                console.log(message.body)
-
-                const dto = JSON.parse(message.body);
-                switch(dto.msg) {
-                    case "add": this.empls.set(dto.empl.id, dto.empl); break;
-                    case "upd": this.empls.set(dto.empl.id, dto.empl); break;
-                    case "del": this.empls.delete(dto.empl.id); break;
-                }
-
-                this.subscriber?.next(Array.from(this.empls.values()))
-            })
-        }, (error: any) => this.subscriber?.next(JSON.stringify(error)), () => console.log('websocket disconnected'))
+        this.webSocket = new WebSocket(this.urlWebsocket, localStorage.getItem(AUTH_DATA_JWT) || '')
+        this.webSocket.onmessage = message => {
+            console.log(message.data)
+            this.subscriberNext()          
+        }
     }
 
     async addEmployee(empl: Employee): Promise<Employee> {
