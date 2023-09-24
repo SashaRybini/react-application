@@ -58,7 +58,7 @@ const SignInForm: React.FC<Props> = ({submitFn}) => {
                             required
                             fullWidth
                             id="email"
-                            label="Email Address"
+                            label="User name"
                             name="email"
                             autoComplete="email"
                             autoFocus

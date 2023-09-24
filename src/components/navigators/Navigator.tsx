@@ -1,12 +1,14 @@
 import { AppBar, Box, Tab, Tabs } from '@mui/material'
 import { ReactNode, useEffect, useState } from 'react'
-import { Link, NavLink, Outlet, useLocation, useNavigate} from 'react-router-dom'
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
+
 export type RouteType = {
-    to: string, 
+    to: string,
     label: string,
     order?: number
 }
-const Navigator: React.FC<{ routes: RouteType[] }> = ({routes}) => {
+
+const Navigator: React.FC<{ routes: RouteType[] }> = ({ routes }) => {
     const navigate = useNavigate()
     const location = useLocation()
     const [value, setValue] = useState(0)
@@ -22,10 +24,10 @@ const Navigator: React.FC<{ routes: RouteType[] }> = ({routes}) => {
         setValue(newValue)
     }
     function getTabs(): ReactNode {
-        return routes.map(r => <Tab component={Link} to={r.to} label={r.label} key={r.label}/>)
+        return routes.map(r => <Tab component={Link} to={r.to} label={r.label} key={r.label} />)
     }
     return <Box mt={10}>
-        <AppBar sx={{backgroundColor:"lightgray"}}>
+        <AppBar sx={{ backgroundColor: "lightgray" }}>
             <Tabs value={value < routes.length ? value : 0} onChange={onChangeFn}>
                 {getTabs()}
             </Tabs>
@@ -34,4 +36,3 @@ const Navigator: React.FC<{ routes: RouteType[] }> = ({routes}) => {
     </Box>
 }
 export default Navigator;
-// useMediaQuery //useState
