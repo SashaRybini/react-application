@@ -18,6 +18,7 @@ import SnackbarAlert from "./components/common/SnackbarAlert";
 import { authActions } from "./redux/slices/authSlice";
 import CodePayload from "./model/CodePayload";
 import ChatRoom from "./components/pages/ChatRoom";
+import SignUp from "./components/pages/SignUp";
 
 const { always, authenticated, /*admin,*/ noadmin, noauthenticated } = routesConfig;
 
@@ -39,7 +40,7 @@ function getRoutes(userData: UserData): RouteType[] {
     return res
   });
   if (userData) {
-    res[result.length - 1].label = userData.email //logout last
+    res[result.length - 1].label = userData.username //logout last
   }
   return res
 }
@@ -68,6 +69,7 @@ const App: React.FC = () => {
       <Route path="/" element={<NavigatorDispatcher routes={routes} />}>
         <Route index element={<ChatRoom />} />
         <Route path="signin" element={<SignIn />} />
+        <Route path="signup" element={<SignUp />} />
         <Route path="signout" element={<SignOut />} />
         <Route path="/*" element={<NotFound />} />
       </Route>

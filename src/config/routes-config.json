@@ -19,6 +19,11 @@
             "to": "/signin",
             "label": "Sign In",
             "order": 2
+        },
+        {
+            "to": "/signup",
+            "label": "Sign Up",
+            "order": 3
         }
     ]
 }

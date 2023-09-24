@@ -1,5 +1,8 @@
 type UserData = {
-    email: string,
-    role: string
+    username: string,
+    email?: string,
+    role?: string,
+    password?: string
+    // imageUrl: string
 } | null
 export default UserData

@@ -24,9 +24,9 @@ const SignInForm: React.FC<Props> = ({submitFn}) => {
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        const email: string = data.get('email')! as string
+        const username: string = data.get('username')! as string
         const password: string = data.get('password')! as string
-        const res = await submitFn({email, password})
+        const res = await submitFn({username, password})
 
     };
 
@@ -57,10 +57,10 @@ const SignInForm: React.FC<Props> = ({submitFn}) => {
                             margin="normal"
                             required
                             fullWidth
-                            id="email"
+                            id="username"
                             label="User name"
-                            name="email"
-                            autoComplete="email"
+                            name="username"
+                            autoComplete="username"
                             autoFocus
                         />
                         <TextField
