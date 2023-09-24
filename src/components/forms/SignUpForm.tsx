@@ -4,16 +4,18 @@ import {
 } from '@mui/material';
 import UserData from '../../model/UserData';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import appFirebase from '../../config/firebase-config';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 
 type Props = {
     submitFn: (newUser: UserData) => void
 }
 
 const initialUser: UserData = {
-    username: '', email: '', role: 'user', password: ''
+    username: '', email: '', role: 'user', password: '', imageUrl: ''
 }
 
-const RegistrationForm: React.FC<Props> = ({ submitFn }) => {
+const SignUpForm: React.FC<Props> = ({ submitFn }) => {
     const [userData, setUserData] = useState(initialUser);
 
     const handleChange = (event: any) => {
@@ -21,6 +23,20 @@ const RegistrationForm: React.FC<Props> = ({ submitFn }) => {
         setUserData((prevData) => ({
             ...prevData,
             [name]: value,
+        }))
+    }
+
+    const handleFileChange = async (event: any) => {
+        const file = event.target.files[0]
+
+        const storage = getStorage(appFirebase)
+        const storageRef = ref(storage, file.name)
+        await uploadBytes(storageRef, file)
+        const imageUrl = await getDownloadURL(storageRef)
+
+        setUserData((prevData) => ({
+            ...prevData,
+            imageUrl: imageUrl
         }))
     }
 
@@ -82,6 +98,24 @@ const RegistrationForm: React.FC<Props> = ({ submitFn }) => {
                             />
                         </Grid>
                         <Grid item xs={12} sm={4} md={12}>
+                            {!userData.imageUrl && <Box>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    required
+                                    onChange={handleFileChange}
+                                    style={{ display: 'none' }}
+                                    id="file-input"
+                                />
+                                <label htmlFor="file-input">
+                                    <Button variant="contained" component="span">
+                                        Upload Avatar Image
+                                    </Button>
+                                </label>
+                            </Box>}
+                            {userData.imageUrl && <img src={userData.imageUrl} style={{width:'100px', height:'auto'}}/>}
+                        </Grid>
+                        <Grid item xs={12} sm={4} md={12}>
                             <Button
                                 type="submit"
                                 variant="contained"
@@ -98,4 +132,4 @@ const RegistrationForm: React.FC<Props> = ({ submitFn }) => {
     </Box>
 }
 
-export default RegistrationForm;
+export default SignUpForm;

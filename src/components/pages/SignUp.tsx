@@ -5,7 +5,7 @@ import CodeType from "../../model/CodeType"
 import LoginData from "../../model/LoginData"
 import UserData from "../../model/UserData"
 import { authActions } from "../../redux/slices/authSlice"
-import RegisterForm from "../forms/RegisterForm"
+import RegisterForm from "../forms/SignUpForm"
 
 const SignUp: React.FC = () => {
 

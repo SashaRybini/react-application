@@ -3,6 +3,6 @@ type UserData = {
     email?: string,
     role?: string,
     password?: string
-    // imageUrl: string
+    imageUrl?: string
 } | null
 export default UserData
