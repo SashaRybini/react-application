@@ -1,4 +1,6 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material'
+import {
+    Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle
+} from '@mui/material'
 
 type Props = {
     title: string,
@@ -6,7 +8,7 @@ type Props = {
     handleClose: (decision: boolean) => void
     open: boolean
 }
-const Confirm: React.FC<Props> = ({title, content, handleClose, open}) => {
+const Confirm: React.FC<Props> = ({ title, content, handleClose, open }) => {
 
     return <Box>
         <Dialog

@@ -22,8 +22,6 @@ export default class AuthServiceJwt implements AuthService {
     }
 
     async registerNewUser(newUser: UserData): Promise<LoginData> {
-        console.log(newUser);
-        
         const response = await fetch(`${this.url}/signup`, {
             method: "POST",
             headers: {
@@ -51,7 +49,6 @@ export default class AuthServiceJwt implements AuthService {
     }
 
     async logout(): Promise<void> {
-        
         localStorage.removeItem(AUTH_DATA_JWT)
     }
 

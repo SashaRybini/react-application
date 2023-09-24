@@ -9,7 +9,6 @@ import routesConfig from './config/routes-config.json';
 import NotFound from "./components/pages/NotFound";
 import NavigatorDispatcher from "./components/navigators/NavigatorDispatcher";
 import UserData from "./model/UserData";
-import Employees from "./components/pages/Employees";
 import CodeType from "./model/CodeType";
 import { StatusType } from "./model/StatusType";
 import { authService } from "./config/service-config";

@@ -12,10 +12,7 @@ const SignUp: React.FC = () => {
     const dispatch = useDispatch()
 
     async function signUpSubmitFn(newUser: UserData) {
-        console.log(newUser);
-        
         const loginData: LoginData = await authService.registerNewUser(newUser)
-        console.log(loginData);
         const res: UserData = await authService.login(loginData)
         res && dispatch(authActions.set(res))
 
