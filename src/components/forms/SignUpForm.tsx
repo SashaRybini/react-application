@@ -28,7 +28,7 @@ const SignUpForm: React.FC<Props> = ({ submitFn }) => {
 
     const handleFileChange = async (event: any) => {
         const file = event.target.files[0]
-
+        // firebase storage
         const storage = getStorage(appFirebase)
         const storageRef = ref(storage, file.name)
         await uploadBytes(storageRef, file)

@@ -4,6 +4,8 @@ import CodeType from "../model/CodeType";
 import { codeActions } from "../redux/slices/codeSlice";
 import { useEffect, useState } from "react";
 import { Subscription } from "rxjs";
+import Contact from "../model/Contact";
+import { chatRoomService } from "../config/service-config";
 
 export function useDispatchCode() {
     const dispatch = useDispatch();
@@ -21,4 +23,25 @@ export function useDispatchCode() {
         }
         dispatch(codeActions.set({ code, message: message || successMessage }))
     }
+}
+
+export function useSelectorContacts() {
+    const dispatch = useDispatchCode();
+    const [contacts, setContacts] = useState<Contact[]>([]);
+    useEffect(() => {
+        const subscription: Subscription = chatRoomService.getAllContacts()
+            .subscribe({
+                next(contArray: Contact[] | string) {
+                    let errorMessage: string = '';
+                    if (typeof contArray === 'string') {
+                        errorMessage = contArray;
+                    } else {
+                        setContacts(contArray);
+                    }
+                    dispatch(errorMessage, '');
+                }
+            });
+        return () => subscription.unsubscribe();
+    }, []);
+    return contacts;
 }

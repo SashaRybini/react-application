@@ -17,12 +17,14 @@ function getUserData(data: any): UserData {
 
 export default class AuthServiceJwt implements AuthService {
 
+    private webSocket: WebSocket | undefined;
+
     constructor(private url: string) {
 
     }
 
     async registerNewUser(newUser: UserData): Promise<LoginData> {
-        const response = await fetch(`${this.url}/signup`, {
+        const response = await fetch(`http://${this.url}/users/signup`, {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
@@ -38,18 +40,27 @@ export default class AuthServiceJwt implements AuthService {
         serverLoginData.username = loginData.username;
         serverLoginData.password = loginData.password;
         
-        const response = await fetch(`${this.url}/login`, {
+        const response = await fetch(`http://${this.url}/users/login`, {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(serverLoginData)
         })
+
+        //на логине создаем коннекшн
+        this.webSocket = new WebSocket(`ws://${this.url}/connect/${loginData.username}`);
+        
         return response.ok ? getUserData(await response.json()) : null
     }
 
     async logout(): Promise<void> {
-        localStorage.removeItem(AUTH_DATA_JWT)
+        //на логауте удаляем коннекшн, вопрос - какой ?
+        console.log('logout');
+        
+        this.webSocket!.close()
+        
+        // localStorage.removeItem(AUTH_DATA_JWT) // redux
     }
 
 }
