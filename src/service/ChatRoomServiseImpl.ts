@@ -103,18 +103,18 @@ export default class ChatRoomServiceImpl implements ChatRoomService {
     }
 
 
-    async getImageUrl(username: string): Promise<string> {
-        const url = `http://localhost:8080/users/imageUrl/${username}`;
-        const responce = await fetchRequest(url, { method: "GET"})
-        const imgUrl = (await responce.json()).imgUrl
-        console.log(typeof imgUrl);
-        return imgUrl
-    }
+    // async getImageUrl(username: string): Promise<string> {
+    //     const url = `http://localhost:8080/users/imageUrl/${username}`;
+    //     const responce = await fetchRequest(url, { method: "GET"})
+    //     const imgUrl = (await responce.json()).imgUrl
+    //     console.log(typeof imgUrl);
+    //     return imgUrl
+    // }
 
-    async getUsers(): Promise<any> {
-        const url = `http://localhost:8080/users`;
-        const responce = await fetchRequest(url, { method: "GET"})
-        return responce.json()
-    }
+    // async getUsers(): Promise<any> {
+    //     const url = `http://localhost:8080/users`;
+    //     const responce = await fetchRequest(url, { method: "GET"})
+    //     return responce.json()
+    // }
     
 }

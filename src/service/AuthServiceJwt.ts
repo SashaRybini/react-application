@@ -17,7 +17,7 @@ function getUserData(data: any): UserData {
 
 export default class AuthServiceJwt implements AuthService {
 
-    private webSocket: WebSocket | undefined;
+    webSocket: WebSocket | undefined;
 
     constructor(private url: string) {
 
@@ -55,12 +55,22 @@ export default class AuthServiceJwt implements AuthService {
     }
 
     async logout(): Promise<void> {
-        //на логауте удаляем коннекшн, вопрос - какой ?
-        console.log('logout');
-        
+        //на логауте удаляем коннекшн
+        //колим ендпоинт для нотификации
+
         this.webSocket!.close()
+
+        console.log('logout');
+
+        await fetch(`http://${this.url}/users/signout`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
         
-        // localStorage.removeItem(AUTH_DATA_JWT) // redux
+        
+        // localStorage.removeItem(AUTH_DATA_JWT) // redux does it
     }
 
 }

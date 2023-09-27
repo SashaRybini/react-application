@@ -1,5 +1,5 @@
 export function getISODateStr(date) {
-    return date.toISOString().substring(0, 10)
+    return date.toISOString().substring(0, 19)
 }
 export function getEndDate(startDateStr, days) {
     const date = new Date(startDateStr);
