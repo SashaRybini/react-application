@@ -1,3 +1,4 @@
+import { messagesService } from "../config/service-config";
 import LoginData from "../model/LoginData";
 import UserData from "../model/UserData";
 import AuthService from "./AuthService";
@@ -17,7 +18,7 @@ function getUserData(data: any): UserData {
 
 export default class AuthServiceJwt implements AuthService {
 
-    webSocket: WebSocket | undefined;
+    // webSocket: WebSocket | undefined;
 
     constructor(private url: string) {
 
@@ -49,7 +50,8 @@ export default class AuthServiceJwt implements AuthService {
         })
 
         //на логине создаем коннекшн
-        this.webSocket = new WebSocket(`ws://${this.url}/connect/${loginData.username}`);
+        messagesService.connectWs(loginData.username)
+        // this.webSocket = new WebSocket(`ws://${this.url}/connect/${loginData.username}`);
         
         return response.ok ? getUserData(await response.json()) : null
     }
@@ -57,8 +59,8 @@ export default class AuthServiceJwt implements AuthService {
     async logout(): Promise<void> {
         //на логауте удаляем коннекшн
         //колим ендпоинт для нотификации
-
-        this.webSocket!.close()
+        messagesService.closeWs()
+        // this.webSocket!.close()
 
         console.log('logout');
 

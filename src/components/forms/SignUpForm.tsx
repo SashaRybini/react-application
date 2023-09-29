@@ -131,5 +131,4 @@ const SignUpForm: React.FC<Props> = ({ submitFn }) => {
         </form>
     </Box>
 }
-
 export default SignUpForm;

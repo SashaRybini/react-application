@@ -5,7 +5,7 @@ import CodeType from "../../model/CodeType"
 import LoginData from "../../model/LoginData"
 import UserData from "../../model/UserData"
 import { authActions } from "../../redux/slices/authSlice"
-import RegisterForm from "../forms/SignUpForm"
+import SignUpForm from "../forms/SignUpForm"
 
 const SignUp: React.FC = () => {
 
@@ -23,6 +23,6 @@ const SignUp: React.FC = () => {
         // alert.message = res ? 'Welcome' : 'Incorrect Credentials'
     }
 
-    return <RegisterForm submitFn={signUpSubmitFn} />
+    return <SignUpForm submitFn={signUpSubmitFn} />
 }
 export default SignUp
