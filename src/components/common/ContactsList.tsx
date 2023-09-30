@@ -3,7 +3,24 @@ import { chatRoomService } from "../../config/service-config"
 import { useSelectorContacts } from "../../hooks/hooks"
 import UserData from "../../model/UserData"
 import { useSelectorAuth } from "../../redux/store"
-import { Avatar, Box, List, ListItem, ListItemAvatar, ListItemText, Typography } from "@mui/material"
+import {
+    Avatar, Box, Button, List, ListItem, ListItemAvatar, ListItemText, Modal, Typography
+} from "@mui/material"
+import ForwardToInboxIcon from '@mui/icons-material/ForwardToInbox';
+import Correspondence from "../pages/Correspondence"
+
+const style = {
+    position: 'absolute' as 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '80%',
+    height: '70%', //
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+};
 
 type contactType = {
     username: string,
@@ -11,7 +28,11 @@ type contactType = {
     status: "online" | 'offline' | 'blocked'
 }
 
-const ContactsList: React.FC = () => {
+type Props = {
+    handleSendTo: (usernameTo: string) => void
+}
+
+const ContactsList: React.FC<Props> = ({ handleSendTo }) => {
     const userData: UserData = useSelectorAuth()
     const username = userData?.username
 
@@ -33,27 +54,50 @@ const ContactsList: React.FC = () => {
         })
     }
 
+    const [openCorrespondence, setOpenCorrespondence] = useState(false)
+    const [clientTo, setClientTo] = useState('')
+
     return <List>{contacts.map(c => {
-        return (
-            <Box key={c.username}>
-                <ListItem>
-                    <ListItemAvatar>
+        return <Box key={c.username}>
+            <ListItem>
+                <ListItemAvatar>
+                    {username != c.username ? <div
+                        onClick={() => {
+                            setOpenCorrespondence(true)
+                            setClientTo(c.username)
+                        }}
+                        style={{ cursor: 'pointer' }}
+                    >
                         <Avatar src={c.image} />
-                    </ListItemAvatar>
-                    <ListItemText
-                        primary={c.username}
-                        secondary={
-                            <Typography
-                                variant="body2"
-                                color="textSecondary"
-                            >
-                                {c.status}
-                            </Typography>
-                        }
-                    />
-                </ListItem>
+                    </div> : <Avatar src={c.image} />}
+                </ListItemAvatar>
+                <ListItemText
+                    primary={c.username}
+                    secondary={
+                        <Typography
+                            variant="body2"
+                            color={c.status == 'online' ? 'green' : c.status == 'blocked' ? 'red' : 'pink'}
+                        >
+                            {c.status}
+                        </Typography>
+                    }
+                />
+                {username != c.username && <Button
+                    onClick={() => handleSendTo(c.username)}
+                >
+                    <ForwardToInboxIcon />
+                </Button>}
+            </ListItem>
+        </Box>
+    })}
+        <Modal
+            open={openCorrespondence}
+            onClose={() => setOpenCorrespondence(false)}
+        >
+            <Box sx={style}>
+                <Correspondence clientFrom={username!} clientTo={clientTo} />
             </Box>
-        )
-    })}</List>
+        </Modal>
+    </List>
 }
 export default ContactsList

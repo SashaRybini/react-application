@@ -2,37 +2,64 @@ import { Avatar, ListItem, ListItemAvatar, ListItemText, Typography } from "@mui
 import { chatRoomService } from "../../config/service-config"
 import MessageType from "../../model/MessageType"
 import { useEffect, useState } from "react"
+import UserData from "../../model/UserData"
+import { useSelectorAuth } from "../../redux/store"
+import { getDateTime, getTime } from "../../util/date-functions"
 
 type Props = {
-    message: MessageType
+    message: MessageType,
+    isModal: boolean
 }
-const Message: React.FC<Props> = ({ message }) => {
+const Message: React.FC<Props> = ({ message, isModal }) => {
+    const userData: UserData = useSelectorAuth()
+    const username = userData?.username
 
     // const image = await chatRoomService.getImageUrl(message.from)
 
-    const [image, setImage] = useState<string | null>(null);
+    const [image, setImage] = useState<string | null>(null)
 
     useEffect(() => {
-        const fetchImageUrl = async () => {
-            const imageUrl = await chatRoomService.getImageUrl(message.from);
-            setImage(imageUrl);
+        fetchImageUrl()
+    }, [])
+    async function fetchImageUrl() {
+        const imageUrl = await chatRoomService.getImageUrl(message.from)
+        setImage(imageUrl)
+    }
+
+    function getMessage() {
+        let sender = message.from
+        if(message.to == username) { //&& message.from != 'all'
+            sender += ' private to me'
         }
-        fetchImageUrl();
-    }, []);
+        if (message.from == username && message.to != 'all') {
+            sender += ` private to ${message.to}`
+        }
+        return `${sender}: ${'\u00A0'.repeat(30 - sender.length)}${message.text}`
+    }
+    function getColor() {
+        let color = ''
+        if (message.from == username && message.to != 'all') {
+            color = 'lightblue'
+        }
+        if (message.to == username) {
+            color = 'lightyellow'
+        }
+        return color
+    }
 
 
-    return <ListItem >
+    return <ListItem style={{ backgroundColor: getColor()}}>
         <ListItemAvatar>
             {image && <Avatar src={image} />}
         </ListItemAvatar>
         {message.from && <ListItemText
-            primary={`${message.from}: ${'\u00A0'.repeat(30)}${message.text}`}
+            primary={getMessage()}
             secondary={
                 <Typography
                     variant="body2"
                     color="textSecondary"
                 >
-                    {message.date}
+                    {isModal ? getDateTime(new Date(message.date)) : getTime(new Date(message.date))}
                 </Typography>
             }
         />}

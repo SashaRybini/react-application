@@ -49,7 +49,8 @@ export default class AuthServiceJwt implements AuthService {
             body: JSON.stringify(serverLoginData)
         })
 
-        //на логине создаем коннекшн
+        //на логине создаем коннекшн 
+        // TODO убрать в компоненту
         messagesService.connectWs(loginData.username)
         // this.webSocket = new WebSocket(`ws://${this.url}/connect/${loginData.username}`);
         
@@ -59,6 +60,7 @@ export default class AuthServiceJwt implements AuthService {
     async logout(): Promise<void> {
         //на логауте удаляем коннекшн
         //колим ендпоинт для нотификации
+        // TODO убрать в компоненту 
         messagesService.closeWs()
         // this.webSocket!.close()
 

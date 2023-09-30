@@ -31,4 +31,18 @@ export default class MessagesService {
     this.webSocket?.addEventListener('message', handleMessage);
   }
 
+  async getPrivateMessages(clientFrom: string, clientTo: string) {
+    const url = `http://${this.url}/messages`
+    const responce = await fetch(url, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({clientFrom, clientTo})
+        })
+    return await responce.text()
+  }
+
+
+
 }
