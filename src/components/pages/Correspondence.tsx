@@ -30,7 +30,7 @@ const Correspondence: React.FC<Props> = ({ clientFrom, clientTo }) => {
     }, [])
     async function fetchMessages() {
         const messagesStr = await messagesService.getPrivateMessages(clientFrom, clientTo)
-        console.log(messagesStr);
+        // console.log(messagesStr);
         
         setMessages(JSON.parse(messagesStr))
     }

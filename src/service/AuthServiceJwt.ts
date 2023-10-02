@@ -24,6 +24,7 @@ export default class AuthServiceJwt implements AuthService {
 
     }
 
+    //rename to signUp
     async registerNewUser(newUser: UserData): Promise<LoginData> {
         const response = await fetch(`http://${this.url}/users/signup`, {
             method: "POST",
@@ -51,6 +52,8 @@ export default class AuthServiceJwt implements AuthService {
 
         //на логине создаем коннекшн 
         // TODO убрать в компоненту
+        
+        
         messagesService.connectWs(loginData.username)
         // this.webSocket = new WebSocket(`ws://${this.url}/connect/${loginData.username}`);
         
@@ -72,9 +75,16 @@ export default class AuthServiceJwt implements AuthService {
                 'Content-Type': 'application/json'
             }
         })
-        
-        
         // localStorage.removeItem(AUTH_DATA_JWT) // redux does it
+    }
+
+    async deleteUser(username: string) {
+        await fetch(`http://${this.url}/users/${username}`, {
+            method: "DELETE",
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
     }
 
 }

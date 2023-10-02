@@ -7,14 +7,23 @@ import { useSelectorAuth } from "../../redux/store";
 import { getISODateStr } from "../../util/date-functions";
 import { messagesService } from "../../config/service-config";
 import Message from "../common/Message";
+import { useNavigate } from "react-router-dom";
 
 // const wsService = new WebSocketService()
 
 const ChatRoom: React.FC = () => {
     const userData: UserData = useSelectorAuth()
-    // initialMessage.from = userData!.username
+    // const navigate = useNavigate()
+    // useEffect(() =>{
+    //     if (!userData) {
+    //         navigate('/signin')
+    //         // return null
+    //     }
+    // },[])
 
-    const [message, setMessage] = useState<MessageType>({ from: userData!.username, to: 'all', text: '', date: '' })
+    // const [message, setMessage] = useState<MessageType>({ from: userData!.username, to: 'all', text: '', date: '' })
+    const [message, setMessage] = useState<MessageType>({ from: userData? userData!.username : '', to: 'all', text: '', date: '' })
+
 
     function handleText(event: any) {
         const text = event.target.value
@@ -48,10 +57,12 @@ const ChatRoom: React.FC = () => {
 
     useEffect(() => {
         console.log('add listener');
-        if(!messagesService.isWebsocket()) { //потому что колится рашьне апп я хз
-            messagesService.reconnect()
+        if (userData) { //иначе идет реконнект без юзердаты
+            if(!messagesService.isWebsocket()) { //потому что колится рашьне апп я хз
+                messagesService.reconnect()
+            }
+            messagesService.addListener(handleMessage)
         }
-        messagesService.addListener(handleMessage)
     }, [])
     function handleMessage(event: any) {
         console.log('handle message')

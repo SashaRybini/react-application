@@ -27,7 +27,7 @@ function getRoutes(userData: UserData): RouteType[] {
   if (userData) {
     result.push(...authenticated)
     // userData.role === 'admin' && result.push(...admin);
-    userData.role === 'user' && result.push(...noadmin);
+    // userData.role === 'user' && result.push(...noadmin);
   } else {
     result.push(...noauthenticated);
   }
@@ -60,12 +60,6 @@ const App: React.FC = () => {
     }
     return res
   }
-
-  // useEffect(() => {
-  //   console.log('reconnect');
-    
-  //   messagesService.reconnect()
-  // }, [])
 
   const routes = useMemo(() => getRoutes(userData), [userData])
 

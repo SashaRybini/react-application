@@ -1,4 +1,4 @@
-import { Avatar, ListItem, ListItemAvatar, ListItemText, Typography } from "@mui/material"
+import { Avatar, Button, ListItem, ListItemAvatar, ListItemText, Typography } from "@mui/material"
 import { chatRoomService } from "../../config/service-config"
 import MessageType from "../../model/MessageType"
 import { useEffect, useState } from "react"
@@ -16,11 +16,11 @@ const Message: React.FC<Props> = ({ message, isModal }) => {
 
     // const image = await chatRoomService.getImageUrl(message.from)
 
-    const [image, setImage] = useState<string | null>(null)
+    const [image, setImage] = useState<string>('')
 
     useEffect(() => {
         fetchImageUrl()
-    }, [])
+    }, [message.from]) //а иначе путаются картинки я хз
     async function fetchImageUrl() {
         const imageUrl = await chatRoomService.getImageUrl(message.from)
         setImage(imageUrl)
@@ -52,10 +52,11 @@ const Message: React.FC<Props> = ({ message, isModal }) => {
 
 
     return <ListItem style={{ backgroundColor: getColor()}}>
+        {message.from == username && <Button onClick={() => console.log(JSON.stringify(message))}> b </Button>}
         <ListItemAvatar>
-            {image && <Avatar src={image} />}
+            <Avatar src={image} />
         </ListItemAvatar>
-        {message.from && <ListItemText
+        <ListItemText
             primary={getMessage()}
             secondary={
                 <Typography
@@ -65,7 +66,7 @@ const Message: React.FC<Props> = ({ message, isModal }) => {
                     {isModal ? getDateTime(new Date(message.date)) : getTime(new Date(message.date))}
                 </Typography>
             }
-        />}
+        />
     </ListItem>
 }
 export default Message

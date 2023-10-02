@@ -3,6 +3,8 @@ import MessageType from "../model/MessageType";
 
 export function filterMessages(request: Request, messages: any, clientFrom: string, clientTo: string) {
     let res: MessageType[] = []
+    // console.log(`admin/postman --> ${JSON.stringify(messages)}`);
+    
     if (messages) {
         //clientTo is empty string in case of admin role 'eye' - otherwise filter will clear everything
         

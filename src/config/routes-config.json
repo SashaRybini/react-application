@@ -12,7 +12,7 @@
             "order": 10
         }
     ],
-    
+    "admin": [],
     "noadmin": [],
     "noauthenticated": [
         {

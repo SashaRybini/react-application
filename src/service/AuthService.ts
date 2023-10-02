@@ -6,5 +6,6 @@ export default interface AuthService {
     login(loginData: LoginData): Promise<UserData>
     logout(): Promise<void>
     registerNewUser(newUser: UserData): Promise<LoginData>
-    
+    deleteUser(username: string): Promise<void>
+
 }

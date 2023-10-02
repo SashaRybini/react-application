@@ -1,14 +1,19 @@
-import { useMemo, useState } from "react"
-import { chatRoomService } from "../../config/service-config"
+import { useMemo, useRef, useState } from "react"
+import { authService, chatRoomService } from "../../config/service-config"
 import { useSelectorContacts } from "../../hooks/hooks"
 import UserData from "../../model/UserData"
 import { useSelectorAuth } from "../../redux/store"
 import {
-    Avatar, Box, Button, List, ListItem, ListItemAvatar, ListItemText, Modal, Typography
+    Avatar, Box, Button, List, ListItem, ListItemAvatar, ListItemText, Menu, MenuItem, MenuList, Modal, Typography
 } from "@mui/material"
 import ForwardToInboxIcon from '@mui/icons-material/ForwardToInbox';
 import Correspondence from "../pages/Correspondence"
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import AppBlockingIcon from '@mui/icons-material/AppBlocking';
+import MenuIcon from '@mui/icons-material/Menu';
+import { authActions } from "../../redux/slices/authSlice"
+import { useDispatch } from "react-redux"
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -50,6 +55,14 @@ const ContactsList: React.FC<Props> = ({ handleSendTo }) => {
     const contactsDb = useSelectorContacts()
 
     const contacts = useMemo(() => getContacts(), [contactsDb])
+    
+    const dispatch = useDispatch()
+    // console.log(contacts.length); //вон из чата если пропал из контактов
+    if (contacts.length > 0 && !contacts.some(c => c.username == username)) {
+        console.log('как будто бы нету')
+        authService.logout()
+        dispatch(authActions.reset());
+    }
 
     function getContacts() {
         return contactsDb.map(c => {
@@ -68,7 +81,14 @@ const ContactsList: React.FC<Props> = ({ handleSendTo }) => {
     const [openCorrespondence, setOpenCorrespondence] = useState(false)
     const [clientTo, setClientTo] = useState('')
 
-    return <List>{contacts.map(c => {
+
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+    const [currentContactName, setCurrentContactName] = useState('')
+
+    return <List>{contacts.map((c, index) => {
+        // const contactName = c.username
+        // console.log(c.username)
+        // setCurrentContactName(c.username)
         return <Box key={c.username}>
             <ListItem>
                 <ListItemAvatar>
@@ -98,16 +118,51 @@ const ContactsList: React.FC<Props> = ({ handleSendTo }) => {
                 >
                     <ForwardToInboxIcon />
                 </Button>}
-                {getRole() == 'admin' && username != c.username && <Button onClick={() => {
-                    setOpenCorrespondence(true)
-                    setClientFrom(c.username)
-                    setClientTo('') //like a null
-                }}>
-                    <VisibilityIcon />
-                </Button>}
+
+                {getRole() == 'admin' && username != c.username && <Box>
+                    <Button onClick={(event) => {
+                        setAnchorEl(event.currentTarget)
+                        setCurrentContactName(c.username)
+                    }}>
+                        <MenuIcon />
+                    </Button>
+                </Box>}
+
+                    <Menu
+                        anchorEl={anchorEl}
+                        open={Boolean(anchorEl)}
+                        onClose={() => setAnchorEl(null)}
+                    >
+                        <MenuItem onClick={() => {
+                            setOpenCorrespondence(true)
+                            setClientFrom(currentContactName)
+                            setClientTo('')
+                            setAnchorEl(null)
+                        }}>
+                            <VisibilityIcon />
+                        </MenuItem>
+                        <MenuItem onClick={() => {
+                            //
+                            console.log(`delete ${currentContactName}`)
+                            authService.deleteUser(currentContactName)
+                            setAnchorEl(null)
+                        }}>
+                            <DeleteOutlineIcon />
+                        </MenuItem>
+                        <MenuItem onClick={() => {
+                            //
+                            console.log(index)
+                            console.log(`block ${currentContactName}`)
+                            setAnchorEl(null)
+                        }}>
+                            <AppBlockingIcon />
+                        </MenuItem>
+                    </Menu>
+
             </ListItem>
         </Box>
     })}
+
         <Modal
             open={openCorrespondence}
             onClose={() => setOpenCorrespondence(false)}
@@ -116,6 +171,7 @@ const ContactsList: React.FC<Props> = ({ handleSendTo }) => {
                 <Correspondence clientFrom={clientFrom!} clientTo={clientTo} />
             </Box>
         </Modal>
+
     </List>
 }
 export default ContactsList

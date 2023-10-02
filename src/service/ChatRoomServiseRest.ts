@@ -105,7 +105,7 @@ export default class ChatRoomServiceRest implements ChatRoomService {
     async getImageUrl(username: string): Promise<string> {
         const url = `http://localhost:8080/users/imageUrl/${username}`;
         const responce = await fetchRequest(url, { method: "GET"})
-        const imgUrl = (await responce.json()).imgUrl
+        const imgUrl = await responce.text()
         return imgUrl
     }
 

@@ -13,6 +13,8 @@ export default class MessagesService {
 
   connectWs(username: string) { //on login
     // this.webSocket = new WebSocket('ws://localhost:8080/message/websocket')
+    console.log('77777777777777');
+    
     this.webSocket = new WebSocket(`ws://${this.url}/connect/${username}`);
   }
 
