@@ -27,12 +27,14 @@ const Message: React.FC<Props> = ({ message, isModal }) => {
     }
 
     function getMessage() {
-        let sender = message.from
+        // let sender = message.from
+        //логика адуха, первая строка для админа, чтобы он в своем супер глазе видел кто - кому отправил
+        let sender = `${message.from} to ${message.to}`
         if(message.to == username) { //&& message.from != 'all'
-            sender += ' private to me'
+            sender = `${message.from} private to me`
         }
         if (message.from == username && message.to != 'all') {
-            sender += ` private to ${message.to}`
+            sender = `${message.from} private to ${message.to}`
         }
         return `${sender}: ${'\u00A0'.repeat(30 - sender.length)}${message.text}`
     }
@@ -40,9 +42,10 @@ const Message: React.FC<Props> = ({ message, isModal }) => {
         let color = ''
         if (message.from == username && message.to != 'all') {
             color = 'lightblue'
-        }
-        if (message.to == username) {
+        } else if (message.to == username) {
             color = 'lightyellow'
+        } else if (message.from == username && message.to == 'all') {
+            color = 'whitesmoke'
         }
         return color
     }

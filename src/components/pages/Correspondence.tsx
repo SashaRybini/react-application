@@ -2,8 +2,9 @@ import { useEffect, useMemo, useState } from "react"
 import { messagesService } from "../../config/service-config"
 import MessageType from "../../model/MessageType"
 import Message from "../common/Message"
-import { Box, Button, Paper, TextField } from "@mui/material"
+import { Box, Button, IconButton, InputAdornment, Paper, TextField } from "@mui/material"
 import { filterMessages } from "../../service/ChatRoomProcess"
+import ClearIcon from '@mui/icons-material/Clear';
 
 type Props = {
     clientFrom: string,
@@ -15,12 +16,13 @@ export type Request = {
     received: boolean,
     dateFrom: Date,
     dateTo: Date,
-    includeToAll: boolean
+    includeToAll: boolean,
+    someText: string
 }
 
 const Correspondence: React.FC<Props> = ({ clientFrom, clientTo }) => {
 
-    const [request, setRequest] = useState<Request>({ sent: false, received: false, dateFrom: new Date('1900-01-01'), dateTo: new Date(), includeToAll: false })
+    const [request, setRequest] = useState<Request>({ sent: false, received: false, dateFrom: new Date('1900-01-01'), dateTo: new Date(), includeToAll: false, someText: '' })
 
     const [messagesDb, setMessages] = useState()
     useEffect(() => {
@@ -28,6 +30,8 @@ const Correspondence: React.FC<Props> = ({ clientFrom, clientTo }) => {
     }, [])
     async function fetchMessages() {
         const messagesStr = await messagesService.getPrivateMessages(clientFrom, clientTo)
+        console.log(messagesStr);
+        
         setMessages(JSON.parse(messagesStr))
     }
 
@@ -58,6 +62,17 @@ const Correspondence: React.FC<Props> = ({ clientFrom, clientTo }) => {
         const date = event.target.value
         const requestCopy = { ...request }
         requestCopy.dateTo = new Date(date)
+        setRequest(requestCopy)
+    }
+    function handleSomeText(event: any) {
+        const text = event.target.value
+        const requestCopy = { ...request }
+        requestCopy.someText = text
+        setRequest(requestCopy)
+    }
+    function handleTextReset() {
+        const requestCopy = { ...request }
+        requestCopy.someText = ''
         setRequest(requestCopy)
     }
 
@@ -100,6 +115,27 @@ const Correspondence: React.FC<Props> = ({ clientFrom, clientTo }) => {
                 shrink: true
             }}
             onChange={handleDateTo}
+        />
+        <TextField
+            size="small"
+            type="text"
+            label="Search"
+            onChange={handleSomeText}
+            value={request.someText}
+            InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    {request.someText && <IconButton
+                        aria-label="Reset"
+                        onClick={handleTextReset}
+                        edge="end"
+                      >
+                        <ClearIcon />
+                      </IconButton>
+                    }
+                  </InputAdornment>
+                ),
+              }}
         />
 
         <Paper elevation={3} sx={{ p: 2, height: '60vh', overflowY: 'auto' }}>

@@ -55,7 +55,7 @@ function getHeaders(): HeadersInit {
 
 
 
-export default class ChatRoomServiceImpl implements ChatRoomService {
+export default class ChatRoomServiceRest implements ChatRoomService {
 
     private conts: Map<string, Contact> = new Map();
 
@@ -88,8 +88,7 @@ export default class ChatRoomServiceImpl implements ChatRoomService {
     }
 
     private connectWS() {
-        
-        this.webSocket = new WebSocket(this.urlWebsocket) //второй параметр? имя?
+        this.webSocket = new WebSocket(this.urlWebsocket) //второй параметр?
         this.webSocket.onmessage = message => {
             console.log(message.data)
             this.subscriberNext()          

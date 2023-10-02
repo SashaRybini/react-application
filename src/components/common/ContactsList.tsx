@@ -8,6 +8,7 @@ import {
 } from "@mui/material"
 import ForwardToInboxIcon from '@mui/icons-material/ForwardToInbox';
 import Correspondence from "../pages/Correspondence"
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -20,12 +21,21 @@ const style = {
     border: '2px solid #000',
     boxShadow: 24,
     p: 4,
-};
-
+}
+function getRole() {
+    const jwt = localStorage.getItem('auth-data-jwt')
+    if (jwt) {
+        const jwtPayloadJson = atob(jwt.split('.')[1])
+        const jwtPayloadObj = JSON.parse(jwtPayloadJson)
+        const role = jwtPayloadObj.role
+        return role
+    }
+}
+type contactStatus = "online" | 'offline' | 'blocked'
 type contactType = {
     username: string,
     image: string,
-    status: "online" | 'offline' | 'blocked'
+    status: contactStatus
 }
 
 type Props = {
@@ -35,6 +45,7 @@ type Props = {
 const ContactsList: React.FC<Props> = ({ handleSendTo }) => {
     const userData: UserData = useSelectorAuth()
     const username = userData?.username
+    const [clientFrom, setClientFrom] = useState(username)
 
     const contactsDb = useSelectorContacts()
 
@@ -87,6 +98,13 @@ const ContactsList: React.FC<Props> = ({ handleSendTo }) => {
                 >
                     <ForwardToInboxIcon />
                 </Button>}
+                {getRole() == 'admin' && username != c.username && <Button onClick={() => {
+                    setOpenCorrespondence(true)
+                    setClientFrom(c.username)
+                    setClientTo('') //like a null
+                }}>
+                    <VisibilityIcon />
+                </Button>}
             </ListItem>
         </Box>
     })}
@@ -95,7 +113,7 @@ const ContactsList: React.FC<Props> = ({ handleSendTo }) => {
             onClose={() => setOpenCorrespondence(false)}
         >
             <Box sx={style}>
-                <Correspondence clientFrom={username!} clientTo={clientTo} />
+                <Correspondence clientFrom={clientFrom!} clientTo={clientTo} />
             </Box>
         </Modal>
     </List>

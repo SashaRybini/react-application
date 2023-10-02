@@ -4,14 +4,14 @@ import SignIn from "./components/pages/SignIn";
 import SignOut from "./components/pages/SignOut";
 import './App.css'
 import { useSelectorAuth, useSelectorCode } from "./redux/store";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import routesConfig from './config/routes-config.json';
 import NotFound from "./components/pages/NotFound";
 import NavigatorDispatcher from "./components/navigators/NavigatorDispatcher";
 import UserData from "./model/UserData";
 import CodeType from "./model/CodeType";
 import { StatusType } from "./model/StatusType";
-import { authService } from "./config/service-config";
+import { authService, messagesService } from "./config/service-config";
 import { useDispatch } from "react-redux";
 import SnackbarAlert from "./components/common/SnackbarAlert";
 import { authActions } from "./redux/slices/authSlice";
@@ -60,6 +60,12 @@ const App: React.FC = () => {
     }
     return res
   }
+
+  // useEffect(() => {
+  //   console.log('reconnect');
+    
+  //   messagesService.reconnect()
+  // }, [])
 
   const routes = useMemo(() => getRoutes(userData), [userData])
 
