@@ -33,7 +33,7 @@ export function filterMessages(request: Request, messages: any, clientFrom: stri
 
         res = res.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
 
-        console.log(res);
+        // console.log(res);
         
     }
     return res

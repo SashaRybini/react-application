@@ -56,20 +56,22 @@ const ChatRoom: React.FC = () => {
     const [messages, setMessages] = useState<MessageType[]>([])
 
     useEffect(() => {
-        console.log('add listener');
+        // console.log('add listener');
         if (userData) { //иначе идет реконнект без юзердаты
-            if(!messagesService.isWebsocket()) { //потому что колится рашьне апп я хз
+            if(!messagesService.isWebsocket()) { //потому что колится раньше апп я хз
                 messagesService.reconnect()
             }
             messagesService.addListener(handleMessage)
         }
     }, [])
     function handleMessage(event: any) {
-        console.log('handle message')
-        
-        const message: MessageType = JSON.parse(event.data) //тут также будуь сообщ о коннекте...
-        console.log(`HANDLE MESSAGE ${JSON.stringify(message)}`);
-        if(message.from) {
+        const message: MessageType | any = JSON.parse(event.data)
+
+        if (message.action == 'deleting') {
+            setMessages((prevMessages) => prevMessages.filter(m => JSON.stringify(m) != JSON.stringify(message.message)))
+        }
+
+        if (message.from) { //там выше также будут сообщ о коннекте.. странно что как мессадж тайп проходит..
             setMessages((prevMessages) => [...prevMessages, message])
         }
         

@@ -86,9 +86,7 @@ const ContactsList: React.FC<Props> = ({ handleSendTo }) => {
     const [currentContactName, setCurrentContactName] = useState('')
 
     return <List>{contacts.map((c, index) => {
-        // const contactName = c.username
-        // console.log(c.username)
-        // setCurrentContactName(c.username)
+        
         return <Box key={c.username}>
             <ListItem>
                 <ListItemAvatar>
@@ -143,7 +141,7 @@ const ContactsList: React.FC<Props> = ({ handleSendTo }) => {
                         </MenuItem>
                         <MenuItem onClick={() => {
                             //
-                            console.log(`delete ${currentContactName}`)
+                            // console.log(`delete ${currentContactName}`)
                             authService.deleteUser(currentContactName)
                             setAnchorEl(null)
                         }}>
@@ -151,7 +149,6 @@ const ContactsList: React.FC<Props> = ({ handleSendTo }) => {
                         </MenuItem>
                         <MenuItem onClick={() => {
                             //
-                            console.log(index)
                             console.log(`block ${currentContactName}`)
                             setAnchorEl(null)
                         }}>

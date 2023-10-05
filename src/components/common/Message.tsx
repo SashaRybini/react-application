@@ -1,10 +1,13 @@
-import { Avatar, Button, ListItem, ListItemAvatar, ListItemText, Typography } from "@mui/material"
-import { chatRoomService } from "../../config/service-config"
+import {
+    Avatar, Button, ListItem, ListItemAvatar, ListItemText, Typography
+} from "@mui/material"
+import { chatRoomService, messagesService } from "../../config/service-config"
 import MessageType from "../../model/MessageType"
 import { useEffect, useState } from "react"
 import UserData from "../../model/UserData"
 import { useSelectorAuth } from "../../redux/store"
 import { getDateTime, getTime } from "../../util/date-functions"
+import ClearIcon from '@mui/icons-material/Clear';
 
 type Props = {
     message: MessageType,
@@ -28,9 +31,9 @@ const Message: React.FC<Props> = ({ message, isModal }) => {
 
     function getMessage() {
         // let sender = message.from
-        //логика адуха, первая строка для админа, чтобы он в своем супер глазе видел кто - кому отправил
+        //логика ..., первая строка для админа, чтобы он в своем супер глазе видел кто - кому отправил
         let sender = `${message.from} to ${message.to}`
-        if(message.to == username) { //&& message.from != 'all'
+        if (message.to == username) { //&& message.from != 'all'
             sender = `${message.from} private to me`
         }
         if (message.from == username && message.to != 'all') {
@@ -51,8 +54,7 @@ const Message: React.FC<Props> = ({ message, isModal }) => {
     }
 
 
-    return <ListItem style={{ backgroundColor: getColor()}}>
-        {message.from == username && <Button onClick={() => console.log(JSON.stringify(message))}> b </Button>}
+    return <ListItem style={{ backgroundColor: getColor() }}>
         <ListItemAvatar>
             <Avatar src={image} />
         </ListItemAvatar>
@@ -67,6 +69,15 @@ const Message: React.FC<Props> = ({ message, isModal }) => {
                 </Typography>
             }
         />
+        
+        {(message.from == username || username == 'admin') && <Button
+            onClick={() => {
+            // console.log(JSON.stringify(message))
+            messagesService.deleteMessage(message)
+        }}
+        >
+            <ClearIcon />
+        </Button>}
     </ListItem>
 }
 export default Message

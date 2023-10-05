@@ -13,8 +13,8 @@ export default class MessagesService {
 
   connectWs(username: string) { //on login
     // this.webSocket = new WebSocket('ws://localhost:8080/message/websocket')
-    console.log('77777777777777');
-    
+    // console.log('77777777777777');
+
     this.webSocket = new WebSocket(`ws://${this.url}/connect/${username}`);
   }
 
@@ -23,18 +23,12 @@ export default class MessagesService {
   }
 
   send(message: MessageType) {
-    console.log(message)
 
     this.webSocket!.send(JSON.stringify(message))
   }
 
   addListener(handleMessage: (event: any) => void) {
     //вешаем слушателя, по сообщ колим колбэк хэндлер в чатрум компоненте
-    console.log('veshatel slushatelya');
-    if (this.webSocket) {
-      console.log('socket +');
-      
-    }
     this.webSocket?.addEventListener('message', handleMessage);
   }
 
@@ -62,8 +56,27 @@ export default class MessagesService {
   }
 
   isWebsocket() {
-    
+
     return this.webSocket
+  }
+
+  async deleteMessage(message: MessageType) {
+    const url = `http://${this.url}/messages`
+    const responce = await fetch(url, {
+      method: "DELETE",
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(message)
+    })
+    // console.log((await responce.text()));
+
+    const deletedMessage = {
+      action: 'deleting',
+      message: message
+    }
+    this.webSocket!.send(JSON.stringify(deletedMessage))
+
   }
 
 
