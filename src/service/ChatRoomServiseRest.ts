@@ -54,7 +54,6 @@ function getHeaders(): HeadersInit {
 }
 
 
-
 export default class ChatRoomServiceRest implements ChatRoomService {
 
     private conts: Map<string, Contact> = new Map();
@@ -68,10 +67,10 @@ export default class ChatRoomServiceRest implements ChatRoomService {
     private webSocket: WebSocket | undefined
 
     constructor(baseUrl: string) {
-        this.urlService = `http://${baseUrl}/contacts`;
+        this.urlService = `http://${baseUrl}/contacts`
         this.urlWebsocket = `ws://${baseUrl}/contacts/websocket`
     }
-    
+
     getAllContacts(): Observable<string | Contact[]> {
         if (!this.observable) {
             this.observable = new Observable<Contact[] | string>(subscriber => {
@@ -90,8 +89,8 @@ export default class ChatRoomServiceRest implements ChatRoomService {
     private connectWS() {
         this.webSocket = new WebSocket(this.urlWebsocket) //второй параметр?
         this.webSocket.onmessage = message => {
-            console.log(message.data)
-            this.subscriberNext()          
+            // console.log(message.data)
+            this.subscriberNext()
         }
     }
     private subscriberNext(): void {
@@ -104,15 +103,9 @@ export default class ChatRoomServiceRest implements ChatRoomService {
 
     async getImageUrl(username: string): Promise<string> {
         const url = `http://localhost:8080/users/imageUrl/${username}`;
-        const responce = await fetchRequest(url, { method: "GET"})
+        const responce = await fetchRequest(url, { method: "GET" })
         const imgUrl = await responce.text()
         return imgUrl
     }
 
-    // async getUsers(): Promise<any> {
-    //     const url = `http://localhost:8080/users`;
-    //     const responce = await fetchRequest(url, { method: "GET"})
-    //     return responce.json()
-    // }
-    
 }

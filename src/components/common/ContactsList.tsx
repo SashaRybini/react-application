@@ -1,10 +1,10 @@
-import { useMemo, useRef, useState } from "react"
-import { authService, chatRoomService } from "../../config/service-config"
+import { useEffect, useMemo, useRef, useState } from "react"
+import { authService, chatRoomService, messagesService } from "../../config/service-config"
 import { useSelectorContacts } from "../../hooks/hooks"
 import UserData from "../../model/UserData"
 import { useSelectorAuth } from "../../redux/store"
 import {
-    Avatar, Box, Button, List, ListItem, ListItemAvatar, ListItemText, Menu, MenuItem, MenuList, Modal, Typography
+    Avatar, Box, Button, List, ListItem, ListItemAvatar, ListItemText, Menu, MenuItem, Modal, Typography
 } from "@mui/material"
 import ForwardToInboxIcon from '@mui/icons-material/ForwardToInbox';
 import Correspondence from "../pages/Correspondence"
@@ -14,6 +14,7 @@ import AppBlockingIcon from '@mui/icons-material/AppBlocking';
 import MenuIcon from '@mui/icons-material/Menu';
 import { authActions } from "../../redux/slices/authSlice"
 import { useDispatch } from "react-redux"
+import Contact from "../../model/Contact"
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -40,7 +41,8 @@ type contactStatus = "online" | 'offline' | 'blocked'
 type contactType = {
     username: string,
     image: string,
-    status: contactStatus
+    status: contactStatus,
+    unread: Array<any>
 }
 
 type Props = {
@@ -55,9 +57,9 @@ const ContactsList: React.FC<Props> = ({ handleSendTo }) => {
     const contactsDb = useSelectorContacts()
 
     const contacts = useMemo(() => getContacts(), [contactsDb])
-    
+
     const dispatch = useDispatch()
-    // console.log(contacts.length); //вон из чата если пропал из контактов
+    //вон из чата если пропал из контактов
     if (contacts.length > 0 && !contacts.some(c => c.username == username)) {
         console.log('как будто бы нету')
         authService.logout()
@@ -74,7 +76,8 @@ const ContactsList: React.FC<Props> = ({ handleSendTo }) => {
                 status = c.isActive ? 'online' : 'offline'
             }
             const image = c.image
-            return { username, status, image }
+            const unread = c.unread
+            return { username, status, image, unread }
         })
     }
 
@@ -85,8 +88,18 @@ const ContactsList: React.FC<Props> = ({ handleSendTo }) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
     const [currentContactName, setCurrentContactName] = useState('')
 
+    function getUnreadNumber(contact: any) {     
+        const unreadAr = contact.unread
+        const index = unreadAr.findIndex((o: any) => o.name == username)
+        let count = 0
+        if (index > -1) {
+            count = unreadAr[index].count
+        }
+        return count
+    }
+
     return <List>{contacts.map((c, index) => {
-        
+
         return <Box key={c.username}>
             <ListItem>
                 <ListItemAvatar>
@@ -94,11 +107,20 @@ const ContactsList: React.FC<Props> = ({ handleSendTo }) => {
                         onClick={() => {
                             setOpenCorrespondence(true)
                             setClientTo(c.username)
+                            messagesService.resetUnread(username!, c.username)
                         }}
                         style={{ cursor: 'pointer' }}
                     >
                         <Avatar src={c.image} />
                     </div> : <Avatar src={c.image} />}
+                    <div
+                        style={{
+                            marginLeft: '38px',
+                            marginTop: '-10px'
+                          }}
+                    >
+                        {getUnreadNumber(c) == 0 ? '' : getUnreadNumber(c)}
+                    </div>
                 </ListItemAvatar>
                 <ListItemText
                     primary={c.username}
@@ -126,35 +148,33 @@ const ContactsList: React.FC<Props> = ({ handleSendTo }) => {
                     </Button>
                 </Box>}
 
-                    <Menu
-                        anchorEl={anchorEl}
-                        open={Boolean(anchorEl)}
-                        onClose={() => setAnchorEl(null)}
-                    >
-                        <MenuItem onClick={() => {
-                            setOpenCorrespondence(true)
-                            setClientFrom(currentContactName)
-                            setClientTo('')
-                            setAnchorEl(null)
-                        }}>
-                            <VisibilityIcon />
-                        </MenuItem>
-                        <MenuItem onClick={() => {
-                            //
-                            // console.log(`delete ${currentContactName}`)
-                            authService.deleteUser(currentContactName)
-                            setAnchorEl(null)
-                        }}>
-                            <DeleteOutlineIcon />
-                        </MenuItem>
-                        <MenuItem onClick={() => {
-                            //
-                            console.log(`block ${currentContactName}`)
-                            setAnchorEl(null)
-                        }}>
-                            <AppBlockingIcon />
-                        </MenuItem>
-                    </Menu>
+                <Menu
+                    anchorEl={anchorEl}
+                    open={Boolean(anchorEl)}
+                    onClose={() => setAnchorEl(null)}
+                >
+                    <MenuItem onClick={() => {
+                        setOpenCorrespondence(true)
+                        setClientFrom(currentContactName)
+                        setClientTo('')
+                        setAnchorEl(null)
+                    }}>
+                        <VisibilityIcon />
+                    </MenuItem>
+                    <MenuItem onClick={() => {
+                        authService.deleteUser(currentContactName)
+                        setAnchorEl(null)
+                    }}>
+                        <DeleteOutlineIcon />
+                    </MenuItem>
+                    <MenuItem onClick={() => {
+                        //
+                        console.log(`block ${currentContactName}`)
+                        setAnchorEl(null)
+                    }}>
+                        <AppBlockingIcon />
+                    </MenuItem>
+                </Menu>
 
             </ListItem>
         </Box>

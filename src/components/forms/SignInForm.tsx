@@ -9,9 +9,6 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import LoginData from '../../model/LoginData';
-import InputResult from '../../model/InputResult';
-import { Alert, Snackbar } from '@mui/material';
-import { StatusType } from '../../model/StatusType';
 
 const defaultTheme = createTheme();
 
@@ -30,8 +27,7 @@ const SignInForm: React.FC<Props> = ({submitFn}) => {
 
     };
 
-    return (
-        <ThemeProvider theme={defaultTheme}>
+    return <ThemeProvider theme={defaultTheme}>
             <Container component="main" maxWidth="xs">
                 <CssBaseline />
                 <Box
@@ -85,6 +81,6 @@ const SignInForm: React.FC<Props> = ({submitFn}) => {
                 </Box>
             </Container>
         </ThemeProvider>
-    );
+    
 }
 export default SignInForm

@@ -30,8 +30,6 @@ const Correspondence: React.FC<Props> = ({ clientFrom, clientTo }) => {
     }, [])
     async function fetchMessages() {
         const messagesStr = await messagesService.getPrivateMessages(clientFrom, clientTo)
-        // console.log(messagesStr);
-        
         setMessages(JSON.parse(messagesStr))
     }
 
@@ -123,19 +121,17 @@ const Correspondence: React.FC<Props> = ({ clientFrom, clientTo }) => {
             onChange={handleSomeText}
             value={request.someText}
             InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    {request.someText && <IconButton
-                        aria-label="Reset"
-                        onClick={handleTextReset}
-                        edge="end"
-                      >
-                        <ClearIcon />
-                      </IconButton>
-                    }
-                  </InputAdornment>
-                ),
-              }}
+                endAdornment: <InputAdornment position="end">
+                        {request.someText && <IconButton
+                            aria-label="Reset"
+                            onClick={handleTextReset}
+                            edge="end"
+                        >
+                            <ClearIcon />
+                        </IconButton>
+                        }
+                    </InputAdornment>
+            }}
         />
 
         <Paper elevation={3} sx={{ p: 2, height: '60vh', overflowY: 'auto' }}>

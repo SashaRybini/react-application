@@ -4,6 +4,7 @@ type Contact = {
     received: Array<any>,
     isActive: boolean,
     isBlocked: boolean,
-    image: string
+    image: string,
+    unread: Array<any>
 }
 export default Contact

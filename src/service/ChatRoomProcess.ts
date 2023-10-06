@@ -3,7 +3,6 @@ import MessageType from "../model/MessageType";
 
 export function filterMessages(request: Request, messages: any, clientFrom: string, clientTo: string) {
     let res: MessageType[] = []
-    // console.log(`admin/postman --> ${JSON.stringify(messages)}`);
     
     if (messages) {
         //clientTo is empty string in case of admin role 'eye' - otherwise filter will clear everything
@@ -28,12 +27,10 @@ export function filterMessages(request: Request, messages: any, clientFrom: stri
         }
 
         res = res.filter(m => new Date(m.date) > new Date(request.dateFrom) && new Date(m.date) < new Date(request.dateTo))
-
+        //объединить фильтры
         res = res.filter(m => m.text.includes(request.someText))
 
         res = res.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-
-        // console.log(res);
         
     }
     return res

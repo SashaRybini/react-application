@@ -18,20 +18,20 @@ const SnackbarAlert: React.FC<Props> = ({ message, duration, severity }) => {
         message && setOpen(true);
         alertMessage.current = message;
     }, [message])
-    return <Snackbar 
-            open={open} 
-            autoHideDuration={duration || DEFAULT_DURATION}
-            onClose={() => {
-                setOpen(false)
-                dispatch(codeActions.reset()) //for two success alerts in a row, for example
-                }}
-            >
-        <Alert 
+    return <Snackbar
+        open={open}
+        autoHideDuration={duration || DEFAULT_DURATION}
+        onClose={() => {
+            setOpen(false)
+            dispatch(codeActions.reset()) //for two success alerts in a row, for example
+        }}
+    >
+        <Alert
             onClose={() => {
                 setOpen(false)
                 dispatch(codeActions.reset())
-            }} 
-            severity={severity} 
+            }}
+            severity={severity}
             sx={{ width: '100%' }}
         >
             {message}

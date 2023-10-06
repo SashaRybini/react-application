@@ -8,12 +8,9 @@ export default class MessagesService {
 
   constructor(baseurl: string) {
     this.url = baseurl
-    // this.webSocket = new WebSocket('ws://localhost:8080/message/websocket')
   }
 
   connectWs(username: string) { //on login
-    // this.webSocket = new WebSocket('ws://localhost:8080/message/websocket')
-    // console.log('77777777777777');
 
     this.webSocket = new WebSocket(`ws://${this.url}/connect/${username}`);
   }
@@ -33,7 +30,7 @@ export default class MessagesService {
   }
 
   async getPrivateMessages(clientFrom: string, clientTo: string) {
-    const url = `http://${this.url}/messages`
+    const url = `http://${this.url}/messages/private`
     const responce = await fetch(url, {
       method: "POST",
       headers: {
@@ -69,16 +66,27 @@ export default class MessagesService {
       },
       body: JSON.stringify(message)
     })
-    // console.log((await responce.text()));
-
+ 
+    //
     const deletedMessage = {
       action: 'deleting',
       message: message
     }
     this.webSocket!.send(JSON.stringify(deletedMessage))
-
+    //
   }
 
-
+  async resetUnread(username: string, client: string) {
+    //идем в клаента, ресетим там себя (я - юзернейм)
+    const url = `http://${this.url}/messages/unread`
+    const responce = await fetch(url, {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ username, client })
+    })
+    return await responce.text() //
+  }
 
 }

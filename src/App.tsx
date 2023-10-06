@@ -4,14 +4,14 @@ import SignIn from "./components/pages/SignIn";
 import SignOut from "./components/pages/SignOut";
 import './App.css'
 import { useSelectorAuth, useSelectorCode } from "./redux/store";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import routesConfig from './config/routes-config.json';
 import NotFound from "./components/pages/NotFound";
 import NavigatorDispatcher from "./components/navigators/NavigatorDispatcher";
 import UserData from "./model/UserData";
 import CodeType from "./model/CodeType";
 import { StatusType } from "./model/StatusType";
-import { authService, messagesService } from "./config/service-config";
+import { authService } from "./config/service-config";
 import { useDispatch } from "react-redux";
 import SnackbarAlert from "./components/common/SnackbarAlert";
 import { authActions } from "./redux/slices/authSlice";
@@ -19,7 +19,7 @@ import CodePayload from "./model/CodePayload";
 import ChatRoom from "./components/pages/ChatRoom";
 import SignUp from "./components/pages/SignUp";
 
-const { always, authenticated, /*admin,*/ noadmin, noauthenticated } = routesConfig;
+const { always, authenticated, /*admin, noadmin,*/ noauthenticated } = routesConfig;
 
 function getRoutes(userData: UserData): RouteType[] {
   const result: RouteType[] = [];

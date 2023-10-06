@@ -12,19 +12,16 @@ function getUserData(data: any): UserData {
     const jwtPayloadObj = JSON.parse(jwtPayloadJson)
     const username = jwtPayloadObj.sub
     const role = jwtPayloadObj.role === "admin" ? "admin" : "user";
-    const res: UserData = {username, role}
+    const res: UserData = { username, role }
     return res;
 }
 
 export default class AuthServiceJwt implements AuthService {
 
-    // webSocket: WebSocket | undefined;
-
     constructor(private url: string) {
 
     }
 
-    //rename to signUp
     async registerNewUser(newUser: UserData): Promise<LoginData> {
         const response = await fetch(`http://${this.url}/users/signup`, {
             method: "POST",
@@ -38,10 +35,10 @@ export default class AuthServiceJwt implements AuthService {
 
     async login(loginData: LoginData): Promise<UserData> {
 
-        const serverLoginData:any = {};
+        const serverLoginData: any = {};
         serverLoginData.username = loginData.username;
         serverLoginData.password = loginData.password;
-        
+
         const response = await fetch(`http://${this.url}/users/login`, {
             method: "POST",
             headers: {
@@ -52,11 +49,8 @@ export default class AuthServiceJwt implements AuthService {
 
         //на логине создаем коннекшн 
         // TODO убрать в компоненту
-        
-        
         messagesService.connectWs(loginData.username)
-        // this.webSocket = new WebSocket(`ws://${this.url}/connect/${loginData.username}`);
-        
+
         return response.ok ? getUserData(await response.json()) : null
     }
 
@@ -65,9 +59,6 @@ export default class AuthServiceJwt implements AuthService {
         //колим ендпоинт для нотификации
         // TODO убрать в компоненту 
         messagesService.closeWs()
-        // this.webSocket!.close()
-
-        console.log('logout');
 
         await fetch(`http://${this.url}/users/signout`, {
             method: "POST",

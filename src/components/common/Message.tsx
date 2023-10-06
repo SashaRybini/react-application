@@ -17,21 +17,18 @@ const Message: React.FC<Props> = ({ message, isModal }) => {
     const userData: UserData = useSelectorAuth()
     const username = userData?.username
 
-    // const image = await chatRoomService.getImageUrl(message.from)
-
     const [image, setImage] = useState<string>('')
 
     useEffect(() => {
         fetchImageUrl()
-    }, [message.from]) //а иначе путаются картинки я хз
+    }, [message.from]) //а иначе путаются картинки
     async function fetchImageUrl() {
         const imageUrl = await chatRoomService.getImageUrl(message.from)
         setImage(imageUrl)
     }
 
     function getMessage() {
-        // let sender = message.from
-        //логика ..., первая строка для админа, чтобы он в своем супер глазе видел кто - кому отправил
+        //первая строка для админа, чтобы он в своем супер глазе видел кто - кому отправил
         let sender = `${message.from} to ${message.to}`
         if (message.to == username) { //&& message.from != 'all'
             sender = `${message.from} private to me`
@@ -69,15 +66,15 @@ const Message: React.FC<Props> = ({ message, isModal }) => {
                 </Typography>
             }
         />
-        
+
         {(message.from == username || username == 'admin') && <Button
             onClick={() => {
-            // console.log(JSON.stringify(message))
             messagesService.deleteMessage(message)
         }}
         >
             <ClearIcon />
         </Button>}
+        
     </ListItem>
 }
 export default Message
