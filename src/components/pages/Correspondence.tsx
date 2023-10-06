@@ -24,16 +24,17 @@ const Correspondence: React.FC<Props> = ({ clientFrom, clientTo }) => {
 
     const [request, setRequest] = useState<Request>({ sent: false, received: false, dateFrom: new Date('1900-01-01'), dateTo: new Date(), includeToAll: false, someText: '' })
 
+    const [flag, setFlag] = useState(true)
     const [messagesDb, setMessages] = useState()
     useEffect(() => {
         fetchMessages()
-    }, [])
+    }, [flag])
     async function fetchMessages() {
         const messagesStr = await messagesService.getPrivateMessages(clientFrom, clientTo)
         setMessages(JSON.parse(messagesStr))
     }
 
-    const messages: MessageType[] = useMemo(() => filterMessages(request, messagesDb, clientFrom, clientTo), [request])
+    const messages: MessageType[] = useMemo(() => filterMessages(request, messagesDb, clientFrom, clientTo), [request, messagesDb])
 
     function handleSent() {
         const requestCopy = { ...request }
@@ -136,7 +137,7 @@ const Correspondence: React.FC<Props> = ({ clientFrom, clientTo }) => {
 
         <Paper elevation={3} sx={{ p: 2, height: '60vh', overflowY: 'auto' }}>
             {messages.map((msg, index) => {
-                return <Message key={index} message={msg} isModal={true} />
+                return <Message key={index} message={msg} isModal={true} handleDel={() => setFlag(!flag)}/>
             })}
         </Paper>
     </Box>

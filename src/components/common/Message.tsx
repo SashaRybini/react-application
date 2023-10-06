@@ -11,9 +11,10 @@ import ClearIcon from '@mui/icons-material/Clear';
 
 type Props = {
     message: MessageType,
-    isModal: boolean
+    isModal: boolean,
+    handleDel?: () => void
 }
-const Message: React.FC<Props> = ({ message, isModal }) => {
+const Message: React.FC<Props> = ({ message, isModal, handleDel }) => {
     const userData: UserData = useSelectorAuth()
     const username = userData?.username
 
@@ -69,12 +70,15 @@ const Message: React.FC<Props> = ({ message, isModal }) => {
 
         {(message.from == username || username == 'admin') && <Button
             onClick={() => {
+            if (handleDel) {
+                handleDel()
+            }
             messagesService.deleteMessage(message)
         }}
         >
             <ClearIcon />
         </Button>}
-        
+
     </ListItem>
 }
 export default Message
