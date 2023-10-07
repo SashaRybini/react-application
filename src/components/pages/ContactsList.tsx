@@ -7,7 +7,7 @@ import {
     Avatar, Box, Button, List, ListItem, ListItemAvatar, ListItemText, Menu, MenuItem, Modal, Typography
 } from "@mui/material"
 import ForwardToInboxIcon from '@mui/icons-material/ForwardToInbox';
-import Correspondence from "../pages/Correspondence"
+import Correspondence from "./Correspondence"
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import AppBlockingIcon from '@mui/icons-material/AppBlocking';
@@ -15,6 +15,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { authActions } from "../../redux/slices/authSlice"
 import { useDispatch } from "react-redux"
 import Contact from "../../model/Contact"
+import { blockActions } from "../../redux/slices/blockSlice"
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -42,19 +43,21 @@ type contactType = {
     username: string,
     image: string,
     status: contactStatus,
-    unread: Array<any>
+    unread: Array<any>,
+    isBlocked: boolean
 }
 
 type Props = {
-    handleSendTo: (usernameTo: string) => void
+    handleSendTo: (usernameTo: string) => void,
+    contactsDb: Contact[]
 }
 
-const ContactsList: React.FC<Props> = ({ handleSendTo }) => {
+const ContactsList: React.FC<Props> = ({ handleSendTo, contactsDb }) => {
     const userData: UserData = useSelectorAuth()
     const username = userData?.username
     const [clientFrom, setClientFrom] = useState(username)
 
-    const contactsDb = useSelectorContacts()
+    // const contactsDb = useSelectorContacts()
 
     const contacts = useMemo(() => getContacts(), [contactsDb])
 
@@ -77,7 +80,7 @@ const ContactsList: React.FC<Props> = ({ handleSendTo }) => {
             }
             const image = c.image
             const unread = c.unread
-            return { username, status, image, unread }
+            return { username, status, image, unread } //и смысл переделывать контакт
         })
     }
 
@@ -127,13 +130,13 @@ const ContactsList: React.FC<Props> = ({ handleSendTo }) => {
                     secondary={
                         <Typography
                             variant="body2"
-                            color={c.status == 'online' ? 'green' : c.status == 'blocked' ? 'red' : 'pink'}
+                            color={c.status == 'online' ? 'green' : c.status == 'blocked' ? 'brown' : 'pink'}
                         >
                             {c.status}
                         </Typography>
                     }
                 />
-                {username != c.username && <Button
+                {username != c.username && c.status != 'blocked' && <Button
                     onClick={() => handleSendTo(c.username)}
                 >
                     <ForwardToInboxIcon />
@@ -168,8 +171,8 @@ const ContactsList: React.FC<Props> = ({ handleSendTo }) => {
                         <DeleteOutlineIcon />
                     </MenuItem>
                     <MenuItem onClick={() => {
-                        //
-                        console.log(`block ${currentContactName}`)
+                        chatRoomService.blockContact(currentContactName)
+                        blockActions.set(true)
                         setAnchorEl(null)
                     }}>
                         <AppBlockingIcon />

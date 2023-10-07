@@ -108,4 +108,23 @@ export default class ChatRoomServiceRest implements ChatRoomService {
         return imgUrl
     }
 
+    async isUserBlocked(username: string): Promise<boolean> { //what a mess
+        
+        const responce = await fetchRequest(`http://localhost:8080/connect/${username}`, { method: "GET" })
+        
+        try {
+            const contact: Contact = await responce.json()
+            return contact.isBlocked
+        } catch(error) {
+            //block del issue
+        }
+        return false
+    }
+
+    async blockContact(username: string): Promise<void> { //what a mess
+        console.log(username);
+        
+        await fetchRequest(`http://localhost:8080/connect/block/${username}`, { method: "POST" })
+    }
+
 }

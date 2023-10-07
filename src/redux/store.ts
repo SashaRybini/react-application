@@ -5,11 +5,13 @@ import UserData from "../model/UserData";
 import { codeReducer } from "./slices/codeSlice";
 import CodeType from "../model/CodeType";
 import CodePayload from "../model/CodePayload";
+import { blockReducer } from "./slices/blockSlice";
 
 export const store = configureStore({
     reducer: {
      authState: authReducer,
-     codeState: codeReducer
+     codeState: codeReducer,
+     blockedState: blockReducer
     }
 });
 export function useSelectorAuth() {
@@ -17,4 +19,7 @@ export function useSelectorAuth() {
 }
 export function useSelectorCode() {
     return useSelector<any, CodePayload>(state => state.codeState.codeMessage)
+}
+export function useSelectorBlocked() {
+    return useSelector<any, boolean>(state => state.blockedState.isBlocked)
 }

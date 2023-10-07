@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 import { Subscription } from "rxjs";
 import Contact from "../model/Contact";
 import { chatRoomService } from "../config/service-config";
+import UserData from "../model/UserData";
+import { useSelectorAuth } from "../redux/store";
 
 export function useDispatchCode() {
     const dispatch = useDispatch();
@@ -26,22 +28,25 @@ export function useDispatchCode() {
 }
 
 export function useSelectorContacts() {
+    const userData: UserData = useSelectorAuth()
     const dispatch = useDispatchCode();
     const [contacts, setContacts] = useState<Contact[]>([]);
     useEffect(() => {
-        const subscription: Subscription = chatRoomService.getAllContacts()
-            .subscribe({
-                next(contArray: Contact[] | string) {
-                    let errorMessage: string = '';
-                    if (typeof contArray === 'string') {
-                        errorMessage = contArray;
-                    } else {
-                        setContacts(contArray);
+        if(userData) {
+            const subscription: Subscription = chatRoomService.getAllContacts()
+                .subscribe({
+                    next(contArray: Contact[] | string) {
+                        let errorMessage: string = '';
+                        if (typeof contArray === 'string') {
+                            errorMessage = contArray;
+                        } else {
+                            setContacts(contArray);
+                        }
+                        dispatch(errorMessage, '');
                     }
-                    dispatch(errorMessage, '');
-                }
-            });
-        return () => subscription.unsubscribe();
+                });
+            return () => subscription.unsubscribe();
+        }
     }, []);
     return contacts;
 }

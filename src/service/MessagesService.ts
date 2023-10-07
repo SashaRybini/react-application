@@ -25,7 +25,7 @@ export default class MessagesService {
   }
 
   addListener(handleMessage: (event: any) => void) {
-    //вешаем слушателя, по сообщ колим колбэк хэндлер в чатрум компоненте
+    
     this.webSocket?.addEventListener('message', handleMessage);
   }
 

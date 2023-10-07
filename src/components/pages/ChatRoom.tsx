@@ -1,16 +1,32 @@
 import { Box, Button, Container, Grid, Paper, TextField } from "@mui/material"
-import ContactsList from "../common/ContactsList"
+import ContactsList from "./ContactsList"
 import { useEffect, useState } from "react";
 import MessageType from "../../model/MessageType";
 import UserData from "../../model/UserData";
-import { useSelectorAuth } from "../../redux/store";
-import { messagesService } from "../../config/service-config";
+import { useSelectorAuth, useSelectorBlocked } from "../../redux/store";
+import { chatRoomService, messagesService } from "../../config/service-config";
 import Message from "../common/Message";
+import { useDispatch } from "react-redux";
+import { blockActions } from "../../redux/slices/blockSlice";
+import { useSelectorContacts } from "../../hooks/hooks";
 
 const ChatRoom: React.FC = () => {
     const userData: UserData = useSelectorAuth()
     const [message, setMessage] = useState<MessageType>({ from: userData ? userData!.username : '', to: 'all', text: '', date: '' })
 
+    const dispatch = useDispatch();
+    const username = userData?.username
+    const isBlocked = useSelectorBlocked()
+    
+    const contactsDb = useSelectorContacts()
+    useEffect(() => {
+        getIsBlock()    
+    }, [contactsDb]) //useSelectorContacts() inside brackets mb
+    async function getIsBlock() {
+        const res: boolean = await chatRoomService.isUserBlocked(username!)
+        dispatch(blockActions.set(res))
+    }
+    
     function handleText(event: any) {
         const text = event.target.value
         const messageCopy = { ...message }
@@ -55,11 +71,11 @@ const ChatRoom: React.FC = () => {
         }
     }
 
-    return <Box>
+    return isBlocked? <div>you are blocked</div> : <Box>
         <Container sx={{ display: 'flex', flexDirection: 'column' }}>
             <Grid container spacing={2} sx={{ flex: 1 }}>
                 <Grid item xs={3}>
-                    <ContactsList handleSendTo={handleSendTo} />
+                    <ContactsList handleSendTo={handleSendTo} contactsDb={contactsDb} />
                 </Grid>
                 <Grid item xs={9}>
                     <Paper elevation={3} sx={{ p: 2, height: '60vh', overflowY: 'auto' }}>

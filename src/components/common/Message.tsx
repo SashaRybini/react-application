@@ -12,7 +12,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 type Props = {
     message: MessageType,
     isModal: boolean,
-    handleDel?: () => void
+    handleDel?: () => void //а ведь можно было убрать сообщ из массива и все
 }
 const Message: React.FC<Props> = ({ message, isModal, handleDel }) => {
     const userData: UserData = useSelectorAuth()
