@@ -2,9 +2,13 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
+import SimpleFetch from './SimpleFetch';
+import DatePicker from './DatePicker';
 import reportWebVitals from './reportWebVitals';
 import { Provider } from 'react-redux';
 import { store } from './redux/store';
+import Capitals from './Capitals';
+import Table from './Table';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -13,7 +17,7 @@ root.render(
   // <React.StrictMode> //стриктмод тоже вызывает юзэффект
 
     <Provider store={store}>
-      <App />
+      <Table />
     </Provider>
 
   // </React.StrictMode>
