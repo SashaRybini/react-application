@@ -106,7 +106,7 @@ export default class EmployeesServiceRest implements EmployeesService {
         this.stompClient?.disconnect()
     }
     private connectWS() {
-        this.stompClient.connect({}, () => {
+        this.stompClient.connect({}, () => { 
             this.stompClient.subscribe(TOPIC, message => {
                 console.log(message.body)
                 this.sibscriberNext()
